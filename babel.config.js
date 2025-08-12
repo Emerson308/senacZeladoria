@@ -1,0 +1,12 @@
+import { plugins } from "./postcss.config";
+
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [
+      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+      "nativewind/babel",
+    ],
+    plugins: ["nativewind/babel"]
+  };
+};

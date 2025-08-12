@@ -1,0 +1,10 @@
+{
+  "tailwindCSS.includeLanguages": {
+    "javascript": "javascript",
+    "typescript": "typescript",
+    "html": "html"
+  },
+  "tailwindCSS.classAttributes": [
+    "className"
+  ]
+}
