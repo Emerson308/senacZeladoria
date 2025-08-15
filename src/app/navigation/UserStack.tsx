@@ -7,7 +7,7 @@ import UserDashboardScreen from '../screens/UserDashboardScreen';
 const Stack = createStackNavigator();
 
 export const UserNavigator = () => (
-  <Stack.Navigator>
+  <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name="UserDashboard" component={UserDashboardScreen} />
     {/* <Stack.Screen name="Profile" component={ProfileScreen} /> */}
   </Stack.Navigator>

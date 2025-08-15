@@ -1,4 +1,4 @@
-import { plugins } from "./postcss.config";
+// import { plugins } from "./postcss.config";
 
 module.exports = function (api) {
   api.cache(true);
@@ -7,6 +7,6 @@ module.exports = function (api) {
       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
       "nativewind/babel",
     ],
-    plugins: ["nativewind/babel"]
+    // plugins: ["nativewind/babel"]
   };
 };

@@ -1,47 +1,130 @@
-
-// screens/LoginScreen.tsx
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Button, Text, TextInput } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { TextInput, Button, Text, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
 
-// import '.../styles/global.css'
-
-export default function LoginScreen() {
+const LoginScreen = () => {
   const authContext = useContext(AuthContext);
 
   if (!authContext) {
-    return null; // ou uma tela de erro
+    return null;
   }
 
   const { signIn } = authContext;
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
-    <View className='flex min-h-full flex-col justify-center px-6 py-12 lg:pg-8 bg-gray-900'>
-      <View className='sm:mx-auto sm:w-full sm:max-w-sm'>
-        <Text className='mt-10 text-center text-2xl/9 font-bold tracking-tight text-white'>Login</Text>
+    <View className='flex-1 bg-gray-50 justify-center p-16'>
+      <View className='items-center mb-10'>
+        <Image
+          source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/1200px-Senac_logo.svg.png" }}
+          resizeMode="contain"
+          className='h-24 w-40 mb-10'
+        />
+        <Text className='items-center text-3xl font-bold font-regular'>Login</Text>
+      </View>
 
+      <View className='max-w-sm w-full self-center'>
+        {/* Campo de Usuário */}
+        <TextInput
+          label="Usuário"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          keyboardType="default"
+          mode="outlined"
+          style={styles.input}
+          activeOutlineColor='#004A8D'
+          />
+
+        {/* Campo de Senha */}
+        <TextInput
+          label="Senha"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+          keyboardType="visible-password"
+          mode="outlined"
+          style={styles.input}
+          activeOutlineColor='#004A8D'
+        />
+        
+        {/* Botão de Esqueceu a senha */}
+        <TouchableOpacity style={styles.forgotPassword}>
+          <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+        </TouchableOpacity>
+
+        {/* Botão de Conectar */}
+        <Button
+          mode="contained"
+          onPress={() => signIn('user')}
+          style={styles.button}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
+        >
+          Conectar
+        </Button>
       </View>
-      
-      <View className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
-        <View>
-          <Text className='block text-sm/6 font-medium text-gray-100'>Email</Text>
-          <View className='mt-2'>
-            <TextInput
-              onChangeText={setEmail}
-              value={email}
-              autoCapitalize='none'
-              autoComplete='email'
-              keyboardType='email-address'
-              className='black w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10  focus:outline-2  focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6'
-              placeholder='Digite seu email'
-              placeholderTextColor="gray"
-            />
-          </View>
-        </View>
-      </View>
-        {/* <Button title="Entrar como Usuário Comum" onPress={() => signIn('user')} />
-        <Button title="Entrar como Admin" onPress={() => signIn('admin')} /> */}
     </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  content: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logo: {
+    height: 96, // h-24
+    width: 160, // w-40
+    marginBottom: 24, // mb-10
+  },
+  title: {
+    fontSize: 32, // text-3xl
+    fontWeight: 'bold', // font-bold
+    textAlign: 'center',
+  },
+  formContainer: {
+    width: '100%',
+    maxWidth: 384, // max-w-sm
+    alignSelf: 'center',
+  },
+  input: {
+    marginBottom: 16,
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: 16,
+  },
+  forgotPasswordText: {
+    color: '#667eea', // A cor padrão de um link do Tailwind
+    fontWeight: '600',
+  },
+  button: {
+    marginTop: 16,
+    backgroundColor: '#004A8D'
+  },
+  buttonContent: {
+    paddingVertical: 8,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+
+export default function App() {
+  return (
+    <PaperProvider>
+      <LoginScreen />
+    </PaperProvider>
   );
 }
