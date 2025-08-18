@@ -1,7 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { TextInput, Button, Text, Provider as PaperProvider } from 'react-native-paper';
+import { TextInput, Button, Text, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
+import { realizarLogin } from '../servicos/servicoAutenticacao';
+import { salvarToken } from '../servicos/servicoArmazenamento';
 
 const LoginScreen = () => {
   const authContext = useContext(AuthContext);
@@ -13,6 +15,41 @@ const LoginScreen = () => {
   const { signIn } = authContext;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [carregando, setCarregando] = useState(false);
+  const [mensagemErro, setMensagemErro] = useState('');
+
+  const lidarComLogin = async () => {
+    setCarregando(true);
+    setMensagemErro('');
+    try{
+      const resposta = await realizarLogin({username: username, password: password})
+      console.log(resposta)
+      await salvarToken(resposta.token)
+      signIn('user')
+    } catch(erro: any){
+      setMensagemErro(erro.message || 'Ocorreu um erro ao tentar fazer login. Tente novamente.')
+    } finally{
+      setCarregando(false)
+    }
+
+  }
+
+  if(carregando){
+    return(
+      <View className='flex-1 bg-gray-50 justify-center p-16'>
+
+        <ActivityIndicator size={80}/>
+      </View>
+    )
+  }
+
+  if(mensagemErro){
+    return(
+      <View className='flex-1 bg-gray-50 justify-center p-16'>
+        <Text className='text-center'>{mensagemErro}</Text>
+      </View>
+    )
+  }
 
   return (
     <View className='flex-1 bg-gray-50 justify-center p-16'>
@@ -59,7 +96,7 @@ const LoginScreen = () => {
         {/* Botão de Conectar */}
         <Button
           mode="contained"
-          onPress={() => signIn('user')}
+          onPress={lidarComLogin} //() => signIn('user')
           style={styles.button}
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}
