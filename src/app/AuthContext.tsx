@@ -1,4 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { obterToken, removerToken } from './servicos/servicoArmazenamento';
+import api from './api/axiosConfig';
+import { usuarioLogado } from './servicos/servicoAutenticacao';
 
 type UserRole = 'user' | 'admin' | null;
 
@@ -20,9 +23,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simule a verificação de um token ou sessão salvo
-    // Na vida real, você faria uma chamada assíncrona aqui (e.g. AsyncStorage)
-    setIsLoading(false);
+    const verificarAutenticacao = async () => {
+      const token = await obterToken();
+      if (token){
+        api.defaults.headers.common['Authorization'] = `Token ${token}`
+        const usuario = await usuarioLogado();
+        // console.log(usuario)
+        if(usuario){
+          if(usuario.is_staff){
+            setUserRole('admin')
+          } else{
+            
+            setUserRole('user')
+          }
+          
+        }
+
+
+      }
+      setIsLoading(false);
+    }
+    verificarAutenticacao()
     // setTimeout(() => {
     //   // Exemplo: se houver um token, você extrai o papel dele
     //   // setUserRole('user'); // Exemplo de usuário comum
@@ -35,8 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Lógica de login: salvar token, definir o papel, etc.
       setUserRole(role);
     },
-    signOut: () => {
+    signOut: async () => {
       // Lógica de logout: limpar token, redefinir o papel
+      await removerToken()
       setUserRole(null);
     },
     userRole,

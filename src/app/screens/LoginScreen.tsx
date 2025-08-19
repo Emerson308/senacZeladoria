@@ -23,9 +23,14 @@ const LoginScreen = () => {
     setMensagemErro('');
     try{
       const resposta = await realizarLogin({username: username, password: password})
-      console.log(resposta)
+      // console.log(resposta)
       await salvarToken(resposta.token)
-      signIn('user')
+      if (resposta.user_data.is_staff){
+        signIn('admin')
+      } else{
+        signIn('user')
+
+      }
     } catch(erro: any){
       setMensagemErro(erro.message || 'Ocorreu um erro ao tentar fazer login. Tente novamente.')
     } finally{

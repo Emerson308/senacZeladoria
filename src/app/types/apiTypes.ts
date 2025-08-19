@@ -5,8 +5,32 @@ export interface CredenciaisLogin {
 }
 
 export interface RespostaLoginAPI {
-    token: string
+    username: string,
+    password: string,
+    token: string,
+    user_data: UserData
 }
+
+export interface UserData{
+    id: number,
+    username: string,
+    email: string,
+    is_staff: boolean,
+    is_superuser: boolean
+
+}
+
+export interface Sala{
+    id: number,
+    nome_numero: string,
+    capacidade: number,
+    descricao: string,
+    localizacao: string,
+    status_limpeza: "Limpa" | "Limpeza Pendente",
+    ultima_limpeza_data_hora: null | String,
+    ultima_limpeza_funcionario: null | string
+}
+
 
 // export interface ProdutoAPI{
 //     id: number,

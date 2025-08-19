@@ -5,14 +5,15 @@ import { Sala } from "../types/types"
 
 interface propsSalaCard{
     sala: Sala;
-    key: number
+    key: number;
+    onPress: () => void
 }
 
 export default function SalaCard(props: propsSalaCard){
 
 
     return (
-        <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white">
+        <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={props.onPress}>
             <Card>
                 <Card.Content>
                     {/* O componente Title e Paragraph foram descontinuados */}
