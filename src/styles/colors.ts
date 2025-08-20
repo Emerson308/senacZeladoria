@@ -1,15 +1,15 @@
 
 export const colors = {
-    white: '#E1E1E6',
+    sgray: '#E1E1E6',
 
     sblue: '#004A8D',
 
     sorange: '#F7941D',
 
-    gray: {
-        200: "C4C4CC",
-        300: "8D8D99",
-    },
+    // gray: {
+    //     200: "C4C4CC",
+    //     300: "8D8D99",
+    // },
 
     green:{
         500: "00292E",

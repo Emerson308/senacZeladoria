@@ -16,9 +16,23 @@ export async function obterSalas():Promise<Sala[]>{
 export async function obterDetalhesSala(id: number):Promise<Sala>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
+        console.log(resposta.data)
         return resposta.data
     } catch (erro: any){
         console.log(erro);
         throw new Error(erro|| 'Erro ao buscar salas')
+    }
+}
+
+export async function marcarSalaComoLimpaService(id: number){
+    // console.log('teste')
+    try{
+        const resposta = await api.post(`salas/${id}/marcar_como_limpa/`, {})
+        console.log(resposta)
+        return
+    } catch(erro : any){
+        console.log(erro);
+        throw new Error(erro|| 'Erro ao buscar salas')
+        
     }
 }

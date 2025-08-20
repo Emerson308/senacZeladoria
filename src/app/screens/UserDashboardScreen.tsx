@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from 'react-native';
-import { Card, Button, Text, ActivityIndicator } from 'react-native-paper';
+import { Card, Button, Text, ActivityIndicator, Appbar } from 'react-native-paper';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import SalaCard from "../components/SalaCard";
@@ -87,9 +87,13 @@ export default function UserDashboardScreen() {
 
     return (
         <View className="flex-1 bg-gray-100 p-4">
-            <View className="bg-gray-100 w-full h-40 mb-6 justify-center p-2">
+            {/* <View className="bg-gray-100 w-full h-40 mb-6 justify-center p-2">
                 <Text className=" text-3xl font-bold">Salas</Text>
-            </View>
+            </View> */}
+            <Appbar.Header>
+                <Appbar.Content title='Salas' className=""/>
+                <Appbar.Action icon={'logout'} onPress={signOut}/>
+            </Appbar.Header>
             <ScrollView className="p-3">
                 {salas.map((sala) => (
                     <SalaCard key={sala.id} sala={sala} onPress={() => irParaDetalhesSala(sala.id)}/>

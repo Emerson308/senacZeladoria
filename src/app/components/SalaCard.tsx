@@ -1,7 +1,6 @@
 import { TouchableOpacity } from "react-native"
 import { Card, Text } from "react-native-paper"
-import { Sala } from "../types/types"
-
+import { Sala } from "../types/apiTypes";
 
 interface propsSalaCard{
     sala: Sala;
