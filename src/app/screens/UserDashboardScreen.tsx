@@ -1,12 +1,14 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity } from 'react-native';
-import { Card, Button, Text, ActivityIndicator, Appbar } from 'react-native-paper';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
+import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons } from 'react-native-paper';
+import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import SalaCard from "../components/SalaCard";
 import { RootStackParamList } from "../types/telaTypes";
 import { Sala } from "../types/apiTypes";
 import { obterSalas } from "../servicos/servicoSalas";
+import { marcarSalaComoLimpaService } from "../servicos/servicoSalas";
+import { segmentSalaStatus } from "../types/types";
 // import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
 
 export default function UserDashboardScreen() {
@@ -20,53 +22,82 @@ export default function UserDashboardScreen() {
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
     const [salas, setSalas] = useState<Sala[]>([])
+    const [filtro, setFiltro] = useState<segmentSalaStatus>('Todas')
+    const [salasFiltradas, setSalasFiltradas] = useState<Sala[]>([])
 
-    useEffect(() => {
-        const carregarSalas = async () => {
-            setCarregando(true)
-            try{
-                const obtendoSalas = await obterSalas()
-                setSalas(obtendoSalas)
-            } catch(erro: any){
-                setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-                if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                    signOut()
-                }
-            } finally{
-                setCarregando(false)
+    // if (filtro) {
+    //     console.log(filtro)
 
+    // }    
+
+    const carregarSalasComLoading = async () => {
+        setCarregando(true);
+        await carregarSalas();
+        setCarregando(false)
+    }
+
+    const carregarSalas = async () => {
+        try{
+            const obtendoSalas = await obterSalas()
+            setSalas(obtendoSalas)
+            setFiltro(filtro)
+        } catch(erro: any){
+            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
             }
+        } finally{
+
         }
+    }
+
+    const marcarSalaComoLimpa = async (id: number) => {
+        // setCarregando(true)
+        try{
+            await marcarSalaComoLimpaService(id, '')
+            await carregarSalasComLoading()
+            setFiltro(filtro)
+        } catch(erro: any){
+            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }                
+            
+        } finally{
+            // setCarregando(false)
+        }
+    }
+    
+    useEffect(() => {
+        setCarregando(true)
         carregarSalas()
+        setCarregando(false)
 
     }, [])
+
+    useEffect(() => {
+        if (filtro === 'Todas') {
+            setSalasFiltradas(salas)
+        } else if (filtro === 'Limpas'){
+            const salasLimpas = salas.filter(item => item.status_limpeza === 'Limpa')
+            setSalasFiltradas(salasLimpas)
+        } else if (filtro === 'Limpeza pendente'){
+            const salasLimpezaPendente = salas.filter(item => item.status_limpeza === 'Limpeza Pendente')
+            // console.log(salasLimpezaPendente)
+            setSalasFiltradas(salasLimpezaPendente)
+        }
+
+    }, [filtro])
+
+    useFocusEffect( React.useCallback(() => {
+        carregarSalas()
+    },[]))
     
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     
     const irParaDetalhesSala = (id: number) =>{
         navigation.navigate('DetalhesSala', {id: id})
     }
-
-    const teste : Sala = { id: 1, nome_numero: 'Sala de TI', capacidade: 30, descricao: 'Sala de reuniões da equipe de TI.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: "2025-07-09T12:00:00Z", ultima_limpeza_funcionario: null}
-
-    // const salas: Sala[] = [
-    //     { id: 1, nome_numero: 'Sala de TI', capacidade: 30, descricao: 'Sala de reuniões da equipe de TI.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 2, nome_numero: 'Sala de Reunião Principal', capacidade: 30, descricao: 'Sala para grandes apresentações e reuniões.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 3, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 4, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 5, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 6, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 7, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 8, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 9, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 10, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 11, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 12, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 13, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 14, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 15, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    //     { id: 16, nome_numero: 'Sala de Design', capacidade: 30, descricao: 'Equipada com computadores e tablets de última geração.', localizacao: "Bloco A", status_limpeza: "Limpeza Pendente", ultima_limpeza_data_hora: null, ultima_limpeza_funcionario: null},
-    // ];
 
     if(carregando){
         return(
@@ -86,20 +117,52 @@ export default function UserDashboardScreen() {
     }
 
     return (
-        <View className="flex-1 bg-gray-100 p-4">
+        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-20">
             {/* <View className="bg-gray-100 w-full h-40 mb-6 justify-center p-2">
                 <Text className=" text-3xl font-bold">Salas</Text>
             </View> */}
             <Appbar.Header>
-                <Appbar.Content title='Salas' className=""/>
+                <Appbar.Content title='Salas' onPress={carregarSalasComLoading} className=""/>
                 <Appbar.Action icon={'logout'} onPress={signOut}/>
             </Appbar.Header>
+
+            <SegmentedButtons 
+                value={filtro}
+                onValueChange={setFiltro}
+                style={styles.segmentButtons}
+                buttons={[
+                    {
+                        value: 'Todas',
+                        label: 'Todas',
+                        checkedColor: '#404040'
+                    },
+                    {
+                        value: 'Limpas',
+                        label: 'Limpas',
+                        checkedColor: '#404040'
+                    },
+                    {
+                        value:'Limpeza pendente',
+                        label: 'Limpeza pendente',
+                        checkedColor: '#404040'
+                    }
+                ]}
+            />
+
             <ScrollView className="p-3">
-                {salas.map((sala) => (
-                    <SalaCard key={sala.id} sala={sala} onPress={() => irParaDetalhesSala(sala.id)}/>
+                {salasFiltradas.map((sala) => (
+                    <SalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
                     // <View></View>
                 ))}
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
+
+
+const styles = StyleSheet.create({
+    segmentButtons: {
+        marginVertical: 15,
+        marginHorizontal: 20
+    }
+})

@@ -85,12 +85,13 @@ const LoginScreen = () => {
           label="Senha"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
           autoCapitalize="none"
-          keyboardType="visible-password"
+          // keyboardType="visible-password"
           mode="outlined"
           style={styles.input}
           activeOutlineColor='#004A8D'
+          secureTextEntry
+          right={<TextInput.Icon icon="eye"/>}
         />
         
         {/* Botão de Esqueceu a senha */}

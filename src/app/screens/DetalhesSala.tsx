@@ -1,6 +1,6 @@
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
-import { View, ScrollView, Text } from 'react-native'
-import { Card, Button, ActivityIndicator, Appbar } from 'react-native-paper';
+import { View, ScrollView, Text, StyleSheet } from 'react-native'
+import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../types/telaTypes';
 import { useContext, useEffect, useState } from 'react';
@@ -8,8 +8,7 @@ import { obterDetalhesSala, marcarSalaComoLimpaService } from '../servicos/servi
 import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
-import {parseISO, format} from 'date-fns'
-import { ptBR } from 'date-fns/locale';
+import { formatarDataISO } from '../functions/functions';
 
 
 
@@ -20,38 +19,23 @@ export default function DetalhesSala(){
         return null
     }
 
-    const formatarDataISO = (utcDateTimeStr: string|null) => {
-        if (!utcDateTimeStr){
-            return 'N/A'
-        }
-
-        try{
-            const dateObjectUTC = parseISO(utcDateTimeStr)
-
-            return format(dateObjectUTC, "dd/MM/yyyy 'às' HH:mm:ss", {locale: ptBR})
-        } catch(error){
-            console.error("Erro ao processar data/hora")
-            return "Data Inválida"
-        }
-    }
-
     const marcarSalaComoLimpa = async (id: number) => {
         // signOut()
         setCarregando(true)
         try{
-            await marcarSalaComoLimpaService(id)
+            await marcarSalaComoLimpaService(id ,observacoes)
             await carregarSala()
         } catch(erro: any){
             setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
                 signOut()
             }                
-
+            
         } finally{
             setCarregando(false)
         }
     }
-
+    
     const carregarSala = async () => {
         setCarregando(true)
         try{
@@ -77,6 +61,7 @@ export default function DetalhesSala(){
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
     const [dadosSala, setDadosSala] = useState<Sala|null>(null)
+    const [observacoes, setObservacoes] = useState('')
     // const [reload, setReload] = useState(false)
 
     useEffect(() => {
@@ -151,9 +136,18 @@ export default function DetalhesSala(){
                 </View>
 
 
-                <View className=' p-5 pt-0 md:p-8'>
+                <View className=' p-5 pt-5 pb-10 md:p-8'>
 
-                <Button className='mt-5 mx-10 py-2' icon={'marker'} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala1.id)}>
+                <TextInput
+                    label={"Observações"}
+                    value={observacoes}
+                    onChangeText={setObservacoes}
+                    className=''
+                    mode='outlined'
+                    activeOutlineColor='#004A8D'
+                />
+
+                <Button className='mt-5 mx-10' icon={'marker'} contentStyle={styles.btnMarcarConcluida} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala.id)}>
                     Marcar como limpa
                 </Button>
 
@@ -207,3 +201,9 @@ export default function DetalhesSala(){
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    btnMarcarConcluida:{
+        padding: 8
+    }
+})

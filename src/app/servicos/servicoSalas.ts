@@ -24,12 +24,12 @@ export async function obterDetalhesSala(id: number):Promise<Sala>{
     }
 }
 
-export async function marcarSalaComoLimpaService(id: number){
+export async function marcarSalaComoLimpaService(id: number, observacoes?: string){
     // console.log('teste')
     try{
-        const resposta = await api.post(`salas/${id}/marcar_como_limpa/`, {})
-        console.log(resposta)
-        return
+        const resposta = await api.post(`salas/${id}/marcar_como_limpa/`, {observacoes})
+        // console.log(resposta.data)
+        // return
     } catch(erro : any){
         console.log(erro);
         throw new Error(erro|| 'Erro ao buscar salas')
