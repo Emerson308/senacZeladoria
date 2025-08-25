@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
-import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons } from 'react-native-paper';
+import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from "../AuthContext";
 import SalaCard from "../components/SalaCard";
 import { RootStackParamList } from "../types/telaTypes";
@@ -9,6 +10,9 @@ import { Sala } from "../types/apiTypes";
 import { obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService } from "../servicos/servicoSalas";
 import { segmentSalaStatus } from "../types/types";
+import { colors } from "../../styles/colors";
+import theme from "tailwindcss/defaultTheme";
+import { green } from "react-native-reanimated/lib/typescript/Colors";
 // import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
 
 export default function UserDashboardScreen() {
@@ -24,6 +28,28 @@ export default function UserDashboardScreen() {
     const [salas, setSalas] = useState<Sala[]>([])
     const [filtro, setFiltro] = useState<segmentSalaStatus>('Todas')
     const [salasFiltradas, setSalasFiltradas] = useState<Sala[]>([])
+    // const [index, setIndex] = useState(0);
+
+    // const [routes] = useState([
+    //     { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
+    //     { key: 'albums', title: 'Albums', focusedIcon: 'album' },
+    //     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
+    //     { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
+    // ]);
+
+    // const MusicRoute = () => {return <View></View>}
+    // const AlbumsRoute = () => {return <View></View>}
+    // const RecentsRoute = () => {return <View></View>}
+    // const NotificationsRoute = () => {return <View></View>}
+
+    // const renderScene = BottomNavigation.SceneMap({
+    //     music: MusicRoute,
+    //     albums: AlbumsRoute,
+    //     recents: RecentsRoute,
+    //     notifications: NotificationsRoute
+    // })
+
+
 
     // if (filtro) {
     //     console.log(filtro)
@@ -87,7 +113,7 @@ export default function UserDashboardScreen() {
             setSalasFiltradas(salasLimpezaPendente)
         }
 
-    }, [filtro])
+    }, [filtro, salas])
 
     useFocusEffect( React.useCallback(() => {
         carregarSalas()
@@ -121,10 +147,10 @@ export default function UserDashboardScreen() {
             {/* <View className="bg-gray-100 w-full h-40 mb-6 justify-center p-2">
                 <Text className=" text-3xl font-bold">Salas</Text>
             </View> */}
-            <Appbar.Header>
+            {/* <Appbar.Header>
                 <Appbar.Content title='Salas' onPress={carregarSalasComLoading} className=""/>
                 <Appbar.Action icon={'logout'} onPress={signOut}/>
-            </Appbar.Header>
+            </Appbar.Header> */}
 
             <SegmentedButtons 
                 value={filtro}
@@ -134,17 +160,21 @@ export default function UserDashboardScreen() {
                     {
                         value: 'Todas',
                         label: 'Todas',
-                        checkedColor: '#404040'
+                        checkedColor: 'black',
+                        // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
+                        
                     },
                     {
                         value: 'Limpas',
                         label: 'Limpas',
-                        checkedColor: '#404040'
+                        checkedColor: 'black',
+                        // style: {backgroundColor: colors.sblue},
                     },
                     {
                         value:'Limpeza pendente',
                         label: 'Limpeza pendente',
-                        checkedColor: '#404040'
+                        checkedColor: 'black',
+                        // style: {backgroundColor: colors.sblue},
                     }
                 ]}
             />

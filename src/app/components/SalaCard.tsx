@@ -2,6 +2,7 @@ import { TouchableOpacity, View, StyleSheet } from "react-native"
 import { Card, Text, Button } from "react-native-paper"
 import { Sala } from "../types/apiTypes";
 import { formatarDataISO } from "../functions/functions";
+import { colors } from "../../styles/colors";
 
 interface propsSalaCard{
     sala: Sala;
@@ -15,7 +16,7 @@ export default function SalaCard(props: propsSalaCard){
 
     return (
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={props.onPress}>
-            <Card>
+            <Card  style={styles.bgWhite}>
                 <Card.Content style={styles.contentCard}>
                     {/* O componente Title e Paragraph foram descontinuados */}
                     {/* Usando o componente Text do Paper com a propriedade variant */}
@@ -44,6 +45,8 @@ export default function SalaCard(props: propsSalaCard){
                 <Card.Actions>
                     <Button
                         mode="contained-tonal"
+                        buttonColor={colors.sblue}
+                        textColor={'white'}
                         onPress={(e) => {
                             e.stopPropagation();
                             props.marcarSalaComoLimpa(props.sala.id)
@@ -67,12 +70,17 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         paddingHorizontal: 'auto',
         gap: 10,
+        // backgroundColor: 'white',
         // borderStyle: 'solid',
         // borderColor: 'black',
         // borderWidth: 2,
         // padding: 0,
         paddingLeft: 'auto',
         paddingRight: 'auto',
+    },
+
+    bgWhite:{
+        backgroundColor: 'white'
     },
 
     textYellow:{

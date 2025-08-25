@@ -33,7 +33,7 @@ export async function usuarioLogado():Promise<UserData| null>{
         if (erro.response && erro.response.status === 401){
             throw new Error('Token inválido.');
         }
-        return null
+        // return null
         throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
 
     }
