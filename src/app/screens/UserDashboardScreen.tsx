@@ -5,7 +5,7 @@ import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from "../AuthContext";
 import SalaCard from "../components/SalaCard";
-import { RootStackParamList } from "../types/telaTypes";
+import { UserStackParamList } from "../types/UserStackTypes";
 import { Sala } from "../types/apiTypes";
 import { obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService } from "../servicos/servicoSalas";
@@ -119,7 +119,7 @@ export default function UserDashboardScreen() {
         carregarSalas()
     },[]))
     
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const navigation = useNavigation<NavigationProp<UserStackParamList>>();
     
     const irParaDetalhesSala = (id: number) =>{
         navigation.navigate('DetalhesSala', {id: id})

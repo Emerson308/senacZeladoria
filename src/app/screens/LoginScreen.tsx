@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { TextInput, Button, Text, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
 import { realizarLogin } from '../servicos/servicoAutenticacao';
@@ -33,6 +33,7 @@ const LoginScreen = () => {
       }
     } catch(erro: any){
       setMensagemErro(erro.message || 'Ocorreu um erro ao tentar fazer login. Tente novamente.')
+      Alert.alert('Erro no login', mensagemErro)
     } finally{
       setCarregando(false)
     }
@@ -48,13 +49,14 @@ const LoginScreen = () => {
     )
   }
 
-  if(mensagemErro){
-    return(
-      <View className='flex-1 bg-gray-50 justify-center p-16'>
-        <Text className='text-center'>{mensagemErro}</Text>
-      </View>
-    )
-  }
+  // if(mensagemErro){
+  //   return(
+  //     <View className='flex-1 bg-gray-50 justify-center p-16'>
+  //       <Text className='text-center'>{mensagemErro}</Text>
+  //       {/* <Alert.alert {'Texto', 'Texto'} ></Alert.alert> */}
+  //     </View>
+  //   )
+  // }
 
   return (
     <View className='flex-1 bg-gray-50 justify-center p-16'>

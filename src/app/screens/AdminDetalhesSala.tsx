@@ -13,7 +13,7 @@ import { formatarDataISO } from '../functions/functions';
 
 
 
-export default function AdminDetalhesSala(){
+export default function DetalhesSala(){
     const authContext = useContext(AuthContext)
     if(!authContext){
         return null

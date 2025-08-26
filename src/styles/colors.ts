@@ -6,6 +6,10 @@ export const colors = {
 
     sorange: '#F7941D',
 
+    sred: '#F31F00',
+    
+    sgreen: '00292E',
+
     // gray: {
     //     200: "C4C4CC",
     //     300: "8D8D99",
