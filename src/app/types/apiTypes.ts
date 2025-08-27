@@ -31,6 +31,14 @@ export interface Sala{
     ultima_limpeza_funcionario: null | string
 }
 
+export interface newSala{
+    nome_numero: string,
+    capacidade: number,
+    descricao: string,
+    localizacao: string,
+
+}
+
 
 // export interface ProdutoAPI{
 //     id: number,

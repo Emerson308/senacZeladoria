@@ -1,6 +1,6 @@
 
 import api from "../api/axiosConfig";
-import { Sala } from "../types/apiTypes";
+import { newSala, Sala } from "../types/apiTypes";
 
 export async function obterSalas():Promise<Sala[]>{
     try {
@@ -35,4 +35,43 @@ export async function marcarSalaComoLimpaService(id: number, observacoes?: strin
         throw new Error(erro|| 'Erro ao buscar salas')
         
     }
+}
+
+export async function criarNovaSala(newSala: newSala){
+    // console.log(newSala)
+    try{
+        const resposta = await api.post('salas/', newSala)
+        // console.log(resposta.data)
+        // return
+    } catch(erro : any){
+        console.log(erro.status);
+        throw new Error(erro)
+        
+    }
+}
+
+export async function editarSalaService(newSala: newSala, id: number){
+    try{
+        const resposta = await api.put(`salas/${id}/`, newSala)
+        // console.log(resposta.data)
+        // return
+    } catch(erro : any){
+        console.log(erro.status);
+        throw new Error(erro)
+        
+    }
+
+}
+
+export async function excluirSalaService(id: number){
+    try{
+        const resposta = await api.delete(`salas/${id}/`)
+        // console.log(resposta.data)
+        // return
+    } catch(erro : any){
+        console.log(erro.status);
+        throw new Error(erro)
+        
+    }
+
 }

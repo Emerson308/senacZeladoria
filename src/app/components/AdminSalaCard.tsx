@@ -10,8 +10,8 @@ interface propsSalaCard{
     key: number,
     onPress: () => void,
     marcarSalaComoLimpa: (id:number) => void,
-    editarSala?: (id:number) => void,
-    excluirSala?: (id: number) => void
+    editarSala: (sala: Sala) => void,
+    excluirSala: (id: number) => void
 }
 
 export default function AdminSalaCard(props: propsSalaCard){
@@ -65,7 +65,8 @@ export default function AdminSalaCard(props: propsSalaCard){
                         textColor={'white'}
                         onPress={(e) => {
                             e.stopPropagation();
-                            props.marcarSalaComoLimpa(props.sala.id)
+                            props.excluirSala(props.sala.id)
+                            // props.marcarSalaComoLimpa(props.sala.id)
                             
                         }
                     }
@@ -81,10 +82,12 @@ export default function AdminSalaCard(props: propsSalaCard){
                     <Button
                         mode="contained-tonal"
                         buttonColor={colors.sblue}
+                        className=" my-2"
                         textColor={'white'}
                         onPress={(e) => {
                             e.stopPropagation();
-                            props.marcarSalaComoLimpa(props.sala.id)
+                            props.editarSala(props.sala)
+                            // props.marcarSalaComoLimpa(props.sala.id)
                             
                         }
                         }

@@ -1,15 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert } from 'react-native';
 import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { UserStackParamList } from "../types/UserStackTypes";
-import { Sala } from "../types/apiTypes";
-import { obterSalas } from "../servicos/servicoSalas";
-import { marcarSalaComoLimpaService } from "../servicos/servicoSalas";
+import { newSala, Sala } from "../types/apiTypes";
+import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
+import { marcarSalaComoLimpaService, excluirSalaService } from "../servicos/servicoSalas";
 import { segmentSalaStatus } from "../types/types";
 import AdminSalaCard from "../components/AdminSalaCard";
 import { colors } from "../../styles/colors";
+import SalaForms from "../components/CriarSalaForm";
 // import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
 
 export default function AdminDashboardScreen() {
@@ -25,33 +26,9 @@ export default function AdminDashboardScreen() {
     const [salas, setSalas] = useState<Sala[]>([])
     const [filtro, setFiltro] = useState<segmentSalaStatus>('Todas')
     const [salasFiltradas, setSalasFiltradas] = useState<Sala[]>([])
-    // const [index, setIndex] = useState(0);
-
-    // const [routes] = useState([
-    //     { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
-    //     { key: 'albums', title: 'Albums', focusedIcon: 'album' },
-    //     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
-    //     { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
-    // ]);
-
-    // const MusicRoute = () => {return <View></View>}
-    // const AlbumsRoute = () => {return <View></View>}
-    // const RecentsRoute = () => {return <View></View>}
-    // const NotificationsRoute = () => {return <View></View>}
-
-    // const renderScene = BottomNavigation.SceneMap({
-    //     music: MusicRoute,
-    //     albums: AlbumsRoute,
-    //     recents: RecentsRoute,
-    //     notifications: NotificationsRoute
-    // })
-
-
-
-    // if (filtro) {
-    //     console.log(filtro)
-
-    // }    
+    const [criarSalaFormVisible, setCriarSalaFormVisible] = useState(false)
+    const [editarSalaFormVisible, setEditarSalaFormVisible] = useState(false)
+    const [formEditarData, setFormEditarData] = useState<Sala|null>(null)
 
     const carregarSalasComLoading = async () => {
         setCarregando(true);
@@ -89,6 +66,105 @@ export default function AdminDashboardScreen() {
         } finally{
             // setCarregando(false)
         }
+    }
+    
+    async function criarSala(newSala: newSala){
+        
+        try {
+            await criarNovaSala(newSala);
+            await carregarSalasComLoading();
+        } catch(erro: any){
+            
+            setMensagemErro(erro.message || 'Não foi possivel criar as salas')
+            // console.log('oi')
+            // console.log(erro)
+            // console.log(typeof erro)
+            // console.log(erro[0].status === 400)
+            // console.log(mensagemErro)
+            if(erro.message === 'AxiosError: Request failed with status code 400'){
+                setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
+            }
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }
+            Alert.alert('Erro', mensagemErro)
+        }
+    }
+
+    async function editarSala(newSala: newSala, id: number|undefined){
+        try {
+            if(!id){
+                console.log('O id não foi passado')
+                return
+            }
+            await editarSalaService(newSala, id);
+            await carregarSalasComLoading();
+        } catch(erro: any){
+            
+            setMensagemErro(erro.message || 'Não foi possivel criar as salas')
+            // console.log('oi')
+            // console.log(erro)
+            // console.log(typeof erro)
+            // console.log(erro[0].status === 400)
+            // console.log(mensagemErro)
+            if(erro.message === 'AxiosError: Request failed with status code 400'){
+                setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
+            }
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }
+            Alert.alert('Erro', mensagemErro)
+        }
+
+    }
+
+    async function excluirSalaDefinitivo(id: number){
+        await excluirSalaService(id);
+        await carregarSalasComLoading();
+
+    }
+
+    async function excluirSala(id: number){
+        try {
+            if(!id){
+                console.log('O id não foi passado')
+                return
+            }
+            let confirmacao = {confirmacao: false};
+            Alert.alert('Confirmar exclusão', "Tem certeza de que deseja excluir este item? Esta ação não pode ser desfeita.", [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Confirmar',
+                    style: 'destructive',
+                    onPress: () => excluirSalaDefinitivo(id)
+                }
+            ])
+        } catch(erro: any){
+            
+            setMensagemErro(erro.message || 'Não foi possivel criar as salas')
+            // console.log('oi')
+            // console.log(erro)
+            // console.log(typeof erro)
+            // console.log(erro[0].status === 400)
+            // console.log(mensagemErro)
+            if(erro.message === 'AxiosError: Request failed with status code 400'){
+                setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
+            }
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }
+            Alert.alert('Erro', mensagemErro)
+        }
+
+
+    }
+
+    function btnEditarSala(sala: Sala){
+        setFormEditarData(sala);
+        setEditarSalaFormVisible(true)
     }
     
     useEffect(() => {
@@ -131,13 +207,13 @@ export default function AdminDashboardScreen() {
         )
     }
 
-    if(mensagemErro){
-        return(
-        <View className='flex-1 bg-gray-50 justify-center p-16'>
-            <Text className='text-center'>{mensagemErro}</Text>
-        </View>
-        )
-    }
+    // if(mensagemErro){
+    //     return(
+    //     <View className='flex-1 bg-gray-50 justify-center p-16'>
+    //         <Text className='text-center'>{mensagemErro}</Text>
+    //     </View>
+    //     )
+    // }
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-20">
@@ -148,7 +224,8 @@ export default function AdminDashboardScreen() {
                 <Appbar.Content title='Salas' onPress={carregarSalasComLoading} className=""/>
                 <Appbar.Action icon={'logout'} onPress={signOut}/>
             </Appbar.Header> */}
-
+            <SalaForms visible={criarSalaFormVisible} onClose={() => setCriarSalaFormVisible(false)} onSubmit={criarSala} typeForm='Criar'/>
+            <SalaForms visible={editarSalaFormVisible} onClose={() => setEditarSalaFormVisible(false)} onSubmit={editarSala} typeForm='Editar' sala={formEditarData}/>
             <SegmentedButtons 
                 value={filtro}
                 onValueChange={setFiltro}
@@ -181,6 +258,7 @@ export default function AdminDashboardScreen() {
                 buttonColor={colors.sblue}
                 textColor={'white'}
                 className=" mx-5 my-3"
+                onPress={() => setCriarSalaFormVisible(true)}
                 
             >
                 Criar sala
@@ -188,7 +266,7 @@ export default function AdminDashboardScreen() {
 
             <ScrollView className="p-3">
                 {salasFiltradas.map((sala) => (
-                    <AdminSalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
+                    <AdminSalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={excluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
                     // <View></View>
                 ))}
             </ScrollView>
