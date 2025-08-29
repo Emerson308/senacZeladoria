@@ -96,7 +96,13 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
             <Pressable onPress={onClose} style={styles.centeredView} className=" flex-1 justify-center items-center">
                 <Pressable className="bg-white rounded-lg p-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
                     {/* <Text>Oi</Text> */}
-                    <Text className=" text-center mb-8 text-4xl font-bold">Criar sala</Text>
+                    {
+                        typeForm === 'Criar' ?
+                        <Text className=" text-center mb-8 text-4xl font-bold">Criar sala</Text>
+                        :
+                        <Text className=" text-center mb-8 text-4xl font-bold">Editar sala</Text>
+
+                    }
                     <TextInput
                         label="Nome da sala"
                         value={nomeSala}
@@ -141,15 +147,30 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
                         activeOutlineColor='#004A8D'
                     />
 
-                    <Button 
-                        mode='contained-tonal'
-                        className=" mt-3"
-                        buttonColor={colors.sblue}
-                        textColor="white"
-                        onPress={handleSubmit}
-                    >
-                        Criar sala
-                    </Button>
+                    {
+                        typeForm === 'Criar' ?
+                        <Button 
+                            mode='contained-tonal'
+                            className=" mt-3"
+                            buttonColor={colors.sblue}
+                            textColor="white"
+                            onPress={handleSubmit}
+                        >
+                            Criar sala
+                        </Button>
+                        :
+                        <Button 
+                            mode='contained-tonal'
+                            className=" mt-3"
+                            buttonColor={colors.sblue}
+                            textColor="white"
+                            onPress={handleSubmit}
+                        >
+                            Editar sala
+                        </Button>
+
+
+                    }
                     
                 </Pressable>
             </Pressable>

@@ -16,7 +16,7 @@ export async function obterSalas():Promise<Sala[]>{
 export async function obterDetalhesSala(id: number):Promise<Sala>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
-        console.log(resposta.data)
+        // console.log(resposta.data)
         return resposta.data
     } catch (erro: any){
         console.log(erro);
