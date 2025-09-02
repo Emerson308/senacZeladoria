@@ -17,9 +17,9 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider, AuthContext } from './AuthContext';
 
-import { AuthNavigator } from './navigation/AuthStack';
-import { UserNavigator } from './navigation/UserStack';
-import { AdminNavigator } from './navigation/AdminStack';
+import { AuthNavigator } from './navigation/stacks/AuthStack';
+import { UserNavigator } from './navigation/stacks/UserStack';
+import { AdminNavigator } from './navigation/stacks/AdminStack';
 
 const RootNavigation = () => {
   const authContext = useContext(AuthContext);

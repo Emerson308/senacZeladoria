@@ -2,7 +2,7 @@
 import { View, ScrollView, Text, StyleSheet } from 'react-native'
 import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { TelaDetalhesSala } from '../types/UserStackTypes';
+import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
 import { useContext, useEffect, useState } from 'react';
 import { obterDetalhesSala, marcarSalaComoLimpaService } from '../servicos/servicoSalas';
 import { Sala } from '../types/apiTypes';

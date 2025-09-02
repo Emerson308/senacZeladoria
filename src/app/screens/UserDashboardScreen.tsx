@@ -5,7 +5,7 @@ import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from "../AuthContext";
 import SalaCard from "../components/SalaCard";
-import { UserStackParamList } from "../types/UserStackTypes";
+import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { Sala } from "../types/apiTypes";
 import { obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService } from "../servicos/servicoSalas";

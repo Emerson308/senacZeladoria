@@ -32,7 +32,7 @@ export async function marcarSalaComoLimpaService(id: number, observacoes?: strin
         // return
     } catch(erro : any){
         console.log(erro);
-        throw new Error(erro|| 'Erro ao buscar salas')
+        throw new Error(erro|| 'Erro ao marcar sala')
         
     }
 }

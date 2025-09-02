@@ -7,6 +7,10 @@ import type { DrawerNavigationProp } from '@react-navigation/drawer';
 export type AdminStackParamList = {
     Home: undefined;
     DetalhesSala: {id: number};
+    Usuarios: undefined;
+    RegistrosLimpeza: undefined;
+    AdminTabs: undefined;
+    Logout: undefined
     // Logout: undefined
 }
 
@@ -21,17 +25,17 @@ export type TelaDetalhesSala = NativeStackScreenProps<AdminStackParamList, 'Deta
 
 
 
-export type UserDrawerParamList = {
-    Home: undefined;
-    // Notifications: undefined;
-    // Profile: { userId: string };
-  };
+// export type UserDrawerParamList = {
+//     Home: undefined;
+//     // Notifications: undefined;
+//     // Profile: { userId: string };
+//   };
   
 
-  export type UserDrawerNavProps<T extends keyof UserDrawerParamList> = {
-    navigation: DrawerNavigationProp<ParamListBase>;
-    route: T;
-  };
+//   export type UserDrawerNavProps<T extends keyof UserDrawerParamList> = {
+//     navigation: DrawerNavigationProp<ParamListBase>;
+//     route: T;
+//   };
 
 
 

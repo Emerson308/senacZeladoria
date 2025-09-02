@@ -3,13 +3,14 @@ import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert } f
 import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
-import { UserStackParamList } from "../types/UserStackTypes";
+import { colors } from "../../styles/colors";
+
+import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, Sala } from "../types/apiTypes";
 import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService, excluirSalaService } from "../servicos/servicoSalas";
 import { segmentSalaStatus } from "../types/types";
 import AdminSalaCard from "../components/AdminSalaCard";
-import { colors } from "../../styles/colors";
 import SalaForms from "../components/CriarSalaForm";
 // import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
 
@@ -46,6 +47,8 @@ export default function AdminDashboardScreen() {
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
                 signOut()
             }
+            Alert.alert('Erro', mensagemErro)
+
         } finally{
 
         }
@@ -253,16 +256,6 @@ export default function AdminDashboardScreen() {
                 ]}
             />
 
-            <Button
-                mode='contained-tonal'
-                buttonColor={colors.sblue}
-                textColor={'white'}
-                className=" mx-5 my-3"
-                onPress={() => setCriarSalaFormVisible(true)}
-                
-            >
-                Criar sala
-            </Button>
 
             <ScrollView className="p-3">
                 {salasFiltradas.map((sala) => (
@@ -270,6 +263,17 @@ export default function AdminDashboardScreen() {
                     // <View></View>
                 ))}
             </ScrollView>
+
+            <Button
+                mode='contained-tonal'
+                buttonColor={colors.sblue}
+                textColor={'white'}
+                className=" mx-5 my-3 mb-0 mt-5"
+                onPress={() => setCriarSalaFormVisible(true)}
+                
+            >
+                Criar sala
+            </Button>
         </SafeAreaView>
     );
 };

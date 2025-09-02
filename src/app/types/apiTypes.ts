@@ -39,26 +39,10 @@ export interface newSala{
 
 }
 
-
-// export interface ProdutoAPI{
-//     id: number,
-//     title: string,
-//     price: number,
-//     description: string,
-//     category: string,
-//     image: string,
-//     rating: {
-//         rate: string,
-//         count: number
-//     }
-// }
-
-// export interface ProdutoForm{
-//     id?: number,
-//     title: string,
-//     price: number,
-//     description: string,
-//     image: string,
-//     category: string
-    
-// }
+export interface Usuario{
+    id: number,
+    username: string,
+    email: string,
+    is_staff: boolean,
+    is_superuser: boolean
+}

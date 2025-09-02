@@ -6,15 +6,14 @@ import { View, Text, StyleSheet } from 'react-native';
 import { UserStackParamList } from '../types/UserStackTypes';
 import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/drawer';
 import { DrawerContentScrollView, DrawerItemList, DrawerContentComponentProps } from '@react-navigation/drawer';
-import { colors } from '../../styles/colors';
-import { usuarioLogado } from '../servicos/servicoAutenticacao';
-import { UserData } from '../types/apiTypes';
+import { colors } from '../../../styles/colors';
+import { usuarioLogado } from '../../servicos/servicoAutenticacao';
+import { UserData } from '../../types/apiTypes';
 import {Ionicons} from '@expo/vector-icons'
-// import { DrawerActions } from '@react-navigation/native';
 
-import UserDashboardScreen from '../screens/UserDashboardScreen';
-import DetalhesSala from '../screens/DetalhesSala';
-import Logout from '../screens/logout';
+import UserDashboardScreen from '../../screens/UserDashboardScreen';
+import DetalhesSala from '../../screens/AdminDetalhesSala';
+import Logout from '../../screens/logout';
 
 // import ProfileScreen from '../screens/ProfileScreen';
 
