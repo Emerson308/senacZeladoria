@@ -9,7 +9,7 @@ interface propsUsuarioCard{
     usuario: Usuario
 }
 
-export default function UsuarioCard({key, usuario}: propsUsuarioCard){
+export default function UsuarioCard({usuario}: propsUsuarioCard){
     return (
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white">
             <Card  style={styles.bgWhite}>

@@ -46,3 +46,12 @@ export interface Usuario{
     is_staff: boolean,
     is_superuser: boolean
 }
+
+export interface NovoUsuario{
+    username: string,
+    password: string,
+    confirm_password: string,
+    email?: string,
+    is_staff?: boolean,
+    // is_superuser: boolean
+}

@@ -4,10 +4,11 @@ import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, Bottom
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
-import { Usuario } from "../types/apiTypes";
+import { NovoUsuario, Usuario } from "../types/apiTypes";
 import { segmentUsuarioStatus } from "../types/types";
-import { obterUsuarios } from "../servicos/servicoUsuarios";
+import { criarUsuarioService, obterUsuarios } from "../servicos/servicoUsuarios";
 import UsuarioCard from "../components/UsuarioCard";
+import UsuariosForm from "../components/CriarUsuarioForm";
 
 
 
@@ -41,6 +42,29 @@ export default function UsuariosScreen(){
             
         }
     }
+
+    const criarUsuario = async (novoUsuario: NovoUsuario) => {
+        setCarregando(true)
+        try{
+            const resposta = await criarUsuarioService(novoUsuario)
+            setCarregando(false)
+            Alert.alert('Usuário criado', `O usuário ${novoUsuario.username} foi criado com sucesso`)
+            // setUsuarios(obtendoUsuarios)
+        } catch(erro: any){
+            setMensagemErro(erro.message || 'Não foi possivel criar o usuario')
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }
+            Alert.alert('Erro', mensagemErro)
+            
+        } finally{
+            setCarregando(false)
+        }
+    }
+
+    useFocusEffect( React.useCallback(() => {
+            carregarUsuarios()
+    },[]))
     
     useEffect(() => {
         setCarregando(true)
@@ -75,7 +99,9 @@ export default function UsuariosScreen(){
 
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-20">
+        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
+
+            <UsuariosForm visible={criarUsuarioForm} onClose={() => setCriarUsuarioFormVisible(false)} onSubmit={criarUsuario}/>
 
             <SegmentedButtons
                 value={filtro}

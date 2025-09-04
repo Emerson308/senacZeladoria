@@ -169,6 +169,10 @@ export default function AdminDashboardScreen() {
         setFormEditarData(sala);
         setEditarSalaFormVisible(true)
     }
+
+    useFocusEffect( React.useCallback(() => {
+            carregarSalas()
+    },[]))
     
     useEffect(() => {
         setCarregando(true)
@@ -219,7 +223,7 @@ export default function AdminDashboardScreen() {
     // }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-20">
+        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
             {/* <View className="bg-gray-100 w-full h-40 mb-6 justify-center p-2">
                 <Text className=" text-3xl font-bold">Salas</Text>
             </View> */}
