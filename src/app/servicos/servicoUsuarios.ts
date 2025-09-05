@@ -1,5 +1,5 @@
 import api from "../api/axiosConfig";
-import { NovoUsuario, Usuario } from "../types/apiTypes";
+import { NovoUsuario, Usuario, UserData } from "../types/apiTypes";
 
 export async function obterUsuarios():Promise<Usuario[]>{
     try{
@@ -21,6 +21,21 @@ export async function criarUsuarioService(novoUsuario: NovoUsuario){
         // console.error(erro.message);
 
         throw new Error(erro|| 'Erro ao buscar usuarios')
+    }
+}
+
+export async function usuarioLogado():Promise<UserData>{
+    try {
+        const resposta = await api.get<UserData>('accounts/current_user/');
+        return resposta.data
+    } catch(erro: any){
+        console.log(erro)
+        if (erro.response && erro.response.status === 401){
+            throw new Error('Token inválido.');
+        }
+        // return null
+        throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
+
     }
 }
 

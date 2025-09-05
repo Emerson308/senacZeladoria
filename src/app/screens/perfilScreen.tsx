@@ -1,0 +1,165 @@
+import { useContext, useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { usuarioLogado } from "../servicos/servicoUsuarios";
+import { UserData } from "../types/apiTypes";
+import { Alert, Text, View, StyleSheet } from "react-native";
+import { ActivityIndicator, Avatar, Button } from "react-native-paper";
+import { AuthContext } from "../AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { colors } from "../../styles/colors";
+
+
+
+
+export default function PerfilScreen(){
+
+    const authContext = useContext(AuthContext);
+
+    if (!authContext){
+        return null
+    }
+
+
+    const { signOut } = authContext
+    const [userData, setUserData] = useState<UserData|null>(null)
+    const [carregando, setCarregando] = useState(false)
+    const [mensagemErro, setMensagemErro] = useState('')
+    const navigation = useNavigation()
+    
+
+    useEffect(() => {
+        setCarregando(true)
+        carregarDadosDoUsuario()
+        setCarregando(false)
+    }, [])
+
+    const carregarDadosDoUsuario = async () => {
+        try{
+            const resposta = await usuarioLogado()
+            if (resposta === null){
+                Alert.alert('Erro', 'Erro ao carregar dados', [
+                    {
+                        text: 'Ok',
+                        style: 'default',
+                        onPress: () => navigation.navigate('Home')
+                    }
+                ])
+                // navigation.navigate('Home')
+                return
+                
+            }        
+            setUserData(resposta)
+            // console.log(resposta)
+        } catch(erro: any){
+            setMensagemErro(erro.message || 'Não foi possivel carregar seu perfil')
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }
+            Alert.alert('Erro', mensagemErro, [
+                {
+                    text: 'Ok',
+                    style:'default',
+                    // onPress: () => navigation.navigate('Home')
+                    
+                }
+            ])
+            
+
+        }
+    }
+    
+    const handleExit = () => {
+        Alert.alert('Confirmar logout', 'Tem certeza de que deseja sair da sua conta?', [
+            {
+                text: 'Cancelar',
+                style: 'cancel',
+            },
+            {
+                text: 'Confirmar',
+                style: 'destructive',
+                onPress: () => navigation.navigate('Logout')
+            }
+        ])
+    }
+
+    if (carregando){
+        return(
+            <View className='flex-1 bg-gray-50 justify-center p-16'>
+                <ActivityIndicator size={80}/>
+            </View>
+        )    
+    }
+
+    if (userData === null){
+        return (
+            <View className='flex-1 bg-gray-50 justify-center p-16'>
+                <ActivityIndicator size={80}/>
+            </View>
+        )
+    }
+    
+    return (
+        <SafeAreaView className=" flex-1 bg-gray-100">
+            <View className=" items-center py-10 bg-white border-b border-gray-200">
+                {/* <View className=" w-20 h-20 rounded-full bg-blue-500 justify-center items-center mb-2">
+                    <Text className=" text-4xl font-bold text-white">{userData.username.charAt(0)}</Text>
+                </View> */}
+                <Avatar.Text label={userData.username.charAt(0)} size={86}/>
+                <Text className=" text-xl font-bold text-gray-800">{userData.username}</Text>
+            </View>
+
+            <View className="flex-1 p-5">
+                <View className=" flex-row flex-wrap justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
+                    <Text className=" text-base font-bold text-gray-600">Email:</Text>
+                    <Text className=" text-base text-gray-800">{userData.email ? userData.email : 'Sem email'}</Text>
+                </View>
+
+                <View className=" flex-row justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
+                    <Text className=" text-base font-bold text-gray-600">Nivel de permissão:</Text>
+                    {userData.is_staff ? <Text className="text-base font-bold text-green-500" style={styles.textGreen}>Admin</Text> : <Text className="text-base font-bold text-yellow-500" style={styles.textYellow}>Usuário comum</Text>}
+                </View>
+            </View>
+
+            <Button
+                className="mt-8 mx-5"
+                mode='contained-tonal'
+                buttonColor={colors.sred}
+                textColor={'white'}
+                icon={'logout'}
+                contentStyle={{paddingVertical: 3}}
+                onPress={handleExit}
+            >
+                Sair
+            </Button>
+        </SafeAreaView>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    textYellow:{
+        color: '#eab308',
+        // backgroundColor: '#fef9c3',
+        // padding: 1,
+        // paddingHorizontal: 5,
+        // borderRadius: 20
+    },
+    
+    textGreen:{
+        color: '#00292E',
+        // backgroundColor: '#dcfce7',
+        // padding: 1,
+        // paddingHorizontal: 5,
+        // borderRadius: 20
+    }
+})
+
+
+
+
+
+
+
+
+
+

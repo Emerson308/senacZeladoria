@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
-export default function AdminDetalhesSala(){
+export default function DetalhesSala(){
     const authContext = useContext(AuthContext)
     if(!authContext){
         return null
@@ -69,9 +69,6 @@ export default function AdminDetalhesSala(){
         carregarSala()
     }, [])
 
-    const voltarNavegacao = () => {
-        navigation.goBack()
-    }
 
     if(carregando){
         return(
@@ -93,11 +90,7 @@ export default function AdminDetalhesSala(){
     if(!dadosSala){
         return(
             <View  className="flex-1 bg-gray-100 p-4">
-                <Appbar.Header>
-                    <Appbar.BackAction onPress={voltarNavegacao}/>
-                    <Appbar.Content title="Detalhes da sala" />
-                </Appbar.Header>
-                <Text>Produto não encontrado</Text>
+                <Text>Sala não encontrada</Text>
             </View>
             
         )
@@ -122,12 +115,9 @@ export default function AdminDetalhesSala(){
     }
 
     return(
-        <SafeAreaView  className="flex-1 bg-gray-100 p-4">
+        <SafeAreaView  className="flex-1 bg-gray-100 p-3">
             <ScrollView className="">
-
-
-
-                <View className='py-8 text-center items-center justify-center bg-sblue'>
+                <View className='py-8 px-4 text-center items-center justify-center bg-sblue'>
                     <Text className=' text-4xl font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
 
                 </View>
@@ -135,61 +125,66 @@ export default function AdminDetalhesSala(){
 
                 <View className=' p-5 pt-5 pb-10 md:p-8'>
 
-                <TextInput
-                    label={"Observações"}
-                    value={observacoes}
-                    onChangeText={setObservacoes}
-                    className=''
-                    mode='outlined'
-                    activeOutlineColor='#004A8D'
-                />
+                    <View className=' bg-white p-4 rounded-lg shadow-sm'>
+                        <TextInput
+                            label={"Observações"}
+                            value={observacoes}
+                            onChangeText={setObservacoes}
+                            className=''
+                            mode='outlined'
+                            activeOutlineColor='#004A8D'
+                            numberOfLines={4}
+                            multiline
+                        />
 
-                <Button className='mt-5 mx-10' icon={'marker'} contentStyle={styles.btnMarcarConcluida} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala.id)}>
-                    Marcar como limpa
-                </Button>
+                        <Button className='mt-5 mx-10' icon={'marker'} contentStyle={styles.btnMarcarConcluida} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala.id)}>
+                            Marcar como limpa
+                        </Button>
+                        
+                    </View>
 
-                <View className={estilosTailwind.item + ''}>
-                    <Text className={estilosTailwind.info_label}>Capacidade</Text>
-                    {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                    <Text className={estilosTailwind.info_values}>{dadosSala.capacidade} pessoas</Text>
-
-                </View>
-
-                <View className={estilosTailwind.item}>
-                    <Text className={estilosTailwind.info_label}>Localização</Text>
-                    {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                    <Text className={estilosTailwind.info_values}>{dadosSala.localizacao}</Text>
-
-                </View>
-
-                <View className={estilosTailwind.item}>
-                    <Text className={estilosTailwind.info_label}>Status da limpeza</Text>
-                    {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                    {
-                        dadosSala.status_limpeza === 'Limpa' ? <Text className='bg-green-100 text-green-800 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                        : <Text className='bg-yellow-100 text-yellow-800 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                    }
-                    
-
-                </View>
-
-                <View className={estilosTailwind.item}>
-                    <Text className={estilosTailwind.info_label}>Última limpeza</Text>
-                    {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                    <View>
-                        <Text className={estilosTailwind.info_values + 'font-normal text-3sm'}>{formatarDataISO(dadosSala.ultima_limpeza_data_hora)}</Text>
-                        <Text className={estilosTailwind.info_values + 'text-gray-600 font-regular text-2sm'}>Por {dadosSala.ultima_limpeza_funcionario}</Text>
+                    <View className={estilosTailwind.item + ''}>
+                        <Text className={estilosTailwind.info_label}>Capacidade</Text>
+                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                        <Text className={estilosTailwind.info_values}>{dadosSala.capacidade} pessoas</Text>
 
                     </View>
 
-                </View>
+                    <View className={estilosTailwind.item}>
+                        <Text className={estilosTailwind.info_label}>Localização</Text>
+                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                        <Text className={estilosTailwind.info_values}>{dadosSala.localizacao}</Text>
 
-                <View className={estilosTailwind.item}>
-                    <Text className={estilosTailwind.info_label}>Descrição</Text>
-                    {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                    <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
+                    </View>
 
-                </View>
+                    <View className={estilosTailwind.item}>
+                        <Text className={estilosTailwind.info_label}>Status da limpeza</Text>
+                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                        {
+                            dadosSala.status_limpeza === 'Limpa' ? <Text className='bg-green-100 text-green-800 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                            : <Text className='bg-yellow-100 text-yellow-800 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                        }
+                        
+
+                    </View>
+
+                    <View className={estilosTailwind.item}>
+                        <Text className={estilosTailwind.info_label}>Última limpeza</Text>
+                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                        <View>
+                            <Text className={estilosTailwind.info_values + 'font-normal text-3sm'}>{formatarDataISO(dadosSala.ultima_limpeza_data_hora)}</Text>
+                            <Text className={estilosTailwind.info_values + 'text-gray-600 font-regular text-2sm'}>Por {dadosSala.ultima_limpeza_funcionario}</Text>
+
+                        </View>
+
+                    </View>
+
+                    <View className={estilosTailwind.item}>
+                        <Text className={estilosTailwind.info_label}>Descrição</Text>
+                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                        <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
+
+                    </View>
 
                 </View>
 

@@ -23,8 +23,8 @@ export default function AdminSalaCard(props: propsSalaCard){
                 <Card.Content style={styles.contentCard}>
                     {/* O componente Title e Paragraph foram descontinuados */}
                     {/* Usando o componente Text do Paper com a propriedade variant */}
-                    <View className=" ml-4">
-                        <Text variant="headlineSmall">{props.sala.nome_numero}</Text>
+                    <View className=" ml-4 flex-1">
+                        <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{props.sala.nome_numero}</Text>
                         {/* <Text variant="bodyMedium">Localização: {props.sala.localizacao}</Text> */}
                         <Text variant="bodyMedium"> Capacidade: {props.sala.capacidade}</Text>
                         <View className="flex-row">
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     contentCard: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        flexWrap: 'wrap',
+        flexWrap: 'nowrap',
         paddingHorizontal: 'auto',
         gap: 10,
         // backgroundColor: 'white',

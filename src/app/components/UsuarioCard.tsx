@@ -14,9 +14,9 @@ export default function UsuarioCard({usuario}: propsUsuarioCard){
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white">
             <Card  style={styles.bgWhite}>
                 <Card.Content style={styles.contentCard}>
-                    <View className=" ml-4">
-                        <Text variant="headlineSmall">{usuario.username}</Text>
-                        <Text variant="bodyMedium"> Email: {usuario.email ? usuario.email : 'Sem email'}</Text>
+                    <View className=" mx-4">
+                        <Text numberOfLines={1} ellipsizeMode="tail" variant="headlineSmall">{usuario.username}</Text>
+                        <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Email: {usuario.email ? usuario.email : 'Sem email'}</Text>
                         <View className="flex-row">
                             <Text variant="bodyMedium"> Nível de permissão: </Text>
                             {

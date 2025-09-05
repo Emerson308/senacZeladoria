@@ -12,6 +12,7 @@ import { marcarSalaComoLimpaService, excluirSalaService } from "../servicos/serv
 import { segmentSalaStatus } from "../types/types";
 import AdminSalaCard from "../components/AdminSalaCard";
 import SalaForms from "../components/CriarSalaForm";
+import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 // import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
 
 export default function AdminDashboardScreen() {
@@ -105,11 +106,6 @@ export default function AdminDashboardScreen() {
         } catch(erro: any){
             
             setMensagemErro(erro.message || 'Não foi possivel criar as salas')
-            // console.log('oi')
-            // console.log(erro)
-            // console.log(typeof erro)
-            // console.log(erro[0].status === 400)
-            // console.log(mensagemErro)
             if(erro.message === 'AxiosError: Request failed with status code 400'){
                 setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
             }
@@ -122,37 +118,12 @@ export default function AdminDashboardScreen() {
     }
 
     async function excluirSalaDefinitivo(id: number){
-        await excluirSalaService(id);
-        await carregarSalasComLoading();
+        try{
+            await excluirSalaService(id);
+            await carregarSalasComLoading();
 
-    }
-
-    async function excluirSala(id: number){
-        try {
-            if(!id){
-                console.log('O id não foi passado')
-                return
-            }
-            let confirmacao = {confirmacao: false};
-            Alert.alert('Confirmar exclusão', "Tem certeza de que deseja excluir este item? Esta ação não pode ser desfeita.", [
-                {
-                    text: 'Cancelar',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Confirmar',
-                    style: 'destructive',
-                    onPress: () => excluirSalaDefinitivo(id)
-                }
-            ])
         } catch(erro: any){
-            
             setMensagemErro(erro.message || 'Não foi possivel criar as salas')
-            // console.log('oi')
-            // console.log(erro)
-            // console.log(typeof erro)
-            // console.log(erro[0].status === 400)
-            // console.log(mensagemErro)
             if(erro.message === 'AxiosError: Request failed with status code 400'){
                 setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
             }
@@ -162,7 +133,20 @@ export default function AdminDashboardScreen() {
             Alert.alert('Erro', mensagemErro)
         }
 
+    }
 
+    async function excluirSala(id: number){
+        Alert.alert('Confirmar exclusão', "Tem certeza de que deseja excluir este item? Esta ação não pode ser desfeita.", [
+            {
+                text: 'Cancelar',
+                style: 'cancel',
+            },
+            {
+                text: 'Confirmar',
+                style: 'destructive',
+                onPress: () => excluirSalaDefinitivo(id)
+            }
+        ])
     }
 
     function btnEditarSala(sala: Sala){
@@ -199,10 +183,11 @@ export default function AdminDashboardScreen() {
         carregarSalas()
     },[]))
     
-    const navigation = useNavigation<NavigationProp<UserStackParamList>>();
+    const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     
     const irParaDetalhesSala = (id: number) =>{
         navigation.navigate('DetalhesSala', {id: id})
+        // navigation.navigate('Usuarios')
     }
 
     if(carregando){

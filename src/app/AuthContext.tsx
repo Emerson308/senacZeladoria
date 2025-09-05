@@ -1,7 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { obterToken, removerToken } from './servicos/servicoArmazenamento';
 import api from './api/axiosConfig';
-import { usuarioLogado } from './servicos/servicoAutenticacao';
+// import { usuarioLogado } from './servicos/servicoAutenticacao';
+import { usuarioLogado } from './servicos/servicoUsuarios';
 
 type UserRole = 'user' | 'admin' | null;
 

@@ -7,12 +7,13 @@ import { UserStackParamList } from '../types/UserStackTypes';
 import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/drawer';
 import { DrawerContentScrollView, DrawerItemList, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { colors } from '../../../styles/colors';
-import { usuarioLogado } from '../../servicos/servicoAutenticacao';
+// import { usuarioLogado } from '../../servicos/servicoAutenticacao';
+import { usuarioLogado } from '../../servicos/servicoUsuarios';
 import { UserData } from '../../types/apiTypes';
 import {Ionicons} from '@expo/vector-icons'
 
 import UserDashboardScreen from '../../screens/UserDashboardScreen';
-import DetalhesSala from '../../screens/AdminDetalhesSala';
+import DetalhesSala from '../../screens/UserDetalhesSala';
 import Logout from '../../screens/logout';
 
 // import ProfileScreen from '../screens/ProfileScreen';

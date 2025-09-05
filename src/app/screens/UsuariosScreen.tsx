@@ -136,7 +136,7 @@ export default function UsuariosScreen(){
 
             
 
-            <ScrollView className="p-3">
+            <ScrollView className="p-3 flex-1">
                 {usuariosFiltrados.map((usuario) => (
                     // <View key={usuario.id} className=" border-2 border-black h-6 mb-2">
 

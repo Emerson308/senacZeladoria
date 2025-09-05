@@ -7,15 +7,17 @@ import { UserStackParamList } from '../types/UserStackTypes';
 import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/drawer';
 import { DrawerContentScrollView, DrawerItemList, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { colors } from '../../../styles/colors';
-import { usuarioLogado } from '../../servicos/servicoAutenticacao';
+// import { usuarioLogado } from '../../servicos/servicoAutenticacao';
+import { usuarioLogado } from '../../servicos/servicoUsuarios';
 import { UserData } from '../../types/apiTypes';
 import {Ionicons} from '@expo/vector-icons'
 
 import AdminDashboardScreen from '../../screens/AdminDashboardScreen';
 import { AdminStackParamList } from '../types/AdminStackTypes';
 import Logout from '../../screens/logout';
-import AdminDetalhesSala from '../../screens/DetalhesSala';
-import AdminBottomTabs from '../../components/AdminBottomTabs';
+import AdminDetalhesSala from '../../screens/AdminDetalhesSala';
+import AdminBottomTabs from '../bottomTabs/AdminBottomTabs';
+import UsuariosScreen from '../../screens/UsuariosScreen';
 
 // import SettingsScreen from '../screens/SettingsScreen';
 
@@ -48,6 +50,16 @@ export const AdminNavigator = () => (
       headerTitle: 'Detalhes da sala',
       // headerRight: () => <MenuButton/>
       }} component={AdminDetalhesSala} />
+
+    <Stack.Screen name='Logout' component={Logout} options={{
+      headerShown: false,
+    }}/>
+
+    {/* <Stack.Screen name="Usuarios" options={{
+      headerShown: true,
+      headerTitle: 'Detalhes da sala',
+      // headerRight: () => <MenuButton/>
+      }} component={UsuariosScreen} /> */}
 
     
     {/* <Stack.Screen name="Settings" component={SettingsScreen} /> */}
