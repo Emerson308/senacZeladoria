@@ -47,6 +47,7 @@ export default function UsuariosScreen(){
         setCarregando(true)
         try{
             const resposta = await criarUsuarioService(novoUsuario)
+            await carregarUsuarios();
             setCarregando(false)
             Alert.alert('Usuário criado', `O usuário ${novoUsuario.username} foi criado com sucesso`)
             // setUsuarios(obtendoUsuarios)

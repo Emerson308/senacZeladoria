@@ -9,6 +9,7 @@ import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
 import { formatarDataISO } from '../functions/functions';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
@@ -121,7 +122,7 @@ export default function AdminDetalhesSala(){
     }
 
     return(
-        <View  className="flex-1 bg-gray-100 p-4">
+        <SafeAreaView  className="flex-1 bg-gray-100 p-4">
             <ScrollView className="">
 
 
@@ -194,7 +195,7 @@ export default function AdminDetalhesSala(){
 
             </ScrollView>
             
-        </View>
+        </SafeAreaView>
     )
 }
 

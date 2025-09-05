@@ -24,6 +24,8 @@ export default function UsuariosForm({onClose, visible, onSubmit }: propsCriarUs
     const [confirmPassword, setConfirmPassword] = useState('')
     const [email, setEmail] = useState('')
     const [role, setRole] = useState<typeRole>('User')
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     // const [] = useState('User')
 
     useEffect(() => {
@@ -42,6 +44,7 @@ export default function UsuariosForm({onClose, visible, onSubmit }: propsCriarUs
 
         if(password !== confirmPassword){
             Alert.alert('Erro', 'As senhas não coincidem')
+            return;
         }
 
         let isStaff = false;
@@ -85,11 +88,13 @@ export default function UsuariosForm({onClose, visible, onSubmit }: propsCriarUs
                         onChangeText={setPassword}
                         autoCapitalize="none"
                         // keyboardType='default'
-                        keyboardType='visible-password'
+                        keyboardType='default'
                         mode="outlined"
                         style={styles.input}
                         activeOutlineColor='#004A8D'
-                    />
+                        secureTextEntry={!showPassword}
+                        right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}                        
+                        />
                     
 
                     <TextInput
@@ -97,11 +102,13 @@ export default function UsuariosForm({onClose, visible, onSubmit }: propsCriarUs
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
                         autoCapitalize="none"
-                        keyboardType='visible-password'
+                        keyboardType='default'
                         mode="outlined"
-                        secureTextEntry
+                        secureTextEntry={!showConfirmPassword}
                         style={styles.input}
                         activeOutlineColor='#004A8D'
+                        right={<TextInput.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}                        
+                        
                     />
                     
 

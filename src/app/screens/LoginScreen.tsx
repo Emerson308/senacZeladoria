@@ -4,6 +4,7 @@ import { TextInput, Button, Text, ActivityIndicator, Provider as PaperProvider }
 import { AuthContext } from '../AuthContext';
 import { realizarLogin } from '../servicos/servicoAutenticacao';
 import { salvarToken } from '../servicos/servicoArmazenamento';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
   const authContext = useContext(AuthContext);
@@ -17,6 +18,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [carregando, setCarregando] = useState(false);
   const [mensagemErro, setMensagemErro] = useState('');
+  const [showPassword, setShowPassword] = useState(false)
 
   const lidarComLogin = async () => {
     setCarregando(true);
@@ -59,7 +61,7 @@ const LoginScreen = () => {
   // }
 
   return (
-    <View className='flex-1 bg-gray-50 justify-center p-16'>
+    <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
       <View className='items-center mb-10'>
         <Image
           source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/1200px-Senac_logo.svg.png" }}
@@ -88,12 +90,12 @@ const LoginScreen = () => {
           value={password}
           onChangeText={setPassword}
           autoCapitalize="none"
-          keyboardType="visible-password"
+          keyboardType='default'
           mode="outlined"
           style={styles.input}
           activeOutlineColor='#004A8D'
-          secureTextEntry
-          // right={<TextInput.Icon icon="eye"/>}
+          secureTextEntry={!showPassword}
+          right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
         />
         
         {/* Botão de Esqueceu a senha */}
@@ -112,7 +114,7 @@ const LoginScreen = () => {
           Conectar
         </Button>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

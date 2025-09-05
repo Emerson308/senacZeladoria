@@ -14,10 +14,12 @@ export async function obterUsuarios():Promise<Usuario[]>{
 
 export async function criarUsuarioService(novoUsuario: NovoUsuario){
     try{
-        const resposta = await api.post('accounts/create_user/', {novoUsuario})
+        const resposta = await api.post('accounts/create_user/', novoUsuario)
         return resposta.data
     } catch(erro: any){
-        console.log(erro);
+        console.error(erro);
+        // console.error(erro.message);
+
         throw new Error(erro|| 'Erro ao buscar usuarios')
     }
 }
