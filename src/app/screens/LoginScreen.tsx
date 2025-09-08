@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 import { TextInput, Button, Text, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
 import { realizarLogin } from '../servicos/servicoAutenticacao';
@@ -62,59 +62,63 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
-      <View className='items-center mb-10'>
-        <Image
-          source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/1200px-Senac_logo.svg.png" }}
-          resizeMode="contain"
-          className='h-24 w-40 mb-10'
-        />
-        <Text className='items-center text-3xl font-bold font-regular'>Login</Text>
-      </View>
+      <KeyboardAvoidingView behavior='padding'>
 
-      <View className='max-w-sm w-full self-center'>
-        {/* Campo de Usuário */}
-        <TextInput
-          label="Usuário"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-          keyboardType="default"
-          mode="outlined"
-          style={styles.input}
-          activeOutlineColor='#004A8D'
+        <View className='items-center mb-10'>
+          <Image
+            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/1200px-Senac_logo.svg.png" }}
+            resizeMode="contain"
+            className='h-24 w-40 mb-10'
           />
+          <Text className='items-center text-3xl font-bold font-regular'>Login</Text>
+        </View>
 
-        {/* Campo de Senha */}
-        <TextInput
-          label="Senha"
-          value={password}
-          onChangeText={setPassword}
-          autoCapitalize="none"
-          keyboardType='default'
-          mode="outlined"
-          style={styles.input}
-          activeOutlineColor='#004A8D'
-          secureTextEntry={!showPassword}
-          right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
-        />
-        
-        {/* Botão de Esqueceu a senha */}
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
-        </TouchableOpacity>
+        <View className='max-w-sm w-full self-center'>
+          {/* Campo de Usuário */}
+          <TextInput
+            label="Usuário"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            keyboardType="default"
+            mode="outlined"
+            style={styles.input}
+            activeOutlineColor='#004A8D'
+            />
 
-        {/* Botão de Conectar */}
-        <Button
-          mode="contained"
-          onPress={lidarComLogin} //() => signIn('user')
-          style={styles.button}
-          contentStyle={styles.buttonContent}
-          labelStyle={styles.buttonLabel}
-        >
-          Conectar
-        </Button>
-      </View>
-    </SafeAreaView>
+          {/* Campo de Senha */}
+          <TextInput
+            label="Senha"
+            value={password}
+            onChangeText={setPassword}
+            autoCapitalize="none"
+            keyboardType='default'
+            mode="outlined"
+            style={styles.input}
+            activeOutlineColor='#004A8D'
+            secureTextEntry={!showPassword}
+            right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+          />
+          
+          {/* Botão de Esqueceu a senha */}
+          <TouchableOpacity style={styles.forgotPassword}>
+            <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+          </TouchableOpacity>
+
+          {/* Botão de Conectar */}
+          <Button
+            mode="contained"
+            onPress={lidarComLogin} //() => signIn('user')
+            style={styles.button}
+            className='mb-6'
+            contentStyle={styles.buttonContent}
+            labelStyle={styles.buttonLabel}
+          >
+            Conectar
+          </Button>
+        </View>
+       </KeyboardAvoidingView>
+      </SafeAreaView>
   );
 };
 

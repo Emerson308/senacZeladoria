@@ -7,7 +7,8 @@ import AdminDashboardScreen from "../../screens/AdminDashboardScreen";
 import { colors } from "../../../styles/colors";
 import Logout from "../../screens/logout";
 import UsuariosScreen from "../../screens/UsuariosScreen";
-import PerfilScreen from "../../screens/perfilScreen";
+import PerfilScreen from "../../screens/PerfilScreen";
+import RegistrosLimpezaScreen from "../../screens/RegistrosLimpezaScreen";
 
 
 
@@ -23,6 +24,8 @@ export default function AdminBottomTabs(){
                     let iconName: keyof typeof Ionicons.glyphMap = 'home';
                     if( route.name === 'Home' ){
                         iconName = focused ? 'home' : 'home-outline'
+                    } else if(route.name === 'RegistrosLimpeza'){
+                        iconName = focused ? 'reader' : 'reader-outline'
                     } else if (route.name === 'Usuarios'){
                         iconName = focused ? 'people' : 'people-outline'
                     } else if(route.name === 'Perfil'){
@@ -43,6 +46,13 @@ export default function AdminBottomTabs(){
                 name="Home"
                 component={AdminDashboardScreen}
                 options={{title: 'Início',}}
+            />
+
+            <Tab.Screen
+                name="RegistrosLimpeza"
+                component={RegistrosLimpezaScreen}
+                options={{title: 'Registros'}}
+
             />
 
             <Tab.Screen

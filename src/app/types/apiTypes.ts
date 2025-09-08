@@ -55,3 +55,22 @@ export interface NovoUsuario{
     is_staff?: boolean,
     // is_superuser: boolean
 }
+
+export interface RegistroSala{
+    id: number,
+    sala: number,
+    sala_nome: string,
+    data_hora_limpeza: string,
+    funcionario_responsavel:{
+        id: 1,
+        username: string
+    },
+    observacoes: string
+}
+
+
+
+
+
+
+

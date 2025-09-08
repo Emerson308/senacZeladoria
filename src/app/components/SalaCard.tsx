@@ -47,6 +47,7 @@ export default function SalaCard(props: propsSalaCard){
                         mode="contained-tonal"
                         buttonColor={colors.sblue}
                         textColor={'white'}
+                        className=" mt-2"
                         onPress={(e) => {
                             e.stopPropagation();
                             props.marcarSalaComoLimpa(props.sala.id)

@@ -2,6 +2,7 @@
 import axios from "axios";
 import { obterToken, removerToken } from '../servicos/servicoArmazenamento';
 import { AuthContext } from "../AuthContext";
+import { useContext } from "react";
 
 const api = axios.create({
     baseURL: 'https://zeladoria.tsr.net.br/api/',
@@ -29,10 +30,17 @@ api.interceptors.response.use(
     async (erro) => {
         if (erro.response && erro.response.status === 401) {
             await removerToken();
-            // const authContext = AuthContext;
+            console.warn('Token de autenticação expirado ou inválido. Realize o login novamente.')
+            // const authContext = useContext(AuthContext);
+
+            // if (!authContext){
+            //     return
+            // }
+
+            // const {signOut} = authContext
+            // signOut()
             // const { sign } = authContext
             // await removerToken()
-            console.warn('Token de autenticação expirado ou inválido. Realize o login novamente.')
 
         }
         return Promise.reject(erro)
