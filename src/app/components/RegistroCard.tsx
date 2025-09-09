@@ -14,15 +14,19 @@ export default function RegistroCard({registro, onPress}: propsRegistroCard){
 
 
     return (
-        <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
+        <View className="mb-4 mx-3 rounded-lg shadow-md bg-white">
             <Card  style={styles.bgWhite}>
                 <Card.Content style={styles.contentCard}>
                     <View className=" mx-4 flex-1">
                         <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{registro.sala_nome}</Text>
                         <View className="mt-2">
-                            <Text variant="bodyMedium">Última Limpeza:</Text>
-                            <Text variant="bodySmall"> {formatarDataISO(registro.data_hora_limpeza)}</Text>
-                            <Text variant="bodySmall"> Por {registro.funcionario_responsavel.username}</Text>
+                        <Text variant="bodySmall"> Última Limpeza: 
+                            {registro.data_hora_limpeza ? 
+                                ' ' + formatarDataISO(registro.data_hora_limpeza) + ' Por ' + registro.funcionario_responsavel.username
+                                :
+                                ' Sala sem histórico de limpeza'
+                            }
+                        </Text>
 
                         </View>
                         {/* <Text variant="bodyMedium"> Capacidade: {}</Text> */}
@@ -49,7 +53,7 @@ export default function RegistroCard({registro, onPress}: propsRegistroCard){
                     </Button>
                 </Card.Actions> */}
             </Card>
-        </TouchableOpacity>
+        </View>
 
     )
 }

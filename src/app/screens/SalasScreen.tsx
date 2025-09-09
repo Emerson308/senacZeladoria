@@ -10,19 +10,26 @@ import { newSala, Sala } from "../types/apiTypes";
 import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService, excluirSalaService } from "../servicos/servicoSalas";
 import { segmentSalaStatus } from "../types/types";
-import AdminSalaCard from "../components/AdminSalaCard";
-import SalaForms from "../components/CriarSalaForm";
+// import AdminSalaCard from "../components/AdminSalaCard";
+import SalaCard from "../components/SalaCard";
+import SalaForms from "../components/SalaForms";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 // import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
 
-export default function AdminDashboardScreen() {
+export default function SalasScreen() {
     const authContext = useContext(AuthContext);
 
     if (!authContext) {
         return null;
     }
 
-    const {signOut} = authContext
+    if (authContext.userRole === null){
+        return null
+    }
+    
+    const {signOut, userRole} = authContext
+    // const userRole = 'user'
+    const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
     const [salas, setSalas] = useState<Sala[]>([])
@@ -80,11 +87,6 @@ export default function AdminDashboardScreen() {
         } catch(erro: any){
             
             setMensagemErro(erro.message || 'Não foi possivel criar as salas')
-            // console.log('oi')
-            // console.log(erro)
-            // console.log(typeof erro)
-            // console.log(erro[0].status === 400)
-            // console.log(mensagemErro)
             if(erro.message === 'AxiosError: Request failed with status code 400'){
                 setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
             }
@@ -117,7 +119,7 @@ export default function AdminDashboardScreen() {
 
     }
 
-    async function excluirSalaDefinitivo(id: number){
+    async function excluirSala(id: number){
         try{
             await excluirSalaService(id);
             await carregarSalasComLoading();
@@ -135,16 +137,16 @@ export default function AdminDashboardScreen() {
 
     }
 
-    async function excluirSala(id: number){
-        Alert.alert('Confirmar exclusão', "Tem certeza de que deseja excluir este item? Esta ação não pode ser desfeita.", [
+    async function handleExcluirSala(id: number){
+        Alert.alert('Excluir sala', "Tem certeza de que deseja excluir este item?", [
             {
                 text: 'Cancelar',
                 style: 'cancel',
             },
             {
-                text: 'Confirmar',
+                text: 'Excluir',
                 style: 'destructive',
-                onPress: () => excluirSalaDefinitivo(id)
+                onPress: () => excluirSala(id)
             }
         ])
     }
@@ -155,7 +157,7 @@ export default function AdminDashboardScreen() {
     }
 
     useFocusEffect( React.useCallback(() => {
-            carregarSalas()
+        carregarSalas()
     },[]))
     
     useEffect(() => {
@@ -183,7 +185,6 @@ export default function AdminDashboardScreen() {
         carregarSalas()
     },[]))
     
-    const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     
     const irParaDetalhesSala = (id: number) =>{
         navigation.navigate('DetalhesSala', {id: id})
@@ -199,29 +200,16 @@ export default function AdminDashboardScreen() {
         )
     }
 
-    // if(mensagemErro){
-    //     return(
-    //     <View className='flex-1 bg-gray-50 justify-center p-16'>
-    //         <Text className='text-center'>{mensagemErro}</Text>
-    //     </View>
-    //     )
-    // }
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
-            {/* <View className="bg-gray-100 w-full h-40 mb-6 justify-center p-2">
-                <Text className=" text-3xl font-bold">Salas</Text>
-            </View> */}
-            {/* <Appbar.Header>
-                <Appbar.Content title='Salas' onPress={carregarSalasComLoading} className=""/>
-                <Appbar.Action icon={'logout'} onPress={signOut}/>
-            </Appbar.Header> */}
             <SalaForms visible={criarSalaFormVisible} onClose={() => setCriarSalaFormVisible(false)} onSubmit={criarSala} typeForm='Criar'/>
             <SalaForms visible={editarSalaFormVisible} onClose={() => setEditarSalaFormVisible(false)} onSubmit={editarSala} typeForm='Editar' sala={formEditarData}/>
             <SegmentedButtons 
                 value={filtro}
                 onValueChange={setFiltro}
                 style={styles.segmentButtons}
+                theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
                 buttons={[
                     {
                         value: 'Todas',
@@ -248,21 +236,26 @@ export default function AdminDashboardScreen() {
 
             <ScrollView className="p-3">
                 {salasFiltradas.map((sala) => (
-                    <AdminSalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={excluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
-                    // <View></View>
+                    <SalaCard key={sala.id} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
                 ))}
             </ScrollView>
 
-            <Button
-                mode='contained-tonal'
-                buttonColor={colors.sblue}
-                textColor={'white'}
-                className=" mx-5 my-3 mb-0 mt-5"
-                onPress={() => setCriarSalaFormVisible(true)}
-                
-            >
-                Criar sala
-            </Button>
+            {userRole === 'user' ?
+                null
+                :
+                <Button
+                    mode='contained-tonal'
+                    buttonColor={colors.sblue}
+                    textColor={'white'}
+                    icon={'plus'}
+                    className=" mx-5 my-3 mb-0 mt-5"
+                    onPress={() => setCriarSalaFormVisible(true)}
+                    
+                >
+                    Criar sala
+                </Button>
+
+            }
         </SafeAreaView>
     );
 };

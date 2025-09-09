@@ -31,12 +31,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const usuario = await usuarioLogado();
         // console.log(usuario)
         if(usuario){
-          if(usuario.is_staff){
+          if(usuario.is_superuser){
             setUserRole('admin')
           } else{
             
             setUserRole('user')
           }
+          // setUserRole('user')
           
         }
 

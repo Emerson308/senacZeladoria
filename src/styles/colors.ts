@@ -8,7 +8,9 @@ export const colors = {
 
     sred: '#F31F00',
     
-    sgreen: '00292E',
+    sgreen: '#008000',
+
+    syellow: '#fca510',
 
     // gray: {
     //     200: "C4C4CC",

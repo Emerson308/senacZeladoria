@@ -116,7 +116,7 @@ export default function PerfilScreen(){
 
                 <View className=" flex-row justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
                     <Text className=" text-base font-bold text-gray-600">Nivel de permissão:</Text>
-                    {userData.is_staff ? <Text className="text-base font-bold text-green-500" style={styles.textGreen}>Admin</Text> : <Text className="text-base font-bold text-yellow-500" style={styles.textYellow}>Usuário comum</Text>}
+                    {userData.is_superuser ? <Text className="text-base font-bold text-sgreen">Admin</Text> : <Text className="text-base font-bold text-syellow">Usuário comum</Text>}
                 </View>
             </View>
 

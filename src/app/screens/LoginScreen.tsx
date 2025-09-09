@@ -27,7 +27,7 @@ const LoginScreen = () => {
       const resposta = await realizarLogin({username: username, password: password})
       // console.log(resposta)
       await salvarToken(resposta.token)
-      if (resposta.user_data.is_staff){
+      if (resposta.user_data.is_superuser){
         signIn('admin')
       } else{
         signIn('user')
@@ -50,15 +50,6 @@ const LoginScreen = () => {
       </View>
     )
   }
-
-  // if(mensagemErro){
-  //   return(
-  //     <View className='flex-1 bg-gray-50 justify-center p-16'>
-  //       <Text className='text-center'>{mensagemErro}</Text>
-  //       {/* <Alert.alert {'Texto', 'Texto'} ></Alert.alert> */}
-  //     </View>
-  //   )
-  // }
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>

@@ -8,7 +8,7 @@ import { NovoUsuario, Usuario } from "../types/apiTypes";
 import { segmentUsuarioStatus } from "../types/types";
 import { criarUsuarioService, obterUsuarios } from "../servicos/servicoUsuarios";
 import UsuarioCard from "../components/UsuarioCard";
-import UsuariosForm from "../components/CriarUsuarioForm";
+import UsuariosForms from "../components/UsuarioForms";
 
 
 
@@ -102,12 +102,13 @@ export default function UsuariosScreen(){
     return (
         <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
 
-            <UsuariosForm visible={criarUsuarioForm} onClose={() => setCriarUsuarioFormVisible(false)} onSubmit={criarUsuario}/>
+            <UsuariosForms visible={criarUsuarioForm} onClose={() => setCriarUsuarioFormVisible(false)} onSubmit={criarUsuario}/>
 
             <SegmentedButtons
                 value={filtro}
                 onValueChange={setFiltro}
                 style={styles.segmentButtons}
+                theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
                 buttons={[
                     {
                         value: 'Todos',
@@ -153,6 +154,7 @@ export default function UsuariosScreen(){
                 textColor={'white'}
                 className=" mx-5 my-3 mb-0 mt-5"
                 onPress={() => setCriarUsuarioFormVisible(true)}
+                icon={'plus'}
                 
             >
                 Criar Usuário

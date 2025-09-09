@@ -17,7 +17,7 @@ interface propsCriarUsuarioForm{
 
 type typeRole = 'User' | 'Admin'
 
-export default function UsuariosForm({onClose, visible, onSubmit }: propsCriarUsuarioForm){
+export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarUsuarioForm){
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')

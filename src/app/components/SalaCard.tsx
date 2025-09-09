@@ -1,63 +1,193 @@
-import { TouchableOpacity, View, StyleSheet } from "react-native"
-import { Card, Text, Button } from "react-native-paper"
+import { TouchableOpacity, View, StyleSheet, Text as TextN } from "react-native"
+import { Card, Button, Text } from "react-native-paper"
 import { Sala } from "../types/apiTypes";
 import { formatarDataISO } from "../functions/functions";
 import { colors } from "../../styles/colors";
+import {Ionicons} from '@expo/vector-icons'
+
 
 interface propsSalaCard{
     sala: Sala;
     key: number;
     onPress: () => void,
-    marcarSalaComoLimpa: (id:number) => void
+    marcarSalaComoLimpa: (id:number) => void,
+    editarSala: (sala: Sala) => void,
+    excluirSala: (id: number) => void,
+    userRole: 'user' | 'admin',
+
 }
 
-export default function SalaCard(props: propsSalaCard){
+export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userRole}: propsSalaCard){
 
+    // console.log(userRole)
 
     return (
-        <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={props.onPress}>
+        <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
             <Card  style={styles.bgWhite}>
                 <Card.Content style={styles.contentCard}>
-                    {/* O componente Title e Paragraph foram descontinuados */}
-                    {/* Usando o componente Text do Paper com a propriedade variant */}
                     <View className=" ml-4 flex-1">
-                        <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{props.sala.nome_numero}</Text>
-                        {/* <Text variant="bodyMedium">Localização: {props.sala.localizacao}</Text> */}
-                        <Text variant="bodyMedium"> Capacidade: {props.sala.capacidade}</Text>
+                        <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{sala.nome_numero}</Text>
+                        <Text variant="bodyMedium"> Capacidade: {sala.capacidade}</Text>
+                        <Text variant="bodySmall"> Última Limpeza: 
+                            {sala.ultima_limpeza_funcionario ? 
+                                ' ' + formatarDataISO(sala.ultima_limpeza_data_hora) + ' Por ' + sala.ultima_limpeza_funcionario 
+                                :
+                                ' Sala sem histórico de limpeza'
+                            }
+                        </Text>
+                        {/* <Text variant="bodySmall" > { sala.ultima_limpeza_funcionario ? formatarDataISO(sala.ultima_limpeza_data_hora) : 'Sala sem historico de limpeza'}</Text>
+                        {!sala.ultima_limpeza_funcionario ? null : 
+                        
+                            <Text variant="bodySmall"> Por {sala.ultima_limpeza_funcionario}</Text>
+                        } */}
                         <View className="flex-row">
                             <Text variant="bodyMedium"> Status: </Text>
                             {
-                                props.sala.status_limpeza === 'Limpa'
-                                ? <Text style={styles.textGreen} variant="bodyMedium">{props.sala.status_limpeza}</Text>
-                                : <Text style={styles.textYellow} variant="bodyMedium">{props.sala.status_limpeza}</Text>
+                                sala.status_limpeza === 'Limpa'
+                                ? <Text style={styles.textGreen} variant="bodyMedium">{sala.status_limpeza}</Text>
+                                : <Text style={styles.textYellow} variant="bodyMedium">{sala.status_limpeza}</Text>
                             }
                             
                         </View>
 
                     </View>
-                    <View className=" mt-2 mr-4">
-                        <Text variant="bodyMedium">Última Limpeza:</Text>
-                        <Text variant="bodySmall"> {formatarDataISO(props.sala.ultima_limpeza_data_hora)}</Text>
-                        <Text variant="bodySmall"> Por {props.sala.ultima_limpeza_funcionario}</Text>
-
-                    </View>
                 </Card.Content>
-                <Card.Actions>
-                    <Button
-                        mode="contained-tonal"
-                        buttonColor={colors.sblue}
-                        textColor={'white'}
-                        className=" mt-2"
-                        onPress={(e) => {
-                            e.stopPropagation();
-                            props.marcarSalaComoLimpa(props.sala.id)
+                    {userRole === 'user' ?
+                    (
+                        <Card.Actions>
+                            <TouchableOpacity
+                                className=" mt-2 flex-1 flex-row rounded-full p-2 gap-2 items-center justify-center"
+                                style={{backgroundColor: colors.sgreen + '20'}}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    marcarSalaComoLimpa(sala.id)
+                                    
+                                }
+                            }
+                            >
+                                <View className="flex-row gap-2 mr-2">
+                                    <Ionicons
+                                        name='checkmark-circle-outline' 
+                                        size={22} 
+                                        color={colors.sgreen}
+                                        // style={{ marginLeft: 15 }} 
+                                    />
+                                    <TextN className="text-sgreen" >Limpar sala</TextN>    
+                                </View>
+                            </TouchableOpacity>
+                        </Card.Actions>
+                    )
+                    : 
+                    (
+                        <Card.Actions>
                             
-                        }
-                        }
-                    >
-                        Marcar como limpa
-                    </Button>
-                </Card.Actions>
+                            {/* <TouchableOpacity
+                                className=" mt-2 mr-16 flex-1 flex-row rounded-full p-2 gap-2 items-center justify-center"
+                                style={{backgroundColor: colors.sgreen + '20'}}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    marcarSalaComoLimpa(sala.id)
+                                    
+                                }
+                            }
+                            >
+                                <View className="flex-row gap-2 mr-2">
+                                    <Ionicons
+                                        name='checkmark-circle-outline' 
+                                        size={22} 
+                                        color={colors.sgreen}
+                                        // style={{ marginLeft: 15 }} 
+                                    />
+                                    <TextN className="text-sgreen" >Limpar sala</TextN>    
+                                </View>
+                            </TouchableOpacity> */}
+
+
+
+                            <TouchableOpacity
+                                className=" mt-2 flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
+                                style={{backgroundColor: colors.sred + '20'}}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    excluirSala(sala.id)
+                                    
+                                }
+                            }
+                            >
+                                <Ionicons
+                                    name='trash-outline' 
+                                    size={22} 
+                                    color={colors.sred}
+                                    // style={{ marginLeft: 15 }} 
+                                />
+                            </TouchableOpacity>
+
+
+
+
+                            <TouchableOpacity
+                                className=" mt-2 flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
+                                style={{backgroundColor: colors.sblue + '20'}}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    excluirSala(sala.id)
+                                    
+                                }
+                            }
+                            >
+                                <Ionicons
+                                    name='pencil-outline' 
+                                    size={22} 
+                                    color={colors.sblue}
+                                    // style={{ marginLeft: 15 }} 
+                                />
+                            </TouchableOpacity>
+
+
+
+
+                            {/* <Button
+                                mode="contained-tonal"
+                                buttonColor={colors.sred}
+                                textColor={'white'}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    excluirSala(sala.id)
+                                    
+                                }
+                            }
+                            >
+                            <Ionicons
+                                name='trash-outline' 
+                                size={22} 
+                                color='white' 
+                                style={{ marginRight: 15 }} 
+                            />
+                            </Button>
+                            
+                            <Button
+                                mode="contained-tonal"
+                                buttonColor={colors.sblue}
+                                className=" my-2"
+                                textColor={'white'}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    editarSala(sala)
+                                    
+                                }
+                            }
+                            >
+                                <Ionicons
+                                    name='pencil-outline' 
+                                    size={22} 
+                                    color='white' 
+                                    style={{ marginRight: 15 }} 
+                                    />
+                            </Button> */}
+                        </Card.Actions>
+
+                    )
+                    }
             </Card>
         </TouchableOpacity>
 
@@ -66,7 +196,7 @@ export default function SalaCard(props: propsSalaCard){
 
 const styles = StyleSheet.create({
     contentCard: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         paddingHorizontal: 'auto',
@@ -85,16 +215,16 @@ const styles = StyleSheet.create({
     },
 
     textYellow:{
-        color: '#854d0e',
-        backgroundColor: '#fef9c3',
+        color: colors.syellow,
+        backgroundColor: colors.syellow + '20',
         padding: 1,
         paddingHorizontal: 5,
         borderRadius: 20
     },
     
     textGreen:{
-        color: '#166534',
-        backgroundColor: '#dcfce7',
+        color: colors.sgreen,
+        backgroundColor: colors.sgreen + '20',
         padding: 1,
         paddingHorizontal: 5,
         borderRadius: 20

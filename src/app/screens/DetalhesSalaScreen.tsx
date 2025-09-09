@@ -1,5 +1,5 @@
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
-import { View, ScrollView, Text, StyleSheet } from 'react-native'
+import { View, ScrollView, Text, StyleSheet, Alert } from 'react-native'
 import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
@@ -10,11 +10,12 @@ import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
 import { formatarDataISO } from '../functions/functions';
 import { SafeAreaView } from 'react-native-safe-area-context';
+// import { Alert } from 'react-native';
 
 
 
 
-export default function AdminDetalhesSala(){
+export default function DetalhesSalaScreen(){
     const authContext = useContext(AuthContext)
     if(!authContext){
         return null
@@ -31,6 +32,7 @@ export default function AdminDetalhesSala(){
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
                 signOut()
             }                
+            Alert.alert('Erro', mensagemErro)
             
         } finally{
             setCarregando(false)
@@ -48,6 +50,8 @@ export default function AdminDetalhesSala(){
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
                 signOut()
             }                
+            Alert.alert('Erro', mensagemErro)
+            
         } finally{
             setCarregando(false)
         }
@@ -79,14 +83,6 @@ export default function AdminDetalhesSala(){
         )
     }
 
-    if(mensagemErro){
-        return(
-        <View className='flex-1 bg-gray-50 justify-center p-16'>
-            <Text className='text-center'>{mensagemErro}</Text>
-        </View>
-        )
-    }
-
     if(!dadosSala){
         return(
             <View  className="flex-1 bg-gray-100 p-4">
@@ -94,6 +90,18 @@ export default function AdminDetalhesSala(){
             </View>
             
         )
+    }
+
+    const dadosSala1: Sala ={
+        "id": 1,
+        "nome_numero": "Sala 101",
+        "capacidade": 30,
+        "descricao": "Uma descrição rápida das principais atviidades realizadas na sala.",
+        "localizacao": "Bloco A",
+        "status_limpeza": "Limpa",
+        "ultima_limpeza_data_hora": "2025-07-09T12:00:00Z",
+        "ultima_limpeza_funcionario": "funcionariocz"
+
     }
 
     const estilosTailwind = {
@@ -104,11 +112,8 @@ export default function AdminDetalhesSala(){
 
     return(
         <SafeAreaView  className="flex-1 bg-gray-100 p-3">
-            <ScrollView className="mt-0 pt-0" contentContainerStyle={{margin: 0, padding: 0}}>
-
-
-
-                <View className='py-8 px-5 text-center items-center justify-center bg-sblue'>
+            <ScrollView className="">
+                <View className='py-8 px-4 text-center items-center justify-center bg-sblue'>
                     <Text className=' text-4xl font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
 
                 </View>
