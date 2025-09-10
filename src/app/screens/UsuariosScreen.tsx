@@ -78,10 +78,10 @@ export default function UsuariosScreen(){
         if(filtro === 'Todos'){
             setUsuariosFiltrados(usuarios)
         } else if (filtro === 'Admins'){
-            const usuariosAdmin = usuarios.filter( item => item.is_staff === true)
+            const usuariosAdmin = usuarios.filter( item => item.is_superuser === true)
             setUsuariosFiltrados(usuariosAdmin)
         } else if (filtro === 'Usuários padrões'){
-            const usuariosAdmin = usuarios.filter( item => item.is_staff === false)
+            const usuariosAdmin = usuarios.filter( item => item.is_superuser === false)
             setUsuariosFiltrados(usuariosAdmin)
         }
     }, [filtro, usuarios])
@@ -97,6 +97,13 @@ export default function UsuariosScreen(){
         )
     }
 
+    const contagemUsuarios = usuarios.length;
+    const contagemUsuariosAdmins = usuarios.filter(usuario => usuario.is_superuser === true).length
+    const contagemUsuariosMembros = usuarios.filter(usuario => usuario.is_superuser === false).length
+    
+    // const contagemUsuarios = 200;
+    // const contagemUsuariosAdmins = 200
+    // const contagemUsuariosMembros = 200
 
 
     return (
@@ -108,26 +115,35 @@ export default function UsuariosScreen(){
                 value={filtro}
                 onValueChange={setFiltro}
                 style={styles.segmentButtons}
+                density="regular"
                 theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
                 buttons={[
                     {
                         value: 'Todos',
-                        label: 'Todos',
+                        label: `Todos (${contagemUsuarios})`,
                         checkedColor: 'black',
+                        labelStyle:{fontSize: 12, flexWrap: 'wrap', flex: 1, height: 'auto'},
+                        // style: {height: 70},
+                        // style: {}
                         // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
                     {
                         value: 'Admins',
-                        label: 'Admins',
+                        label: `Admins (${contagemUsuariosAdmins})`,
                         checkedColor: 'black',
+                        labelStyle:{fontSize: 12, flexWrap: 'wrap', flex: 1, height: 'auto'},
+                        // style: {height: 70},
                         // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
                     {
                         value: 'Usuários padrões',
-                        label: 'Usuários padrões',
+                        label: `Membros (${contagemUsuariosMembros})`,
                         checkedColor: 'black',
+                        labelStyle:{fontSize: 12, flexWrap: 'wrap', textAlign: 'center', flex: 1, height: 'auto'},
+                        // style: {height: 70},
+                        // style:{paddingHorizontal: 0, marginHorizontal: 0}
                         // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
@@ -170,6 +186,6 @@ export default function UsuariosScreen(){
 const styles = StyleSheet.create({
     segmentButtons: {
         marginVertical: 15,
-        marginHorizontal: 20
+        marginHorizontal: 15
     }
 })

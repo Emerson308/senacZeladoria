@@ -8,15 +8,20 @@ export interface RespostaLoginAPI {
     username: string,
     password: string,
     token: string,
-    user_data: UserData
+    user_data: Usuario
 }
 
-export interface UserData{
+export interface Usuario{
     id: number,
     username: string,
     email: string,
-    is_staff: boolean,
-    is_superuser: boolean
+    // is_staff: boolean,
+    is_superuser: boolean,
+    groups: number[],
+    profile: {
+        profile_picture: string | null
+    }
+
 
 }
 
@@ -39,20 +44,25 @@ export interface newSala{
 
 }
 
-export interface Usuario{
-    id: number,
-    username: string,
-    email: string,
-    is_staff: boolean,
-    is_superuser: boolean
-}
+// export interface Usuario1{
+//     id: number,
+//     username: string,
+//     email: string,
+//     // is_staff: boolean,
+//     is_superuser: boolean,
+//     groups: number[],
+//     profile: {
+//         profile_picture: string
+//     }
+
+// }
 
 export interface NovoUsuario{
     username: string,
     password: string,
     confirm_password: string,
     email?: string,
-    is_staff?: boolean,
+    is_superuser?: boolean,
     // is_superuser: boolean
 }
 
@@ -66,6 +76,17 @@ export interface RegistroSala{
         username: string
     },
     observacoes: string
+}
+
+export interface UserChangePassword{
+    old_password: string,
+    new_password: string,
+    confirm_new_password: string
+}
+
+export interface UserGroup{
+    id: number,
+    name: string
 }
 
 

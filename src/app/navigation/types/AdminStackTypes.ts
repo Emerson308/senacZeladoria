@@ -11,7 +11,8 @@ export type AdminStackParamList = {
     RegistrosLimpeza: undefined;
     AdminTabs: undefined;
     Logout: undefined;
-    Perfil: undefined
+    Perfil: undefined;
+    AlterarSenha: undefined
     // Logout: undefined
 }
 

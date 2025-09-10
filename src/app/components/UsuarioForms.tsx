@@ -47,9 +47,9 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
             return;
         }
 
-        let isStaff = false;
+        let isSuperuser = false;
         if (role === 'Admin'){
-            isStaff = true
+            isSuperuser = true
         }
 
         onSubmit({
@@ -57,7 +57,7 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
             password,
             confirm_password: confirmPassword,
             email,
-            is_staff: isStaff
+            is_superuser: isSuperuser
         })
 
         onClose()

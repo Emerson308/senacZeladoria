@@ -81,7 +81,7 @@ export async function getRegistrosService(id?: number){
         const resposta = await api.get<RegistroSala[]>('limpezas/')
         return resposta.data
     } catch(erro: any){
-        console.log(erro)
+        console.error(erro)
         throw new Error(erro)
     }
 }

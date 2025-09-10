@@ -9,12 +9,13 @@ import { DrawerContentScrollView, DrawerItemList, DrawerContentComponentProps } 
 import { colors } from '../../../styles/colors';
 // import { usuarioLogado } from '../../servicos/servicoAutenticacao';
 import { usuarioLogado } from '../../servicos/servicoUsuarios';
-import { UserData } from '../../types/apiTypes';
+import { Usuario } from '../../types/apiTypes';
 import {Ionicons} from '@expo/vector-icons'
 
 import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
 import Logout from '../../screens/logout';
 import BottomTabs from './BottomTabs';
+import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 
 
 const Stack = createStackNavigator<UserStackParamList>();
@@ -31,6 +32,8 @@ export const UserNavigator = () => (
     />
 
     <Stack.Screen name='DetalhesSala' options={{headerShown: true, headerTitle: 'Detalhes da sala'}} component={DetalhesSalaScreen} />
+    
+    <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
     
     <Stack.Screen name='Logout' component={Logout} options={{
       headerShown: false,

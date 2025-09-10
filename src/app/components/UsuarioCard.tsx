@@ -20,7 +20,7 @@ export default function UsuarioCard({usuario}: propsUsuarioCard){
                         <View className="flex-row">
                             <Text variant="bodyMedium"> Nível de permissão: </Text>
                             {
-                                usuario.is_staff
+                                usuario.is_superuser
                                 ? <Text style={styles.textGreen} variant="bodyMedium">Admin</Text>
                                 : <Text style={styles.textYellow} variant="bodyMedium">Usuário Padrão</Text>
                             }
@@ -76,16 +76,16 @@ const styles = StyleSheet.create({
     },
 
     textYellow:{
-        color: '#854d0e',
-        backgroundColor: '#fef9c3',
+        color: colors.syellow,
+        backgroundColor: colors.syellow + '20',
         padding: 1,
         paddingHorizontal: 5,
         borderRadius: 20
     },
     
     textGreen:{
-        color: '#166534',
-        backgroundColor: '#dcfce7',
+        color: colors.sgreen,
+        backgroundColor: colors.sgreen + '20',
         padding: 1,
         paddingHorizontal: 5,
         borderRadius: 20

@@ -200,6 +200,10 @@ export default function SalasScreen() {
         )
     }
 
+    const contagemSalas = salas.length
+    const contagemSalasLimpas = salas.filter(sala => sala.status_limpeza === 'Limpa').length
+    const contagemSalasPendentes = salas.filter(sala => sala.status_limpeza === 'Limpeza Pendente').length
+
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
@@ -213,21 +217,24 @@ export default function SalasScreen() {
                 buttons={[
                     {
                         value: 'Todas',
-                        label: 'Todas',
+                        label: `Todas (${contagemSalas})`,
                         checkedColor: 'black',
+                        labelStyle:{fontSize: 12},
                         // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
                     {
                         value: 'Limpas',
-                        label: 'Limpas',
+                        label: `Limpas (${contagemSalasLimpas})`,
                         checkedColor: 'black',
+                        labelStyle:{fontSize: 12},
                         // style: {backgroundColor: colors.sblue},
                     },
                     {
                         value:'Limpeza pendente',
-                        label: 'Limpeza pendente',
+                        label: `Pendente (${contagemSalasPendentes})`,
                         checkedColor: 'black',
+                        labelStyle:{fontSize: 12},
                         // style: {backgroundColor: colors.sblue},
                     }
                 ]}
@@ -264,6 +271,6 @@ export default function SalasScreen() {
 const styles = StyleSheet.create({
     segmentButtons: {
         marginVertical: 15,
-        marginHorizontal: 20
+        marginHorizontal: 15
     }
 })

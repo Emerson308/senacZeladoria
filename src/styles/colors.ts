@@ -1,6 +1,6 @@
 
 export const colors = {
-    sgray: '#E1E1E6',
+    sgray: '#555e67',
 
     sblue: '#004A8D',
 

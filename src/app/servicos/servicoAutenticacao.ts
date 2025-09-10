@@ -1,7 +1,7 @@
 
 
 import api from "../api/axiosConfig";
-import { CredenciaisLogin, RespostaLoginAPI, UserData } from "../types/apiTypes";
+import { CredenciaisLogin, RespostaLoginAPI, Usuario } from "../types/apiTypes";
 
 export async function realizarLogin(credenciais: CredenciaisLogin):Promise<RespostaLoginAPI> {
     

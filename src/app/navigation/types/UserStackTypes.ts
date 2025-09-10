@@ -9,7 +9,8 @@ export type UserStackParamList = {
     DetalhesSala: {id: number};
     UserTabs: undefined
     Perfil: undefined
-    Logout: undefined
+    Logout: undefined;
+    AlterarSenha: undefined
     // Logout: undefined
 }
 

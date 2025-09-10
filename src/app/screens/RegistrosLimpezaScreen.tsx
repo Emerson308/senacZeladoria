@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado } from "../servicos/servicoUsuarios";
-import { RegistroSala, UserData } from "../types/apiTypes";
+import { RegistroSala, Usuario } from "../types/apiTypes";
 import { Alert, Text, View, StyleSheet, ScrollView } from "react-native";
 import { ActivityIndicator, Avatar, Button, TextInput } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
