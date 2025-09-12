@@ -4,9 +4,9 @@ import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, Bottom
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
-import { NovoUsuario, Usuario } from "../types/apiTypes";
+import { NovoUsuario, UserGroup, Usuario } from "../types/apiTypes";
 import { segmentUsuarioStatus } from "../types/types";
-import { criarUsuarioService, obterUsuarios } from "../servicos/servicoUsuarios";
+import { criarUsuarioService, getAllUsersGroups, obterUsuarios } from "../servicos/servicoUsuarios";
 import UsuarioCard from "../components/UsuarioCard";
 import UsuariosForms from "../components/UsuarioForms";
 
@@ -27,6 +27,7 @@ export default function UsuariosScreen(){
     const [filtro, setFiltro] = useState<segmentUsuarioStatus>('Todos')
     const [usuariosFiltrados, setUsuariosFiltrados] = useState<Usuario[]>([])
     const [criarUsuarioForm, setCriarUsuarioFormVisible] = useState(false)
+    const [usersGroups, setUsersGroups] = useState<UserGroup[]>([])
 
 
     const carregarUsuarios = async () => {
@@ -63,12 +64,28 @@ export default function UsuariosScreen(){
         }
     }
 
+    const carregarGroups = async () => {
+        try{
+            const resposta = await getAllUsersGroups()
+            setUsersGroups(resposta)
+        } catch(erro: any){
+            setMensagemErro(erro.message || 'Não foi possivel carregar os grupos de usuario')
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }
+            Alert.alert('Erro', mensagemErro)
+
+        }
+    }
+
     useFocusEffect( React.useCallback(() => {
-            carregarUsuarios()
+        carregarGroups()
+        carregarUsuarios()
     },[]))
     
     useEffect(() => {
         setCarregando(true)
+        carregarGroups()
         carregarUsuarios()
         setCarregando(false)
     }, [])
@@ -158,7 +175,7 @@ export default function UsuariosScreen(){
                     // <View key={usuario.id} className=" border-2 border-black h-6 mb-2">
 
                     // </View>
-                    <UsuarioCard key={usuario.id} usuario={usuario}/>
+                    <UsuarioCard key={usuario.id} usuario={usuario} usersGroups={usersGroups}/>
                     // <AdminSalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={excluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
                     // <View></View>
                 ))}

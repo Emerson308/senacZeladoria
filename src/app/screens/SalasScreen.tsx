@@ -27,7 +27,11 @@ export default function SalasScreen() {
         return null
     }
     
-    const {signOut, userRole} = authContext
+    if (authContext.user === null){
+        return null
+    }
+    
+    const {signOut, userRole, user} = authContext
     // const userRole = 'user'
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     const [carregando, setCarregando] = useState(false)
@@ -62,7 +66,7 @@ export default function SalasScreen() {
         }
     }
 
-    const marcarSalaComoLimpa = async (id: number) => {
+    const marcarSalaComoLimpa = async (id: string) => {
         // setCarregando(true)
         try{
             await marcarSalaComoLimpaService(id, '')
@@ -97,7 +101,7 @@ export default function SalasScreen() {
         }
     }
 
-    async function editarSala(newSala: newSala, id: number|undefined){
+    async function editarSala(newSala: newSala, id: string|undefined){
         try {
             if(!id){
                 console.log('O id não foi passado')
@@ -119,7 +123,7 @@ export default function SalasScreen() {
 
     }
 
-    async function excluirSala(id: number){
+    async function excluirSala(id: string){
         try{
             await excluirSalaService(id);
             await carregarSalasComLoading();
@@ -137,7 +141,7 @@ export default function SalasScreen() {
 
     }
 
-    async function handleExcluirSala(id: number){
+    async function handleExcluirSala(id: string){
         Alert.alert('Excluir sala', "Tem certeza de que deseja excluir este item?", [
             {
                 text: 'Cancelar',
@@ -186,8 +190,8 @@ export default function SalasScreen() {
     },[]))
     
     
-    const irParaDetalhesSala = (id: number) =>{
-        navigation.navigate('DetalhesSala', {id: id})
+    const irParaDetalhesSala = (id: string) =>{
+        navigation.navigate('DetalhesSala', {id})
         // navigation.navigate('Usuarios')
     }
 
@@ -243,7 +247,7 @@ export default function SalasScreen() {
 
             <ScrollView className="p-3">
                 {salasFiltradas.map((sala) => (
-                    <SalaCard key={sala.id} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
+                    <SalaCard key={sala.id} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} userGroups={user.groups} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.qr_code_id)}/>
                 ))}
             </ScrollView>
 

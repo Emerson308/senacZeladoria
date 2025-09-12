@@ -10,16 +10,17 @@ interface propsSalaCard{
     sala: Sala;
     key: number;
     onPress: () => void,
-    marcarSalaComoLimpa: (id:number) => void,
+    marcarSalaComoLimpa: (id:string) => void,
     editarSala: (sala: Sala) => void,
-    excluirSala: (id: number) => void,
+    excluirSala: (id: string) => void,
     userRole: 'user' | 'admin',
+    userGroups: number[]
 
 }
 
-export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userRole}: propsSalaCard){
+export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userRole, userGroups}: propsSalaCard){
 
-    // console.log(userRole)
+    // console.log(userGroups)
 
     return (
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
@@ -55,7 +56,7 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
                     {userRole === 'user' ?
                     (
                         <Card.Actions>
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                                 className=" mt-2 flex-1 flex-row rounded-full p-2 gap-2 items-center justify-center"
                                 style={{backgroundColor: colors.sgreen + '20'}}
                                 onPress={(e) => {
@@ -74,116 +75,99 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
                                     />
                                     <TextN className="text-sgreen" >Limpar sala</TextN>    
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
+                            {
+                                userGroups.includes(1) ?
+                                <Button
+                                    mode='contained-tonal'
+                                    buttonColor={colors.sgreen + '20'}
+                                    textColor={colors.sgreen}
+                                    icon={'broom'}
+                                    className=" mx-5 my-3 mb-0 mt-5"
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        marcarSalaComoLimpa(sala.qr_code_id)
+                                    }}
+                                    
+                                >
+                                    Limpar sala
+                                </Button>
+                                :
+                                null
+
+                            }
                         </Card.Actions>
                     )
                     : 
                     (
                         <Card.Actions>
-                            
-                            {/* <TouchableOpacity
-                                className=" mt-2 mr-16 flex-1 flex-row rounded-full p-2 gap-2 items-center justify-center"
-                                style={{backgroundColor: colors.sgreen + '20'}}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    marcarSalaComoLimpa(sala.id)
-                                    
-                                }
-                            }
-                            >
-                                <View className="flex-row gap-2 mr-2">
-                                    <Ionicons
-                                        name='checkmark-circle-outline' 
-                                        size={22} 
-                                        color={colors.sgreen}
-                                        // style={{ marginLeft: 15 }} 
-                                    />
-                                    <TextN className="text-sgreen" >Limpar sala</TextN>    
+                            <View className=" flex-row items-center justify-center mt-1 gap-4">
+                                
+                                <View className="flex-1 items-center flex-row gap-2">
+                                    {
+                                        userGroups.includes(1) ?
+                                        <Button
+                                            mode='contained-tonal'
+                                            buttonColor={colors.sgreen + '20'}
+                                            textColor={colors.sgreen}
+                                            icon={'broom'}
+                                            className=" flex-1"
+                                            onPress={(e) => {
+                                                e.stopPropagation();
+                                                marcarSalaComoLimpa(sala.qr_code_id)
+                                            }}
+                                            
+                                        >
+                                            Limpar sala
+                                        </Button>
+                                        :
+                                        null
+
+                                    }
+
                                 </View>
-                            </TouchableOpacity> */}
+                                <View className=" flex-row gap-2 items-center justify-center h-full">
+
+                                    <TouchableOpacity
+                                        className="flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
+                                        style={{backgroundColor: colors.sred + '20'}}
+                                        onPress={(e) => {
+                                            e.stopPropagation();
+                                            excluirSala(sala.qr_code_id)
+                                            
+                                        }
+                                    }
+                                    >
+                                        <Ionicons
+                                            name='trash-outline' 
+                                            size={22} 
+                                            color={colors.sred}
+                                            // style={{ marginLeft: 15 }} 
+                                        />
+                                    </TouchableOpacity>
 
 
+                                    <TouchableOpacity
+                                        className="flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
+                                        style={{backgroundColor: colors.sblue + '20'}}
+                                        onPress={(e) => {
+                                            e.stopPropagation();
+                                            editarSala(sala)
+                                            
+                                        }
+                                    }
+                                    >
+                                        <Ionicons
+                                            name='pencil-outline' 
+                                            size={22} 
+                                            color={colors.sblue}
+                                            // style={{ marginLeft: 15 }} 
+                                        />
+                                    </TouchableOpacity>
+                                </View>
 
-                            <TouchableOpacity
-                                className=" mt-2 flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
-                                style={{backgroundColor: colors.sred + '20'}}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    excluirSala(sala.id)
-                                    
-                                }
-                            }
-                            >
-                                <Ionicons
-                                    name='trash-outline' 
-                                    size={22} 
-                                    color={colors.sred}
-                                    // style={{ marginLeft: 15 }} 
-                                />
-                            </TouchableOpacity>
+                            </View>
 
-
-
-
-                            <TouchableOpacity
-                                className=" mt-2 flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
-                                style={{backgroundColor: colors.sblue + '20'}}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    excluirSala(sala.id)
-                                    
-                                }
-                            }
-                            >
-                                <Ionicons
-                                    name='pencil-outline' 
-                                    size={22} 
-                                    color={colors.sblue}
-                                    // style={{ marginLeft: 15 }} 
-                                />
-                            </TouchableOpacity>
-
-
-
-
-                            {/* <Button
-                                mode="contained-tonal"
-                                buttonColor={colors.sred}
-                                textColor={'white'}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    excluirSala(sala.id)
-                                    
-                                }
-                            }
-                            >
-                            <Ionicons
-                                name='trash-outline' 
-                                size={22} 
-                                color='white' 
-                                style={{ marginRight: 15 }} 
-                            />
-                            </Button>
-                            
-                            <Button
-                                mode="contained-tonal"
-                                buttonColor={colors.sblue}
-                                className=" my-2"
-                                textColor={'white'}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    editarSala(sala)
-                                    
-                                }
-                            }
-                            >
-                                <Ionicons
-                                    name='pencil-outline' 
-                                    size={22} 
-                                    color='white' 
-                                    style={{ marginRight: 15 }} 
-                                    />
-                            </Button> */}
                         </Card.Actions>
 
                     )

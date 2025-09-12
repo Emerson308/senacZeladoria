@@ -1,5 +1,5 @@
 import api from "../api/axiosConfig";
-import { NovoUsuario, UserChangePassword, Usuario } from "../types/apiTypes";
+import { NovoUsuario, UserChangePassword, UserGroup, Usuario } from "../types/apiTypes";
 
 export async function obterUsuarios():Promise<Usuario[]>{
     try{
@@ -54,8 +54,21 @@ export async function alterarSenha(passwords: UserChangePassword){
         }
         // return null
         throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
-
+        
     }
+}
+
+export async function getAllUsersGroups(){
+    try{
+        const resposta = await api.get<UserGroup[]>('accounts/list_groups/')
+        return resposta.data
+    } catch(erro: any){
+        if (erro.response && erro.response.status === 401){
+            throw new Error('Token inválido.');
+        }
+        // return null
+        throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
+}
 }
 
 

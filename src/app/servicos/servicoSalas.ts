@@ -13,7 +13,7 @@ export async function obterSalas():Promise<Sala[]>{
     }
 }
 
-export async function obterDetalhesSala(id: number):Promise<Sala>{
+export async function obterDetalhesSala(id: string):Promise<Sala>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
         // console.log(resposta.data)
@@ -24,7 +24,7 @@ export async function obterDetalhesSala(id: number):Promise<Sala>{
     }
 }
 
-export async function marcarSalaComoLimpaService(id: number, observacoes?: string){
+export async function marcarSalaComoLimpaService(id: string, observacoes?: string){
     // console.log('teste')
     try{
         const resposta = await api.post(`salas/${id}/marcar_como_limpa/`, {observacoes})
@@ -50,7 +50,7 @@ export async function criarNovaSala(newSala: newSala){
     }
 }
 
-export async function editarSalaService(newSala: newSala, id: number){
+export async function editarSalaService(newSala: newSala, id: string){
     try{
         const resposta = await api.put(`salas/${id}/`, newSala)
         // console.log(resposta.data)
@@ -63,7 +63,7 @@ export async function editarSalaService(newSala: newSala, id: number){
 
 }
 
-export async function excluirSalaService(id: number){
+export async function excluirSalaService(id: string){
     try{
         const resposta = await api.delete(`salas/${id}/`)
         // console.log(resposta.data)

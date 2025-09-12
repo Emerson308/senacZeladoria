@@ -6,7 +6,7 @@ import type { DrawerNavigationProp } from '@react-navigation/drawer';
 
 export type AdminStackParamList = {
     Home: undefined;
-    DetalhesSala: {id: number};
+    DetalhesSala: {id: string};
     Usuarios: undefined;
     RegistrosLimpeza: undefined;
     AdminTabs: undefined;

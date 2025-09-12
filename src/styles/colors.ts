@@ -12,6 +12,16 @@ export const colors = {
 
     syellow: '#fca510',
 
+    tagColors: [
+        '#007BFF', // Azul Elétrico
+        '#32CD32', // Verde Limão
+        '#FF8C00', // Laranja Vibrante
+        '#FF1493', // Rosa Choque
+        '#8A2BE2', // Roxo Escuro
+        '#FFD700', // Amarelo Ouro
+        '#00CED1', // Ciano
+    ]
+
     // gray: {
     //     200: "C4C4CC",
     //     300: "8D8D99",

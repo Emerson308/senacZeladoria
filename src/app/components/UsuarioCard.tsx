@@ -1,23 +1,25 @@
-import { TouchableOpacity, View, StyleSheet } from "react-native"
+import { TouchableOpacity, View, StyleSheet, Text as TextS } from "react-native"
 import { Card, Text, Button } from "react-native-paper"
-import { Sala, Usuario } from "../types/apiTypes";
+import { Sala, UserGroup, Usuario } from "../types/apiTypes";
 import { formatarDataISO } from "../functions/functions";
 import { colors } from "../../styles/colors";
 
 interface propsUsuarioCard{
     key: number
-    usuario: Usuario
+    usuario: Usuario,
+    usersGroups: UserGroup[]
 }
 
-export default function UsuarioCard({usuario}: propsUsuarioCard){
+export default function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
     return (
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white">
             <Card  style={styles.bgWhite}>
                 <Card.Content style={styles.contentCard}>
                     <View className=" mx-4">
-                        <Text numberOfLines={1} ellipsizeMode="tail" variant="headlineSmall">{usuario.username}</Text>
+                        <Text numberOfLines={1} className=" mb-2" ellipsizeMode="tail" variant="headlineSmall">{usuario.username}</Text>
                         <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Email: {usuario.email ? usuario.email : 'Sem email'}</Text>
-                        <View className="flex-row">
+                        <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Nome: {usuario.nome ? usuario.nome : 'Sem nome'}</Text>
+                        <View className="flex-row mt-1">
                             <Text variant="bodyMedium"> Nível de permissão: </Text>
                             {
                                 usuario.is_superuser
@@ -25,6 +27,35 @@ export default function UsuarioCard({usuario}: propsUsuarioCard){
                                 : <Text style={styles.textYellow} variant="bodyMedium">Usuário Padrão</Text>
                             }
                             
+                        </View>
+                        <Text className=""> Grupos do usuario:</Text>
+                        <View className=" flex-wrap flex-row mt-1 mx-2 gap-3">
+                            {
+                                usuario.groups.length === 0 ?
+                                    <Text style={{
+                                        padding: 1,
+                                        paddingHorizontal: 5,
+                                        borderRadius: 5,
+                                        // flex: 1,
+                                        // textAlign: 'center',
+                                        // opacity: 0,
+                                        color: colors.sgray,
+                                        backgroundColor: colors.sgray + '20',
+                                    }} >Sem Grupos</Text>
+                                :
+                                    usersGroups.map(group => {
+                                        if (usuario.groups.includes(group.id)){
+                                            return <Text key={group.id} style={{
+                                                padding: 1,
+                                                paddingHorizontal: 5,
+                                                borderRadius: 5,
+                                                color: colors.tagColors[group.id -1],
+                                                backgroundColor: colors.tagColors[group.id -1] + '20',
+                                            }} >{group.name}</Text>
+                                        }
+                                    })
+                        }
+
                         </View>
 
                     </View>

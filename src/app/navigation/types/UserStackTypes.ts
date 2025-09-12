@@ -6,7 +6,7 @@ import type { DrawerNavigationProp } from '@react-navigation/drawer';
 
 export type UserStackParamList = {
     Home: undefined;
-    DetalhesSala: {id: number};
+    DetalhesSala: {id: string};
     UserTabs: undefined
     Perfil: undefined
     Logout: undefined;

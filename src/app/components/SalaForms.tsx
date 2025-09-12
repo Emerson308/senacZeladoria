@@ -12,7 +12,7 @@ interface propsCriarSalaForm{
     // id?: number,
     visible: boolean,
     onClose: () => void,
-    onSubmit: (sala: newSala, id?: number) => void,
+    onSubmit: (sala: newSala, id?: string) => void,
     typeForm: 'Criar'| 'Editar',
     sala?: Sala| null
 
@@ -20,7 +20,7 @@ interface propsCriarSalaForm{
 
 export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: propsCriarSalaForm){
     
-    const [id, setId] = useState<number| undefined>(undefined)
+    const [id, setId] = useState<string| undefined>(undefined)
     const [nomeSala, setNomeSala] = useState('')
     const [capacidade, setCapacidade] = useState('')
     const [descricao, setDescricao] = useState('')
@@ -75,7 +75,7 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
 
     useEffect(() => {
         if(visible && sala){
-            setId(sala.id)
+            setId(sala.qr_code_id)
             setNomeSala(sala.nome_numero)
             setCapacidade(String(sala.capacidade))
             setDescricao(sala.descricao)

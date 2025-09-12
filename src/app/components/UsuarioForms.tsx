@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Modal, Pressable, Alert } from "react-native"
 // import toast
 // import { Alert } from "react-native";
@@ -7,6 +7,7 @@ import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { newSala, NovoUsuario, Sala, Usuario } from "../types/apiTypes";
 import {Picker} from '@react-native-picker/picker'
+import { AuthContext } from "../AuthContext";
 
 interface propsCriarUsuarioForm{
     visible: boolean,
@@ -19,13 +20,23 @@ type typeRole = 'User' | 'Admin'
 
 export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarUsuarioForm){
 
+    const authContext = useContext(AuthContext)
+
+    if(!authContext) {
+        return null
+    }
+
+    const {usersGroups} = authContext
+
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [email, setEmail] = useState('')
+    const [nome, setNome] = useState('')
     const [role, setRole] = useState<typeRole>('User')
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [selectedGroups, setSelectedGroups] = useState<number[]>([])
     // const [] = useState('User')
 
     useEffect(() => {
@@ -57,6 +68,8 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
             password,
             confirm_password: confirmPassword,
             email,
+            nome,
+            groups: selectedGroups,
             is_superuser: isSuperuser
         })
 
@@ -113,6 +126,18 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                     
 
                     <TextInput
+                        label="Nome completo"
+                        value={nome}
+                        // placeholder="Nome completo (Opcional)"
+                        onChangeText={setNome}
+                        autoCapitalize="none"
+                        keyboardType='default'
+                        mode="outlined"
+                        style={styles.input}
+                        activeOutlineColor='#004A8D'
+                    />
+
+                    <TextInput
                         label="Email"
                         value={email}
                         onChangeText={setEmail}
@@ -122,6 +147,32 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                         style={styles.input}
                         activeOutlineColor='#004A8D'
                     />
+
+                    <Text style={{ marginBottom: 5 }}>Selecione o(s) Grupo(s) (Opcional):</Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 }} >
+                        {
+                            usersGroups.map((group) => (
+                                <Pressable 
+                                    key={group.id}
+                                    style={[
+                                        styles.tag,
+                                        selectedGroups.includes(group.id) && styles.selectedTag,
+                                    ]}
+                                    onPress={() => {
+                                        setSelectedGroups((prevSelected) => {
+                                            if (prevSelected.includes(group.id)){
+                                                return prevSelected.filter((id) => id !== group.id)
+                                            } else{
+                                                return [...prevSelected, group.id]
+                                            }
+                                        })
+                                    }}
+                                >
+                                    <Text style={styles.tagText} >{group.name}</Text>
+                                </Pressable>
+                            ))
+                        }
+                    </View>
 
                     <Picker
                         selectedValue={role}
@@ -180,8 +231,25 @@ const styles = StyleSheet.create({
         // borderWidth: 1,
         // borderStyle: 'solid',
         // borderColor: colors.sblue
-    }
-    
+    },
+    tag: {
+        borderWidth: 2,
+        borderColor: '#ccc',
+        borderRadius: 15,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginRight: 8,
+        marginBottom: 8
+    },
+    selectedTag: {
+        backgroundColor: colors.sblue + '20',
+        borderColor: colors.sblue,
+        color: colors.sblue
+    },
+    tagText: {
+        color: '#000',
+        fontSize: 14
+    }
 
 })
 

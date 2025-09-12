@@ -18,7 +18,9 @@ export interface Usuario{
     // is_staff: boolean,
     is_superuser: boolean,
     groups: number[],
+    nome: string
     profile: {
+        // nome: string
         profile_picture: string | null
     }
 
@@ -27,10 +29,15 @@ export interface Usuario{
 
 export interface Sala{
     id: number,
+    qr_code_id: string,
     nome_numero: string,
     capacidade: number,
+    validade_limpeza_horas: number,
     descricao: string,
+    instrucoes: string,
     localizacao: string,
+    ativa: boolean,
+    responsaveis: Responsavel[]
     status_limpeza: "Limpa" | "Limpeza Pendente",
     ultima_limpeza_data_hora: null | string,
     ultima_limpeza_funcionario: null | string
@@ -62,6 +69,8 @@ export interface NovoUsuario{
     password: string,
     confirm_password: string,
     email?: string,
+    nome?: string,
+    groups?: number[]
     is_superuser?: boolean,
     // is_superuser: boolean
 }
@@ -87,6 +96,11 @@ export interface UserChangePassword{
 export interface UserGroup{
     id: number,
     name: string
+}
+
+export interface Responsavel{
+    id: number,
+    username: string
 }
 
 

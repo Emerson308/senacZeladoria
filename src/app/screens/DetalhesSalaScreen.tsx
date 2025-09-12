@@ -21,7 +21,7 @@ export default function DetalhesSalaScreen(){
         return null
     }
 
-    const marcarSalaComoLimpa = async (id: number) => {
+    const marcarSalaComoLimpa = async (id: string) => {
         // signOut()
         setCarregando(true)
         try{
@@ -92,17 +92,17 @@ export default function DetalhesSalaScreen(){
         )
     }
 
-    const dadosSala1: Sala ={
-        "id": 1,
-        "nome_numero": "Sala 101",
-        "capacidade": 30,
-        "descricao": "Uma descrição rápida das principais atviidades realizadas na sala.",
-        "localizacao": "Bloco A",
-        "status_limpeza": "Limpa",
-        "ultima_limpeza_data_hora": "2025-07-09T12:00:00Z",
-        "ultima_limpeza_funcionario": "funcionariocz"
+    // const dadosSala1: Sala ={
+    //     "id": 1,
+    //     "nome_numero": "Sala 101",
+    //     "capacidade": 30,
+    //     "descricao": "Uma descrição rápida das principais atviidades realizadas na sala.",
+    //     "localizacao": "Bloco A",
+    //     "status_limpeza": "Limpa",
+    //     "ultima_limpeza_data_hora": "2025-07-09T12:00:00Z",
+    //     "ultima_limpeza_funcionario": "funcionariocz"
 
-    }
+    // }
 
     const estilosTailwind = {
         item: "bg-white mt-5 border-l-4 border-l-sblue p-4 rounded-xl",
@@ -133,7 +133,7 @@ export default function DetalhesSalaScreen(){
                             multiline
                         />
 
-                        <Button className='mt-5 mx-10' icon={'marker'} contentStyle={styles.btnMarcarConcluida} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala.id)}>
+                        <Button className='mt-5 mx-10' icon={'marker'} contentStyle={styles.btnMarcarConcluida} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala.qr_code_id)}>
                             Marcar como limpa
                         </Button>
                         

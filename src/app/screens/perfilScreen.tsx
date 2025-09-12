@@ -22,7 +22,7 @@ export default function PerfilScreen(){
     }
 
 
-    const { signOut } = authContext
+    const { signOut, usersGroups } = authContext
     const [userData, setUserData] = useState<Usuario|null>(null)
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
@@ -108,9 +108,16 @@ export default function PerfilScreen(){
         <SafeAreaView className=" flex-1 bg-gray-100">
             <View className=" items-center py-10 bg-white border-b border-gray-200">
                 {/* <View className=" w-20 h-20 rounded-full bg-blue-500 justify-center items-center mb-2">
-                    <Text className=" text-4xl font-bold text-white">{userData.username.charAt(0)}</Text>
+                    <Text className=" text-4xl font-bol
+                d text-white">{userData.username.charAt(0)}</Text>
                 </View> */}
-                <Avatar.Text label={userData.username.charAt(0)} size={86}/>
+                {
+                    userData.profile.profile_picture === null ?
+                        <Avatar.Text label={userData.username.charAt(0)} size={86}/>
+                    :
+                        // <Avatar.Image size={86} source={userData.profile.profile_picture} />
+                        null
+                }
                 <Text className=" text-xl font-bold text-gray-800">{userData.username}</Text>
             </View>
 
@@ -120,9 +127,48 @@ export default function PerfilScreen(){
                     <Text className=" text-base text-gray-800">{userData.email ? userData.email : 'Sem email'}</Text>
                 </View>
 
+                <View className=" flex-row flex-wrap justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
+                    <Text className=" text-base font-bold text-gray-600">Nome:</Text>
+                    <Text className=" text-base text-gray-800">{userData.nome ? userData.nome : 'Sem nome'}</Text>
+                </View>
+
                 <View className=" flex-row justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
                     <Text className=" text-base font-bold text-gray-600">Nivel de permissão:</Text>
                     {userData.is_superuser ? <Text className="text-base font-bold text-sgreen">Admin</Text> : <Text className="text-base font-bold text-syellow">Usuário comum</Text>}
+                </View>
+
+                <View className=" flex-row justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
+                    <Text className=" text-base font-bold text-gray-600">Grupos do usuário: </Text>
+                    <View className=" flex-row gap-2 flex-wrap">
+
+                    {
+                        userData.groups.length === 0 ?
+                        <Text style={{
+                            padding: 1,
+                            paddingHorizontal: 5,
+                            borderRadius: 5,
+                            // flex: 1,
+                            // textAlign: 'center',
+                            // opacity: 0,
+                            color: colors.sgray,
+                            backgroundColor: colors.sgray + '20',
+                        }} >Sem Grupos</Text>
+                        :
+                            usersGroups.map(group => {
+                                if (userData.groups.includes(group.id)){
+                                    return <Text key={group.id} style={{
+                                        padding: 1,
+                                        paddingHorizontal: 5,
+                                        borderRadius: 5,
+                                        color: colors.tagColors[group.id -1],
+                                        backgroundColor: colors.tagColors[group.id -1] + '20',
+                                    }} >{group.name}</Text>
+                                }
+                            })
+
+
+                    }
+                    </View>
                 </View>
 
                 <TouchableOpacity onPress={irParaAlterarSenha} className=" flex-row flex-wrap items-center bg-white p-4 rounded-lg mt-20 shadow-sm">
