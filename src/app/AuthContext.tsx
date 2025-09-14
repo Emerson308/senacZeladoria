@@ -87,6 +87,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Lógica de logout: limpar token, redefinir o papel
       await removerToken()
       setUserRole(null);
+
+
+      delete api.defaults.headers.common['Authorization']
     },
     userRole,
     user,
