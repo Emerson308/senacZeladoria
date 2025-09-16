@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     //   // setUserRole('user'); // Exemplo de usuário comum
     //   // setUserRole('admin'); // Exemplo de admin
     // }, 1000);
-  }, [userRole]);
+  }, []);
 
   const authContext = {
     signIn: (role: UserRole) => {

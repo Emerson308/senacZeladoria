@@ -3,11 +3,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado } from "../servicos/servicoUsuarios";
 import { Usuario } from "../types/apiTypes";
 import { Alert, Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { ActivityIndicator, Avatar, Button } from "react-native-paper";
+import { ActivityIndicator, Avatar, Button, Provider } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import {Ionicons} from '@expo/vector-icons'
+import { apiURL } from "../api/axiosConfig";
+import ImgTypeSelector from "../components/ImgTypeSelector";
 
 
 
@@ -27,6 +29,8 @@ export default function PerfilScreen(){
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
     const navigation = useNavigation()
+
+    const [rodapeImgSelectorVisible, setRodapeImgSelectorVisible] = useState(false)
     
 
     useEffect(() => {
@@ -105,19 +109,23 @@ export default function PerfilScreen(){
     }
     
     return (
+        <Provider>
         <SafeAreaView className=" flex-1 bg-gray-100">
+            <ImgTypeSelector visible={rodapeImgSelectorVisible} hideModal={() => setRodapeImgSelectorVisible(false)} recarregarPerfil={carregarDadosDoUsuario}/>
             <View className=" items-center py-10 bg-white border-b border-gray-200">
                 {/* <View className=" w-20 h-20 rounded-full bg-blue-500 justify-center items-center mb-2">
                     <Text className=" text-4xl font-bol
                 d text-white">{userData.username.charAt(0)}</Text>
                 </View> */}
+                <TouchableOpacity onPress={() => setRodapeImgSelectorVisible(true)}>
                 {
                     userData.profile.profile_picture === null ?
                         <Avatar.Text label={userData.username.charAt(0)} size={86}/>
                     :
-                        // <Avatar.Image size={86} source={userData.profile.profile_picture} />
-                        null
+                        <Avatar.Image size={86} source={ { uri: apiURL + userData.profile.profile_picture}} />
+                        // null
                 }
+                </TouchableOpacity>
                 <Text className=" text-xl font-bold text-gray-800">{userData.username}</Text>
             </View>
 
@@ -202,6 +210,7 @@ export default function PerfilScreen(){
                 Sair
             </Button>
         </SafeAreaView>
+        </Provider>
     )
 }
 

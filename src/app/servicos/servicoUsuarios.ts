@@ -1,3 +1,4 @@
+import { ImageSourcePropType } from "react-native";
 import api from "../api/axiosConfig";
 import { NovoUsuario, UserChangePassword, UserGroup, Usuario } from "../types/apiTypes";
 
@@ -69,6 +70,36 @@ export async function getAllUsersGroups(){
         // return null
         throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
 }
+}
+
+export async function alterarFotoPerfil(newPhoto: FormData){
+    const formData = new FormData()
+
+    // const imgName = n
+
+    // formData.append('profile_picture', {
+    //     uri: newPhoto,
+    //     name
+    // })
+
+    try{
+        const resposta = await api.put('accounts/profile/', newPhoto, {
+            headers: {
+                "Content-Type" : 'multipart/form-data'
+            }
+        })
+        console.log(resposta.data)
+        return resposta.data
+    } catch(erro: any){
+        console.error(erro)
+        if (erro.response && erro.response.status === 401){
+            throw new Error('Token inválido.');
+        }
+        // return null
+        throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
+}
+    
+
 }
 
 

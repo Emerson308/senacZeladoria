@@ -29,7 +29,7 @@ export default function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
                             
                         </View>
                         <Text className=""> Grupos do usuario:</Text>
-                        <View className=" flex-wrap flex-row mt-1 mx-2 gap-3">
+                        <View className=" flex-wrap flex-row mt-1 mx-2 gap-3 w-full">
                             {
                                 usuario.groups.length === 0 ?
                                     <Text style={{

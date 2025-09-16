@@ -78,20 +78,21 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
                             </TouchableOpacity> */}
                             {
                                 userGroups.includes(1) ?
-                                <Button
-                                    mode='contained-tonal'
-                                    buttonColor={colors.sgreen + '20'}
-                                    textColor={colors.sgreen}
-                                    icon={'broom'}
-                                    className=" mx-5 my-3 mb-0 mt-5"
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        marcarSalaComoLimpa(sala.qr_code_id)
-                                    }}
+                                // <Button
+                                //     mode='contained-tonal'
+                                //     buttonColor={colors.sgreen + '20'}
+                                //     textColor={colors.sgreen}
+                                //     icon={'broom'}
+                                //     className=" mx-5 my-3 mb-0 mt-5"
+                                //     onPress={(e) => {
+                                //         e.stopPropagation();
+                                //         marcarSalaComoLimpa(sala.qr_code_id)
+                                //     }}
                                     
-                                >
-                                    Limpar sala
-                                </Button>
+                                // >
+                                //     Limpar sala
+                                // </Button>
+                                null
                                 :
                                 null
 
@@ -104,7 +105,7 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
                             <View className=" flex-row items-center justify-center mt-1 gap-4">
                                 
                                 <View className="flex-1 items-center flex-row gap-2">
-                                    {
+                                    {/* {
                                         userGroups.includes(1) ?
                                         <Button
                                             mode='contained-tonal'
@@ -123,7 +124,7 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
                                         :
                                         null
 
-                                    }
+                                    } */}
 
                                 </View>
                                 <View className=" flex-row gap-2 items-center justify-center h-full">

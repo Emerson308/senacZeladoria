@@ -27,5 +27,12 @@
       "bundler": "metro"
 
     }
-  }
+  },
+  "permissions": [
+    "CAMERA",
+    "MEDIA_LIBRARY"
+  ],
+  "plugins": [
+    "expo-MEDIA_LIBRARY"
+  ]
 }
