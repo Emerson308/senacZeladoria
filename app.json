@@ -26,7 +26,16 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
 
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app acesses your photos to let you share them with your friends.",
+          "cameraPermission": "The app acesses your camera to let you share them with your friends."
+        }
+      ]
+    ]
   },
   "permissions": [
     "CAMERA",

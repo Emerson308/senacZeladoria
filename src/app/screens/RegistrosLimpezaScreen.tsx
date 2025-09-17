@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado } from "../servicos/servicoUsuarios";
 import { RegistroSala, Usuario } from "../types/apiTypes";
-import { Alert, Text, View, StyleSheet, ScrollView } from "react-native";
+import { Alert, Text, View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { ActivityIndicator, Avatar, Button, TextInput } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -27,6 +27,8 @@ export default function RegistrosLimpezaScreen(){
     const [registros, setRegistros] = useState<RegistroSala[]>([])
     const [registrosFiltrados, setRegistrosFiltrados] = useState<RegistroSala[]>([])
     const [filtroRegistros, setFiltroRegistros] = useState('')
+    const [refreshing, setRefreshing] = useState(false)
+    
     // const [contador, setContador] = useState(0)
 
 
@@ -148,7 +150,7 @@ export default function RegistrosLimpezaScreen(){
 
             />
 
-            <ScrollView className="p-3 flex-1 mt-4">
+            <ScrollView className="p-3 flex-1 mt-4" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarRegistros}/>}>
                 {registrosFiltrados.map((registro) => (
                     <RegistroCard key={registro.id} registro={registro} />
             ))}

@@ -31,6 +31,7 @@ export interface Sala{
     id: number,
     qr_code_id: string,
     nome_numero: string,
+    imagem: string,
     capacidade: number,
     validade_limpeza_horas: number,
     descricao: string,
@@ -48,6 +49,7 @@ export interface newSala{
     capacidade: number,
     descricao: string,
     localizacao: string,
+    imageURL?: string
 
 }
 

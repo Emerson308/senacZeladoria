@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert } from 'react-native';
+import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
@@ -42,6 +42,7 @@ export default function SalasScreen() {
     const [criarSalaFormVisible, setCriarSalaFormVisible] = useState(false)
     const [editarSalaFormVisible, setEditarSalaFormVisible] = useState(false)
     const [formEditarData, setFormEditarData] = useState<Sala|null>(null)
+    const [refreshingSalas, setRefreshingSalas] = useState(false)
 
     const carregarSalasComLoading = async () => {
         setCarregando(true);
@@ -130,9 +131,7 @@ export default function SalasScreen() {
 
         } catch(erro: any){
             setMensagemErro(erro.message || 'Não foi possivel criar as salas')
-            if(erro.message === 'AxiosError: Request failed with status code 400'){
-                setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
-            }
+
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
                 signOut()
             }
@@ -245,7 +244,9 @@ export default function SalasScreen() {
             />
 
 
-            <ScrollView className="p-3">
+            <ScrollView className="p-3"
+                refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
+            >
                 {salasFiltradas.map((sala) => (
                     <SalaCard key={sala.id} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} userGroups={user.groups} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.qr_code_id)}/>
                 ))}

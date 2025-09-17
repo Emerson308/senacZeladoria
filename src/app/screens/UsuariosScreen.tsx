@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert } from 'react-native';
+import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
@@ -28,6 +28,8 @@ export default function UsuariosScreen(){
     const [usuariosFiltrados, setUsuariosFiltrados] = useState<Usuario[]>([])
     const [criarUsuarioForm, setCriarUsuarioFormVisible] = useState(false)
     const [usersGroups, setUsersGroups] = useState<UserGroup[]>([])
+    const [refreshing, setRefreshing] = useState(false)
+    
 
 
     const carregarUsuarios = async () => {
@@ -170,7 +172,7 @@ export default function UsuariosScreen(){
 
             
 
-            <ScrollView className="p-3 flex-1">
+            <ScrollView className="p-3 flex-1" refreshControl={<RefreshControl onRefresh={carregarUsuarios} refreshing={refreshing}/>}>
                 {usuariosFiltrados.map((usuario) => (
                     // <View key={usuario.id} className=" border-2 border-black h-6 mb-2">
 
