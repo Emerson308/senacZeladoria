@@ -21,8 +21,8 @@ export default function RegistroCard({registro, onPress}: propsRegistroCard){
                         <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{registro.sala_nome}</Text>
                         <View className="mt-2">
                         <Text variant="bodySmall"> Última Limpeza: 
-                            {registro.data_hora_limpeza ? 
-                                ' ' + formatarDataISO(registro.data_hora_limpeza) + ' Por ' + registro.funcionario_responsavel.username
+                            {registro.data_hora_inicio ? 
+                                ' ' + formatarDataISO(registro.data_hora_inicio) + ' Por ' + registro.funcionario_responsavel
                                 :
                                 ' Sala sem histórico de limpeza'
                             }

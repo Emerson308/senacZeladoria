@@ -92,6 +92,7 @@ export async function excluirSalaService(id: string){
 export async function getRegistrosService(id?: number){
     try{
         const resposta = await api.get<RegistroSala[]>('limpezas/')
+        // console.log(resposta.data)
         return resposta.data
     } catch(erro: any){
         console.error(erro)

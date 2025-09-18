@@ -31,7 +31,7 @@ export interface Sala{
     id: number,
     qr_code_id: string,
     nome_numero: string,
-    imagem: string,
+    imagem: string | null,
     capacidade: number,
     validade_limpeza_horas: number,
     descricao: string,
@@ -79,14 +79,13 @@ export interface NovoUsuario{
 
 export interface RegistroSala{
     id: number,
-    sala: number,
+    sala: string,
     sala_nome: string,
-    data_hora_limpeza: string,
-    funcionario_responsavel:{
-        id: 1,
-        username: string
-    },
-    observacoes: string
+    data_hora_inicio: string,
+    data_hora_fim: string | null,
+    funcionario_responsavel: string,
+    observacoes: string | null,
+    // fotos: {}
 }
 
 export interface UserChangePassword{

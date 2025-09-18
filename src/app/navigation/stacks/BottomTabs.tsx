@@ -75,7 +75,7 @@ export default function BottomTabs(){
                 <Tab.Screen
                     name="Perfil"
                     component={PerfilScreen}
-                    options={{title: 'Perfil'}}
+                    options={{title: 'Perfil', headerShown: false}}
                 />
     
     

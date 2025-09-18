@@ -13,12 +13,12 @@ import { alterarFotoPerfil } from "../servicos/servicoUsuarios";
 interface RodapeImgSelectorProps{
     visible: boolean,
     hideModal: () => void
-    recarregarPerfil: () => void
+    handleUploadImage: (photo: ImageURISource | null) => void
 }
 
 type imageOption = 'camera' | 'galeria'
 
-export default function ImgTypeSelector({visible, hideModal, recarregarPerfil}: RodapeImgSelectorProps){
+export default function ImgTypeSelector({visible, hideModal, handleUploadImage}: RodapeImgSelectorProps){
 
     const handleTakePhoto = async () => {
         const {status} = await ImagePicker.requestCameraPermissionsAsync()
@@ -61,38 +61,6 @@ export default function ImgTypeSelector({visible, hideModal, recarregarPerfil}: 
         
         return {uri : result.assets[0].uri}
     }
-
-    const handleUploadImage = async (photo:ImageURISource|null) => {
-        console.log(photo)
-        if (!photo) {
-            Alert.alert('Erro', 'Nenhuma imagem selecionada para enviar.');
-            return;
-        }
-        
-        if(!photo.uri){
-            Alert.alert('Erro', 'Nenhuma imagem selecionada para enviar.');
-            return
-        }
-
-        const formData = new FormData();
-        const imageName = photo.uri.split('/').pop();
-
-        formData.append('profile_picture', {
-            uri: photo.uri,
-            name: imageName,
-            type: 'image/jpeg',
-        } as any);
-
-        try {
-            const resposta = await alterarFotoPerfil(formData)
-            
-        } catch (error: any) {
-            console.error('Erro ao enviar a imagem:', error);
-            Alert.alert('Erro', `Falha ao enviar a imagem: ${error.message}`);
-        } finally {
-            recarregarPerfil()
-        }
-    }
     
     const handleOptionPress = async (option: imageOption) => {
         hideModal()
@@ -103,7 +71,7 @@ export default function ImgTypeSelector({visible, hideModal, recarregarPerfil}: 
             photo = await handlePickPhoto()
         }
         
-        await handleUploadImage(photo)
+        handleUploadImage(photo)
 
     }
 
