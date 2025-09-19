@@ -178,7 +178,6 @@ export default function SalasScreen() {
             setSalasFiltradas(salasLimpas)
         } else if (filtro === 'Limpeza pendente'){
             const salasLimpezaPendente = salas.filter(item => item.status_limpeza === 'Limpeza Pendente')
-            // console.log(salasLimpezaPendente)
             setSalasFiltradas(salasLimpezaPendente)
         }
 
@@ -191,7 +190,6 @@ export default function SalasScreen() {
     
     const irParaDetalhesSala = (id: string) =>{
         navigation.navigate('DetalhesSala', {id})
-        // navigation.navigate('Usuarios')
     }
 
     if(carregando){
@@ -222,23 +220,19 @@ export default function SalasScreen() {
                         value: 'Todas',
                         label: `Todas (${contagemSalas})`,
                         checkedColor: 'black',
-                        labelStyle:{fontSize: 12},
-                        // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
-                        
+                        labelStyle:{fontSize: 12},                        
                     },
                     {
                         value: 'Limpas',
                         label: `Limpas (${contagemSalasLimpas})`,
                         checkedColor: 'black',
                         labelStyle:{fontSize: 12},
-                        // style: {backgroundColor: colors.sblue},
                     },
                     {
                         value:'Limpeza pendente',
                         label: `Pendente (${contagemSalasPendentes})`,
                         checkedColor: 'black',
                         labelStyle:{fontSize: 12},
-                        // style: {backgroundColor: colors.sblue},
                     }
                 ]}
             />
@@ -248,7 +242,7 @@ export default function SalasScreen() {
                 refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
             >
                 {salasFiltradas.map((sala) => (
-                    <SalaCard key={sala.id} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} userGroups={user.groups} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.qr_code_id)}/>
+                    <SalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.qr_code_id)}/>
                 ))}
             </ScrollView>
 
