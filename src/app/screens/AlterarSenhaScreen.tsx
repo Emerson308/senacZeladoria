@@ -53,7 +53,7 @@ export default function AlterarSenhaScreen(){
             Alert.alert('Senha alterada', 'Sua senha foi alterada com sucesso', [
                 {
                     text: 'Ok',
-                    onPress: () => navigation.navigate('Logout'),
+                    onPress: async () => await signOut(),
                     style: 'default'
                 }
             ])

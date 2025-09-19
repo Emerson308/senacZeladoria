@@ -21,7 +21,7 @@ import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 const Stack = createStackNavigator<UserStackParamList>();
 
 export const UserNavigator = () => (
-  <Stack.Navigator screenOptions={{}}>
+  <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen
       name='UserTabs'
       component={BottomTabs}
@@ -31,7 +31,7 @@ export const UserNavigator = () => (
       }}
     />
 
-    <Stack.Screen name='DetalhesSala' options={{headerShown: true, headerTitle: 'Detalhes da sala'}} component={DetalhesSalaScreen} />
+    <Stack.Screen name='DetalhesSala' options={{ headerTitle: 'Detalhes da sala'}} component={DetalhesSalaScreen} />
     
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
     

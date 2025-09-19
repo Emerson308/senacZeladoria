@@ -1,7 +1,7 @@
 import { TouchableOpacity, View, StyleSheet, Text as TextS } from "react-native"
 import { Card, Text, Button, Avatar } from "react-native-paper"
 import { Sala, UserGroup, Usuario } from "../types/apiTypes";
-import { formatarDataISO } from "../functions/functions";
+import { formatarDataISO } from "../utils/functions";
 import { colors } from "../../styles/colors";
 import { apiURL } from "../api/axiosConfig";
 
@@ -22,7 +22,7 @@ export default function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
                                 usuario.profile.profile_picture ? 
                                     <Avatar.Image source={{uri: apiURL + usuario.profile.profile_picture}}/>
                                 :
-                                    <Avatar.Text label="EB"/>
+                                    <Avatar.Text label={usuario.username.charAt(0).toUpperCase()}/>
                             }
                         </View>
                         <View className=" flex-1 flex-col">

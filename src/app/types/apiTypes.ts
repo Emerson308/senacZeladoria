@@ -38,7 +38,7 @@ export interface Sala{
     instrucoes: string,
     localizacao: string,
     ativa: boolean,
-    responsaveis: Responsavel[]
+    responsaveis: string[]
     status_limpeza: "Limpa" | "Limpeza Pendente" | "Suja" | "Em Limpeza"
     ultima_limpeza_data_hora: null | string,
     ultima_limpeza_funcionario: null | string
@@ -99,10 +99,10 @@ export interface UserGroup{
     name: string
 }
 
-export interface Responsavel{
-    id: number,
-    username: string
-}
+// export interface Responsavel{
+//     id: number,
+//     username: string
+// }
 
 
 

@@ -12,13 +12,14 @@ import { alterarFotoPerfil } from "../servicos/servicoUsuarios";
 
 interface RodapeImgSelectorProps{
     visible: boolean,
-    hideModal: () => void
+    hideModal: () => void,
+    aspect? : [number, number]
     handleUploadImage: (photo: ImageURISource | null) => void
 }
 
 type imageOption = 'camera' | 'galeria'
 
-export default function ImgTypeSelector({visible, hideModal, handleUploadImage}: RodapeImgSelectorProps){
+export default function ImgTypeSelector({visible, hideModal, handleUploadImage, aspect=[1,1]}: RodapeImgSelectorProps){
 
     const handleTakePhoto = async () => {
         const {status} = await ImagePicker.requestCameraPermissionsAsync()
@@ -30,7 +31,7 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage}:
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ['images'],
             allowsEditing: true,
-            aspect: [1, 1],
+            aspect: aspect,
             quality: 1,
         });
                 
@@ -51,7 +52,7 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage}:
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: true,
-            aspect: [1, 1],
+            aspect: aspect,
             quality: 1,
         });
                 
@@ -70,8 +71,10 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage}:
         } else if (option === 'galeria'){
             photo = await handlePickPhoto()
         }
-        
-        handleUploadImage(photo)
+        if(photo){
+            handleUploadImage(photo)
+
+        }
 
     }
 

@@ -25,7 +25,7 @@ import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 const Stack = createStackNavigator<AdminStackParamList>();
 
 export const AdminNavigator = () => (
-  <Stack.Navigator screenOptions={{}}>
+  <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name="AdminTabs" options={{
       headerShown: false,
       headerTitle: 'Salas',
@@ -33,7 +33,7 @@ export const AdminNavigator = () => (
       }} component={BottomTabs} />
 
     <Stack.Screen name="DetalhesSala" options={{
-      headerShown: true,
+      // headerShown: true,
       headerTitle: 'Detalhes da sala',
       // headerRight: () => <MenuButton/>
       }} component={DetalhesSalaScreen} />

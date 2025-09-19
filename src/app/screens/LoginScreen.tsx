@@ -24,15 +24,7 @@ const LoginScreen = () => {
     setCarregando(true);
     setMensagemErro('');
     try{
-      const resposta = await realizarLogin({username: username, password: password})
-      // console.log(resposta)
-      await salvarToken(resposta.token)
-      if (resposta.user_data.is_superuser){
-        signIn('admin')
-      } else{
-        signIn('user')
-
-      }
+      await signIn(username, password)
     } catch(erro: any){
       setMensagemErro(erro.message || 'Ocorreu um erro ao tentar fazer login. Tente novamente.')
       Alert.alert('Erro no login', mensagemErro)
@@ -92,9 +84,9 @@ const LoginScreen = () => {
           />
           
           {/* Botão de Esqueceu a senha */}
-          <TouchableOpacity style={styles.forgotPassword}>
+          {/* <TouchableOpacity style={styles.forgotPassword}>
             <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Botão de Conectar */}
           <Button

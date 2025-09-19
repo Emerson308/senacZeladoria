@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert, RefreshControl } from 'react-native';
-import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
+import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon, Provider } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
@@ -20,15 +20,17 @@ export default function SalasScreen() {
     const authContext = useContext(AuthContext);
 
     if (!authContext) {
-        return null;
+        return <Text>Oi</Text>;
     }
 
     if (authContext.userRole === null){
-        return null
+        return <Text>Oi</Text>
     }
+
+    // console.log(authContext.user)
     
     if (authContext.user === null){
-        return null
+        return <Text>Oi</Text>
     }
     
     const {signOut, userRole, user} = authContext
@@ -171,13 +173,26 @@ export default function SalasScreen() {
     }, [])
 
     useEffect(() => {
+        let salasAtivasParaInativas
+        if (userRole === 'user'){
+            salasAtivasParaInativas = salas.filter(sala => sala.ativa)
+        } else {
+            const salasAtivas = salas.filter(sala => sala.ativa)
+            const salasInativas = salas.filter(sala => !sala.ativa)
+    
+            salasAtivasParaInativas = [...salasAtivas, ...salasInativas]
+
+        }
+
+
+
         if (filtro === 'Todas') {
-            setSalasFiltradas(salas)
+            setSalasFiltradas(salasAtivasParaInativas)
         } else if (filtro === 'Limpas'){
-            const salasLimpas = salas.filter(item => item.status_limpeza === 'Limpa')
+            const salasLimpas = salasAtivasParaInativas.filter(item => item.status_limpeza === 'Limpa')
             setSalasFiltradas(salasLimpas)
         } else if (filtro === 'Limpeza pendente'){
-            const salasLimpezaPendente = salas.filter(item => item.status_limpeza === 'Limpeza Pendente')
+            const salasLimpezaPendente = salasAtivasParaInativas.filter(item => item.status_limpeza === 'Limpeza Pendente')
             setSalasFiltradas(salasLimpezaPendente)
         }
 
@@ -207,6 +222,7 @@ export default function SalasScreen() {
 
 
     return (
+        <Provider>
         <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
             <SalaForms visible={criarSalaFormVisible} onClose={() => setCriarSalaFormVisible(false)} onSubmit={criarSala} typeForm='Criar'/>
             <SalaForms visible={editarSalaFormVisible} onClose={() => setEditarSalaFormVisible(false)} onSubmit={editarSala} typeForm='Editar' sala={formEditarData}/>
@@ -242,7 +258,7 @@ export default function SalasScreen() {
                 refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
             >
                 {salasFiltradas.map((sala) => (
-                    <SalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.qr_code_id)}/>
+                    <SalaCard key={sala.id} userGroups={user.groups} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={handleExcluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.qr_code_id)}/>
                 ))}
             </ScrollView>
 
@@ -263,6 +279,7 @@ export default function SalasScreen() {
 
             }
         </SafeAreaView>
+        </Provider>
     );
 };
 

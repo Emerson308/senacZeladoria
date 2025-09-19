@@ -1,12 +1,13 @@
 
 import { useEffect, useState } from "react"
-import { View, Text, StyleSheet, Modal, Pressable, Alert } from "react-native"
+import { View, Text, StyleSheet, Modal, Pressable, Alert, ScrollView, TouchableOpacity } from "react-native"
 // import toast
 // import { Alert } from "react-native";
-import { Button, Portal, TextInput } from "react-native-paper"
+import { Button, Portal, TextInput, Provider } from "react-native-paper"
 import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { newSala, Sala } from "../types/apiTypes";
+import ImgTypeSelector from "./ImgTypeSelector";
 
 interface propsCriarSalaForm{
     // id?: number,
@@ -19,6 +20,8 @@ interface propsCriarSalaForm{
 }
 
 export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: propsCriarSalaForm){
+
+    const [imgModalVisible, setImgModalVisible] = useState(true)
     
     const [id, setId] = useState<string| undefined>(undefined)
     const [nomeSala, setNomeSala] = useState('')
@@ -93,6 +96,7 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
     
     return (
         <Modal className=" m-20" visible={visible} onRequestClose={() => onClose} onDismiss={onClose} animationType="slide" transparent={true} style={styles.modal}>
+            {/* <ImgTypeSelector visible={imgModalVisible} hideModal={() => setImgModalVisible(false)} handleUploadImage={() => ''}/> */}
             <Pressable onPress={onClose} style={styles.centeredView} className=" flex-1 justify-center items-center">
                 <Pressable className="bg-white rounded-lg p-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
                     {/* <Text>Oi</Text> */}
@@ -103,49 +107,75 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
                         <Text className=" text-center mb-8 text-4xl font-bold">Editar sala</Text>
 
                     }
-                    <TextInput
-                        label="Nome da sala"
-                        value={nomeSala}
-                        onChangeText={setNomeSala}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
-                    
-                    <TextInput
-                        label="Capacidade"
-                        value={capacidade}
-                        onChangeText={setCapacidade}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
-                    
-                    <TextInput
-                        label="Descrição"
-                        value={descricao}
-                        onChangeText={setDescricao}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
-                    
-                    <TextInput
-                        label="Localização"
-                        value={localizacao}
-                        onChangeText={setLocalizacao}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
+                    <ScrollView className=" h-80 " contentContainerClassName=" gap-2 flex-col">
+                        <TextInput
+                            label="Nome da sala"
+                            value={nomeSala}
+                            onChangeText={setNomeSala}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
+                        />
+
+                        <View className=" gap-2 flex-row h-14 mt-1">
+                            <View className=" border-2 aspect-video h-full">
+
+                            </View>
+
+                            <TouchableOpacity className=" flex-1 items-center justify-center rounded-lg bg-gray-300">
+                                <Text className=" text-lg text-center text-black">Inserir imagem da sala</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                        
+                        <TextInput
+                            label="Capacidade"
+                            value={capacidade}
+                            onChangeText={setCapacidade}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            // className=" mt-0"
+                            activeOutlineColor='#004A8D'
+                        />
+                        
+                        <TextInput
+                            label="Descrição"
+                            value={descricao}
+                            onChangeText={setDescricao}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
+                        />
+                        
+                        <TextInput
+                            label="Localização"
+                            value={localizacao}
+                            onChangeText={setLocalizacao}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
+                        />
+
+                        <TextInput
+                            label="Validade da limpeza (Horas)"
+                            value={localizacao}
+                            onChangeText={setLocalizacao}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
+                        />
+
+                    </ScrollView>
 
                     {
                         typeForm === 'Criar' ?
@@ -189,7 +219,8 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        marginBottom: 16,
+        // marginBottom: 16,
+        marginTop: 0
     },
     
 

@@ -1,5 +1,5 @@
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
-import { View, ScrollView, Text, StyleSheet, Alert } from 'react-native'
+import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackground } from 'react-native'
 import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
@@ -8,8 +8,11 @@ import { obterDetalhesSala, marcarSalaComoLimpaService } from '../servicos/servi
 import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
-import { formatarDataISO } from '../functions/functions';
+import { formatarDataISO } from '../utils/functions';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {Ionicons} from '@expo/vector-icons'
+import { apiURL } from '../api/axiosConfig';
+
 // import { Alert } from 'react-native';
 
 
@@ -20,7 +23,10 @@ export default function DetalhesSalaScreen(){
     if(!authContext){
         return null
     }
-
+    if(!authContext.user){
+        return null
+    }
+    
     const marcarSalaComoLimpa = async (id: string) => {
         // signOut()
         setCarregando(true)
@@ -58,7 +64,7 @@ export default function DetalhesSalaScreen(){
     }
 
 
-    const {signOut} = authContext
+    const {signOut, user} = authContext
     const route = useRoute<TelaDetalhesSala['route']>()
     const navigation = useNavigation()
     const {id} = route.params;
@@ -111,34 +117,103 @@ export default function DetalhesSalaScreen(){
     }
 
     return(
-        <SafeAreaView  className="flex-1 bg-gray-100 p-3">
-            <ScrollView className="">
-                <View className='py-8 px-4 text-center items-center justify-center bg-sblue'>
-                    <Text className=' text-4xl font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
+        <SafeAreaView  className="flex-1 flex-col bg-gray-100 p-3">
+        <View className='text-center flex-col'>
+            <View className=" bg-sblue rounded-lg rounded-b-none py-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
+                <TouchableOpacity onPress={navigation.goBack}>
+                    <Ionicons
+                        name='arrow-back'
+                        color={'white'}
+                        size={24}
+                    />
+                </TouchableOpacity>
+                <Text className=" text-2xl text-white" >Perfil</Text>
+            </View>
 
-                </View>
+            {
+                dadosSala.imagem
+                ? (
+                    <ImageBackground
+                        className=' flex-row items-center justify-center'
+                        source={{uri: apiURL + dadosSala.imagem}}
+                    >
+                        <View className=' bg-black/40 flex-1 items-center h-40 justify-center '>
+                            <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
+                        </View>
+                    </ImageBackground>
+                )
+                : (
+                    <View className=' bg-black/40 items-center h-40 justify-center'>
+                        <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
+                    </View>
+                )
+            }
+            </View>
+            <ScrollView className=" flex-1 my-4">
+                <View className=' p-5 pt-0 pb-10 md:p-8'>
 
 
-                <View className=' p-5 pt-5 pb-10 md:p-8'>
-
-                    <View className=' bg-white p-4 rounded-lg shadow-sm'>
-                        <TextInput
-                            label={"Observações"}
-                            value={observacoes}
-                            onChangeText={setObservacoes}
-                            className=''
-                            mode='outlined'
-                            activeOutlineColor='#004A8D'
-                            numberOfLines={4}
-                            multiline
-                        />
-
-                        <Button className='mt-5 mx-10' icon={'marker'} contentStyle={styles.btnMarcarConcluida} buttonColor='#004A8D' mode='contained' onPress={async () => await marcarSalaComoLimpa(dadosSala.qr_code_id)}>
-                            Marcar como limpa
-                        </Button>
-                        
+                    <View className={estilosTailwind.item}>
+                        <Text className={estilosTailwind.info_label}>Status da limpeza</Text>
+                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                        {
+                            dadosSala.status_limpeza === 'Limpa' 
+                            ? <Text className='text-sgreen bg-sgreen/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                            : dadosSala.status_limpeza === 'Limpeza Pendente'
+                            ? <Text className='text-syellow bg-syellow/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                            : dadosSala.status_limpeza === 'Em Limpeza'
+                            ? <Text className='text-sgray bg-sgray/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                            : <Text className='text-sred bg-sred/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                        }
                     </View>
 
+                    {
+                        user.is_superuser || user.groups.includes(1)
+                        ? (
+                            <>
+                            <View className={estilosTailwind.item + ''}>
+                                <Text className={estilosTailwind.info_label}>Instruções</Text>
+                                {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                                <Text className={estilosTailwind.info_values}>{dadosSala.instrucoes ? dadosSala.instrucoes : 'Sem instruções'}</Text>
+
+                            </View>
+
+                            <View className={estilosTailwind.item}>
+                                <Text className={estilosTailwind.info_label}>Última limpeza</Text>
+                                {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                                {
+                                    dadosSala.ultima_limpeza_funcionario ? 
+                                    <View>
+                                        <Text className={estilosTailwind.info_values + 'font-normal text-3sm'}>{formatarDataISO(dadosSala.ultima_limpeza_data_hora)}</Text>
+                                        <Text className={estilosTailwind.info_values + 'text-gray-600 font-regular text-2sm'}>Por {dadosSala.ultima_limpeza_funcionario}</Text>
+
+                                    </View> : 
+                                    <Text className={estilosTailwind.info_values}>Sem histórico de limpeza</Text>
+
+                                }
+
+                            </View>
+
+
+
+                            <View className={estilosTailwind.item + ''}>
+                                <Text className={estilosTailwind.info_label}>Validade da limpeza</Text>
+                                {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                                <Text className={estilosTailwind.info_values}>{dadosSala.validade_limpeza_horas} horas</Text>
+
+                            </View>
+
+                            <View className={estilosTailwind.item + ''}>
+                                <Text className={estilosTailwind.info_label}>Status da sala</Text>
+                                {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                                <Text className={(dadosSala.ativa) ? 'bg-sgreen/20 px-4 py-1 rounded-md text-2xl text-sgreen' + estilosTailwind.info_values : 'bg-sred/20 px-4 py-1 rounded-md text-2xl text-sred' + estilosTailwind.info_values}>{dadosSala.ativa ? 'Ativa' : 'Inativa'}</Text>
+
+                            </View>
+                                    
+                            </>
+                        ) : null
+                    }
+    
                     <View className={estilosTailwind.item + ''}>
                         <Text className={estilosTailwind.info_label}>Capacidade</Text>
                         {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
@@ -153,27 +228,21 @@ export default function DetalhesSalaScreen(){
 
                     </View>
 
-                    <View className={estilosTailwind.item}>
-                        <Text className={estilosTailwind.info_label}>Status da limpeza</Text>
-                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                        {
-                            dadosSala.status_limpeza === 'Limpa' ? <Text className='bg-green-100 text-green-800 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                            : <Text className='bg-yellow-100 text-yellow-800 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                        }
-                        
-
-                    </View>
-
-                    <View className={estilosTailwind.item}>
-                        <Text className={estilosTailwind.info_label}>Última limpeza</Text>
-                        {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                        <View>
-                            <Text className={estilosTailwind.info_values + 'font-normal text-3sm'}>{formatarDataISO(dadosSala.ultima_limpeza_data_hora)}</Text>
-                            <Text className={estilosTailwind.info_values + 'text-gray-600 font-regular text-2sm'}>Por {dadosSala.ultima_limpeza_funcionario}</Text>
+                    {
+                        user.is_superuser || user.groups.includes(1)
+                        ? (
+                        <View className={estilosTailwind.item + ''}>
+                            <Text className={estilosTailwind.info_label}>Responsaveis</Text>
+                            {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
+                            {dadosSala.responsaveis.map(responsavel => <Text className={estilosTailwind.info_values}>{responsavel}</Text>)}
+                            {dadosSala.responsaveis.length === 0 ? <Text className={estilosTailwind.info_values} >Sem responsaveis</Text>: null}
+                            
 
                         </View>
 
-                    </View>
+                        ) : null
+                    }
+
 
                     <View className={estilosTailwind.item}>
                         <Text className={estilosTailwind.info_label}>Descrição</Text>
@@ -181,7 +250,6 @@ export default function DetalhesSalaScreen(){
                         <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
 
                     </View>
-
                 </View>
 
             </ScrollView>
