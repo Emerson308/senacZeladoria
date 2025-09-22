@@ -147,7 +147,7 @@ export default function PerfilScreen(){
     return (
         <Provider>
         <SafeAreaView className=" flex-1 bg-gray-100">
-            <ImgTypeSelector visible={rodapeImgSelectorVisible} hideModal={() => setRodapeImgSelectorVisible(false)} handleUploadImage={handleUploadImage}/>
+            <ImgTypeSelector visible={rodapeImgSelectorVisible} header="Foto de perfil" hideModal={() => setRodapeImgSelectorVisible(false)} handleUploadImage={handleUploadImage}/>
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <Text className=" text-2xl" >Perfil</Text>
             </View>

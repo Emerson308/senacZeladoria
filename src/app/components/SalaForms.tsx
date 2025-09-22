@@ -23,7 +23,7 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
 
     const [imgModalVisible, setImgModalVisible] = useState(true)
     
-    const [id, setId] = useState<string| undefined>(undefined)
+    const [id, setId] = useState<string| undefined>('')
     const [nomeSala, setNomeSala] = useState('')
     const [capacidade, setCapacidade] = useState('')
     const [descricao, setDescricao] = useState('')
@@ -31,7 +31,7 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
 
     const handleSubmit = () => {
         if (nomeSala === '' || capacidade === '' || localizacao === '') {
-            Alert.alert('Erro', 'Insira todos os campos');
+            Alert.alert('Erro', 'Insira os campos: nome da sala, capacidade, localização');
             return;
         }
 
@@ -48,11 +48,24 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
             
         }
 
+        const validade_limpezaConvertida = parseInt(capacidade, 10)
+        // console.log(validade_limpezaConvertida)
+
+        if(isNaN(validade_limpezaConvertida) && !Number.isInteger(validade_limpezaConvertida)){
+            Alert.alert('Erro', 'Capacidade precisa ser um número válido')
+            return;
+        }
+        if(String(validade_limpezaConvertida) !== capacidade.trim()){
+            Alert.alert('Erro', 'Capacidade precisa ser um número válido')
+            return;
+            
+        }
+
         if (typeForm === 'Criar'){
             onSubmit(
                 {
                     nome_numero: nomeSala,
-                    capacidade: capacidadeConvertida,
+                    capacidade: capacidade,
                     descricao: descricao,
                     localizacao: localizacao,
                 
@@ -64,7 +77,7 @@ export default function SalaForms({onClose, visible, onSubmit, typeForm, sala}: 
                 // id: id,
                 {
                     nome_numero: nomeSala,
-                    capacidade: capacidadeConvertida,
+                    capacidade: capacidade,
                     descricao: descricao,
                     localizacao: localizacao,
                 },

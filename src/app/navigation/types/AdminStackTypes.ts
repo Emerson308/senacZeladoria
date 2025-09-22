@@ -12,7 +12,8 @@ export type AdminStackParamList = {
     AdminTabs: undefined;
     Logout: undefined;
     Perfil: undefined;
-    AlterarSenha: undefined
+    AlterarSenha: undefined;
+    FormSalaPart1: undefined
     // Logout: undefined
 }
 

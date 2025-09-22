@@ -5,7 +5,7 @@ import api from './api/axiosConfig';
 // import { usuarioLogado } from './servicos/servicoAutenticacao';
 import { getAllUsersGroups, usuarioLogado } from './servicos/servicoUsuarios';
 import { UserGroup, Usuario } from './types/apiTypes';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Text } from 'react-native';
 import eventBus from './utils/eventBus';
 
 type UserRole = 'user' | 'admin' | null;
@@ -133,7 +133,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       <View className='flex-1 bg-gray-50 justify-center p-16'>
 
         <ActivityIndicator size={80}/>
+        <Text>Erro ao conectar na sua conta, Tente novamente mais tarde</Text>
       </View>
+      
     )
 
   }

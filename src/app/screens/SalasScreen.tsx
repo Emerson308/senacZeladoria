@@ -271,7 +271,7 @@ export default function SalasScreen() {
                     textColor={'white'}
                     icon={'plus'}
                     className=" mx-5 my-3 mb-0 mt-5"
-                    onPress={() => setCriarSalaFormVisible(true)}
+                    onPress={() => navigation.navigate('FormSalaPart1')}
                     
                 >
                     Criar sala

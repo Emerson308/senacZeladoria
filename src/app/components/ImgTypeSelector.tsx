@@ -14,12 +14,14 @@ interface RodapeImgSelectorProps{
     visible: boolean,
     hideModal: () => void,
     aspect? : [number, number]
-    handleUploadImage: (photo: ImageURISource | null) => void
+    handleUploadImage: (photo: ImageURISource) => void,
+    header? : string
+
 }
 
 type imageOption = 'camera' | 'galeria'
 
-export default function ImgTypeSelector({visible, hideModal, handleUploadImage, aspect=[1,1]}: RodapeImgSelectorProps){
+export default function ImgTypeSelector({visible, hideModal, handleUploadImage, aspect=[1,1], header}: RodapeImgSelectorProps){
 
     const handleTakePhoto = async () => {
         const {status} = await ImagePicker.requestCameraPermissionsAsync()
@@ -87,22 +89,24 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
                 contentContainerStyle={{
                     marginHorizontal: 16,
                     borderRadius: 15,
-                    paddingTop: 16,
                     backgroundColor: '#121212'
                 }}
-            >
-
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingBottom: 16,
-                    paddingHorizontal: 16
-                }}
                 >
-                    <Text className=" text-white text-xl">Foto de perfil</Text>
-                    
-                </View>
+                {header ? 
+                    <View style={{
+                        flexDirection: 'row',
+                        paddingTop: 16,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingBottom: 16,
+                        paddingHorizontal: 16
+                    }}
+                    >
+                        <Text className=" text-white text-xl">Foto de perfil</Text>
+                        
+                    </View>
+                : null                
+                }
 
                 <List.Item
                     style={{paddingHorizontal: 15}}

@@ -46,7 +46,7 @@ export interface Sala{
 
 export interface newSala{
     nome_numero: string,
-    capacidade: number,
+    capacidade: string,
     descricao: string,
     localizacao: string,
     imageURL?: string
