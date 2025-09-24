@@ -48,16 +48,16 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
             <Card  style={{backgroundColor: 'white'}}>
                 <Card.Content style={styles.contentCard}>
-                    <View className=" h-44 flex-row items-center">
+                    <View className=" flex-row aspect-video">
                     {
                         sala.imagem ?
                             <Image
                                 source={{uri: apiURL + sala.imagem}}
-                                className=" h-full flex-1 rounded-md rounded-b-none"
+                                className=" flex-1 rounded-md rounded-b-none"
                                 resizeMode='cover'
                             />
                         : 
-                            <View className="  h-full flex-1 bg-gray-200 rounded-md rounded-b-none items-center justify-center" >
+                            <View className="  flex-1 bg-gray-200 rounded-md rounded-b-none items-center justify-center" >
                                 <TextN className=" text-xl text-center">Sem Imagem</TextN>
                             </View>
                     }

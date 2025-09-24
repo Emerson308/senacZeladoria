@@ -1,4 +1,4 @@
-import { newSala, Sala } from "../types/apiTypes";
+import { imageType, newSala, Sala } from "../types/apiTypes";
 import { useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, TextInput as TextI, FlatList, ImageURISource } from "react-native"
 import { Button, Portal, TextInput, Provider } from "react-native-paper"
@@ -7,6 +7,8 @@ import { colors } from "../../styles/colors";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import ImgTypeSelector from "../components/ImgTypeSelector";
+import * as z from 'zod'
+import { criarNovaSala } from "../servicos/servicoSalas";
 
 
 
@@ -20,14 +22,17 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
     
 
     const navigation = useNavigation()
+    // const route = useRoute()
     const [imgSelectorVisible, setImgSelectorVisible] = useState(false)
     const [id, setId] = useState<string| null>('')
     const [nomeSala, setNomeSala] = useState('')
     const [capacidade, setCapacidade] = useState('')
     const [localizacao, setLocalizacao] = useState('')
+
     const [responsaveisInputText, setResponsaveisInputText] = useState('')
     const [responsaveisSuggestions, setResponsaveisSuggestions] = useState<testUserType[]>([])
     const [selectedResponsaveis, setSelectedResponsaveis] = useState<testUserType[]>([])
+
     const [descricao, setDescricao] = useState('')
     const [instrucoes, setInstrucoes] = useState('')
     const [validade_limpeza_horas, setValidade_limpeza_horas] = useState('')
@@ -61,6 +66,7 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
     }, [responsaveisInputText]);
 
 
+
     const handleSelectUser = (user: testUserType) => {
         if (!selectedResponsaveis.some(u => u.id === user.id)) {
           setSelectedResponsaveis([...selectedResponsaveis, user]);
@@ -74,77 +80,84 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
         setSelectedResponsaveis(updatedUsers);
     };
 
-    const handleSubmit = () => {
-        if (nomeSala === '' || capacidade === '' || localizacao === '') {
-            Alert.alert('Erro', 'Insira os campos: nome da sala, capacidade, localização');
-            return;
-        }
 
-        const capacidadeConvertida = parseInt(capacidade, 10)
-        // console.log(capacidadeConvertida)
 
-        if(isNaN(capacidadeConvertida) && !Number.isInteger(capacidadeConvertida)){
-            Alert.alert('Erro', 'Capacidade precisa ser um número inteiro válido')
-            return;
-        }
-        if(String(capacidadeConvertida) !== capacidade.trim()){
-            Alert.alert('Erro', 'Capacidade precisa ser um número nteiro válido')
-            return;
-            
-        }
+    const handleSubmit = async () => {
+        const salaSchema = z.object({
+            nome_numero: z.string().min(1, 'O nome da sala é obrigatório'),
+            capacidade: z.coerce.number().int('A capacidade deve ser um número inteiro válido')
+                .positive('A capacidade deve ser um número inteiro válido'),
+            localizacao: z.string().min(1, 'A localização é obrigatória'),
+            descricao: z.string().optional(),
+            instrucoes: z.string().optional(),
+            validade_limpeza_horas: z.coerce.number('Validade da limpeza (Horas) deve ser um número inteiro válido').int('Validade da limpeza (Horas) deve ser um número inteiro válido').optional(),
+            ativa: z.boolean().optional().default(true),
+        })
 
-        const validade_limpezaConvertida = parseInt(validade_limpeza_horas, 10)
-        // console.log(validade_limpezaConvertida)
-
-        if(isNaN(validade_limpezaConvertida) && !Number.isInteger(validade_limpezaConvertida)){
-            Alert.alert('Erro', 'Validade da limpeza precisa ser um número inteiro válido')
-            return;
-        }
-        if(String(validade_limpezaConvertida) !== validade_limpeza_horas.trim()){
-            Alert.alert('Erro', 'Validade da limpeza precisa ser um número inteiro válido')
-            return;
-            
-        }
-
-        if (sala){
-            onSubmit(
-                {
-                    nome_numero: nomeSala,
-                    capacidade,
-                    descricao,
-                    localizacao,
-                    instrucoes,
-                    validade_limpeza_horas,
-                    ativa : statusSala === 'Ativa',
-                    image
-                    
-                
-                }
-            )
-
-        } else {
-            onSubmit(
-                // id: id,
-                {
-                    nome_numero: nomeSala,
-                    capacidade,
-                    descricao,
-                    localizacao,
-                    instrucoes,
-                    validade_limpeza_horas,
-                    ativa : statusSala === 'Ativa',
-                    image
-                },
-                id
-            )
-        }
         
         
-        // onClose()
+        const formDataJSON: newSala = {
+            nome_numero: nomeSala,
+            capacidade,
+            descricao,
+            localizacao,
+            instrucoes,
+            validade_limpeza_horas,
+            ativa: statusSala === 'Ativa',
+        }
+        
+        const validationResult = salaSchema.safeParse(formDataJSON)
+
+        if(!validationResult.success){
+            const errorMessages = validationResult.error.issues.map(err => {
+                console.log(err.message)
+                return err.message
+            }).join('\n\n');
+            Alert.alert('Erro de Validação', errorMessages);
+            return;
+        }
+
+        const formData = new FormData()
+
+        Object.entries(formDataJSON).forEach(([key, value]) => {
+            if (value){
+                formData.append(key, value)
+            }
+        })
+
+        if (image && image.uri){
+            const imageName = image.uri.split('/').pop();
+            formData.append('imagem', {
+                uri: image.uri,
+                name: imageName,
+                type: 'image/jpeg',
+
+            } as any)
+        }
+
+        await onSubmit(formData)
     }
 
-    const onSubmit = (newSala: any, id?: string | null) => {
-
+    const onSubmit = async (newSala: FormData) => {
+        try{
+            if(sala){
+                return
+            } else{
+                const resposta = await criarNovaSala(newSala)
+                Alert.alert('Aviso', 'Sala criada com sucesso', [
+                    {
+                        "text": "Ok",
+                        "onPress": () => navigation.navigate('AdminTabs')
+                    }
+                ])
+            }
+        } catch (erro: any){
+            if(erro.message === 'AxiosError: Request failed with status code 400'){
+                Alert.alert('Erro','Esse nome de sala está em uso, digite um nome diferente')
+                return
+            }
+            Alert.alert('Erro','Não foi possivel criar sala')
+        }
     }
 
     
@@ -154,7 +167,7 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
     return (
         <Provider>
         <SafeAreaView className="bg-white rounded-lg p-8 flex-1">
-            <ImgTypeSelector visible={imgSelectorVisible} aspect={[4,2]} hideModal={() => setImgSelectorVisible(false)} handleUploadImage={setImage}/>
+            <ImgTypeSelector visible={imgSelectorVisible} aspect={[1,1]} hideModal={() => setImgSelectorVisible(false)} handleUploadImage={setImage}/>
             {
                 !sala ?
                 <Text className=" text-center mb-8 text-4xl font-bold">Criar sala</Text>
@@ -346,7 +359,7 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
                         
                         buttonColor={colors.sblue}
                         textColor="white"
-                        onPress={() => null}
+                        onPress={async () => await handleSubmit()}
                     >
                         Criar sala
                     </Button>
@@ -356,7 +369,7 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
                         className=" flex-1"
                         buttonColor={colors.sblue}
                         textColor="white"
-                        onPress={() => null}
+                        onPress={async () => await handleSubmit()}
                     >
                         Editar sala
                     </Button>

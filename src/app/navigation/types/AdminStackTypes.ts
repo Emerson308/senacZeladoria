@@ -2,6 +2,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ParamListBase } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
+import { Sala } from '../../types/apiTypes';
 
 
 export type AdminStackParamList = {
@@ -13,7 +14,7 @@ export type AdminStackParamList = {
     Logout: undefined;
     Perfil: undefined;
     AlterarSenha: undefined;
-    FormSalaPart1: undefined
+    FormSala: {sala?: Sala}
     // Logout: undefined
 }
 

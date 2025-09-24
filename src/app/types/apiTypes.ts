@@ -49,8 +49,16 @@ export interface newSala{
     capacidade: string,
     descricao: string,
     localizacao: string,
-    imageURL?: string
+    instrucoes: string,
+    validade_limpeza_horas : string,
+    ativa: boolean,
 
+}
+
+export interface imageType{
+    uri: string,
+    name: string,
+    type: string
 }
 
 // export interface Usuario1{

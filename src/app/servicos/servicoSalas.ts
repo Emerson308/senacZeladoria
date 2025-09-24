@@ -17,7 +17,7 @@ export async function obterSalas():Promise<Sala[]>{
 export async function obterDetalhesSala(id: string):Promise<Sala>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
-        // console.log(resposta.data)
+        console.log(resposta.data)
         return resposta.data
     } catch (erro: any){
         console.log(erro);
@@ -38,16 +38,10 @@ export async function marcarSalaComoLimpaService(id: string, observacoes?: strin
     }
 }
 
-export async function criarNovaSala(newSala: newSala){
-    // console.log(newSala)
-    const newSalaFormData = new FormData()
-    newSalaFormData.append('nome_numero', newSala.nome_numero)
-    newSalaFormData.append('capacidade', String(newSala.capacidade))
-    newSalaFormData.append('descricao', newSala.descricao)
-    newSalaFormData.append('localizacao', newSala.localizacao)
-    // newSalaFormData.append('ativa', '1')
+export async function criarNovaSala(newSala: FormData){
     try{
-        const resposta = await api.post('salas/', newSalaFormData, {
+        // console.log(newSala)
+        const resposta = await api.post('salas/', newSala, {
             headers: {
                 "Content-Type" : "multipart/form-data"
             }
@@ -63,9 +57,13 @@ export async function criarNovaSala(newSala: newSala){
 
 }
 
-export async function editarSalaService(newSala: newSala, id: string){
+export async function editarSalaService(newSala: FormData, id: string){
     try{
-        const resposta = await api.put(`salas/${id}/`, newSala)
+        const resposta = await api.put(`salas/${id}/`, newSala, {
+            headers: {
+                "Content-Type" : "multipart/form-data"
+            }
+        })
         // console.log(resposta.data)
         // return
     } catch(erro : any){

@@ -3,7 +3,7 @@ import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackg
 import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { obterDetalhesSala, marcarSalaComoLimpaService } from '../servicos/servicoSalas';
 import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
@@ -117,7 +117,7 @@ export default function DetalhesSalaScreen(){
     }
 
     return(
-        <SafeAreaView  className="flex-1 flex-col bg-gray-100 p-3">
+        <SafeAreaView  className="flex-1 flex-col bg-gray-100 p-1">
         <View className='text-center flex-col'>
             <View className=" bg-sblue rounded-lg rounded-b-none py-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <TouchableOpacity onPress={navigation.goBack}>
@@ -134,22 +134,22 @@ export default function DetalhesSalaScreen(){
                 dadosSala.imagem
                 ? (
                     <ImageBackground
-                        className=' flex-row items-center justify-center'
+                        className=' flex-row aspect-video justify-center'
                         source={{uri: apiURL + dadosSala.imagem}}
                     >
-                        <View className=' bg-black/40 flex-1 items-center h-40 justify-center '>
+                        <View className=' bg-black/40 flex-1 items-center justify-center '>
                             <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                         </View>
                     </ImageBackground>
                 )
                 : (
-                    <View className=' bg-black/40 items-center h-40 justify-center'>
+                    <View className=' bg-black/40 aspect-video items-center h-40 justify-center'>
                         <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                     </View>
                 )
             }
             </View>
-            <ScrollView className=" flex-1 my-4">
+            <ScrollView className=" flex-1 my-3">
                 <View className=' p-5 pt-0 pb-10 md:p-8'>
 
 
