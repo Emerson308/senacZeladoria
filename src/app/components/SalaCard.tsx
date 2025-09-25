@@ -5,7 +5,7 @@ import { formatarDataISO } from "../utils/functions";
 import { colors } from "../../styles/colors";
 import {Ionicons} from '@expo/vector-icons'
 import { apiURL } from "../api/axiosConfig";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "../AuthContext";
 
 
@@ -21,28 +21,7 @@ interface propsSalaCard{
 
 }
 
-export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userGroups, userRole}: propsSalaCard){
-
-    // const userGroups: number[] = []
-    // const authContext = useContext(AuthContext)
-
-    // if(!authContext){
-    //     return null
-    // }
-
-    // if(!authContext.user){
-    //     return null
-    // }
-
-    // const {user} = authContext;
-
-    // const userRole = user.is_superuser ? 'admin' : 'user'
-    // const userGroups = user.groups
-
-
-    // console.log(userGroups)
-    // console.log(userGroups.includes(1))
-    // console.log(userGroups.includes(2))
+function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userGroups, userRole}: propsSalaCard){
 
     return (
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
@@ -200,6 +179,8 @@ export default function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala
     )
 }
 
+
+
 const styles = StyleSheet.create({
     contentCard: {
         flexDirection: 'column',
@@ -249,3 +230,5 @@ const styles = StyleSheet.create({
         borderRadius: 20
     }
 })
+
+export default React.memo(SalaCard)

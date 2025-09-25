@@ -2,8 +2,13 @@ import { ImageSourcePropType } from "react-native";
 import api from "../api/axiosConfig";
 import { NovoUsuario, UserChangePassword, UserGroup, Usuario } from "../types/apiTypes";
 
-export async function obterUsuarios():Promise<Usuario[]>{
+export async function obterUsuarios(group?: string):Promise<Usuario[]>{
     try{
+        if (group){
+            const resposta = await api.get<Usuario[]>('accounts/list_users/?group='+group)
+            console.log(resposta.data)
+            return resposta.data
+        }
         const resposta = await api.get<Usuario[]>('accounts/list_users/')
         // console.log(resposta.data)
         return resposta.data

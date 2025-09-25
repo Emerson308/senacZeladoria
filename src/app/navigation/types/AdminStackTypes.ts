@@ -26,6 +26,7 @@ declare global {
 
 export type TelaHome = NativeStackScreenProps<AdminStackParamList, 'Home'>
 export type TelaDetalhesSala = NativeStackScreenProps<AdminStackParamList, 'DetalhesSala'>
+export type TelaEditarSala = NativeStackScreenProps<AdminStackParamList, 'FormSala'>
 
 
 

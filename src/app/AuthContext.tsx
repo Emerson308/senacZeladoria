@@ -133,7 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       <View className='flex-1 bg-gray-50 justify-center p-16'>
 
         <ActivityIndicator size={80}/>
-        <Text>Erro ao conectar na sua conta, Tente novamente mais tarde</Text>
+        <Text className=' mt-2 text-center'>Erro ao conectar na sua conta, Tente novamente mais tarde</Text>
       </View>
       
     )

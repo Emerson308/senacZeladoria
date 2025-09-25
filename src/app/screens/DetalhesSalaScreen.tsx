@@ -143,7 +143,7 @@ export default function DetalhesSalaScreen(){
                     </ImageBackground>
                 )
                 : (
-                    <View className=' bg-black/40 aspect-video items-center h-40 justify-center'>
+                    <View className=' bg-black/40 aspect-video items-center justify-center'>
                         <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                     </View>
                 )

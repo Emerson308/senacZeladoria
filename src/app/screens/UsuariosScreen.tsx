@@ -25,7 +25,6 @@ export default function UsuariosScreen(){
     const [mensagemErro, setMensagemErro] = useState('')
     const [usuarios, setUsuarios] = useState<Usuario[]>([])
     const [filtro, setFiltro] = useState<segmentUsuarioStatus>('Todos')
-    const [usuariosFiltrados, setUsuariosFiltrados] = useState<Usuario[]>([])
     const [criarUsuarioForm, setCriarUsuarioFormVisible] = useState(false)
     const [usersGroups, setUsersGroups] = useState<UserGroup[]>([])
     const [refreshing, setRefreshing] = useState(false)
@@ -33,6 +32,7 @@ export default function UsuariosScreen(){
 
 
     const carregarUsuarios = async () => {
+        setRefreshing(true)
         try{
             const obtendoUsuarios = await obterUsuarios()
             setUsuarios(obtendoUsuarios)
@@ -43,6 +43,8 @@ export default function UsuariosScreen(){
             }
             Alert.alert('Erro', mensagemErro)
             
+        } finally{
+            setRefreshing(false)
         }
     }
 
@@ -81,32 +83,12 @@ export default function UsuariosScreen(){
     }
 
     useFocusEffect( React.useCallback(() => {
-        carregarGroups()
-        carregarUsuarios()
-    },[]))
-    
-    useEffect(() => {
         setCarregando(true)
         carregarGroups()
         carregarUsuarios()
         setCarregando(false)
-    }, [])
-
-
-    useEffect(() => {
-        if(filtro === 'Todos'){
-            setUsuariosFiltrados(usuarios)
-        } else if (filtro === 'Admins'){
-            const usuariosAdmin = usuarios.filter( item => item.is_superuser === true)
-            setUsuariosFiltrados(usuariosAdmin)
-        } else if (filtro === 'Usuários padrões'){
-            const usuariosAdmin = usuarios.filter( item => item.is_superuser === false)
-            setUsuariosFiltrados(usuariosAdmin)
-        }
-    }, [filtro, usuarios])
+    },[]))
     
-    
-
     if(carregando){
         return(
         <View className='flex-1 bg-gray-50 justify-center p-16'>
@@ -116,15 +98,17 @@ export default function UsuariosScreen(){
         )
     }
 
+    const usuariosFiltrados = usuarios.filter(usuario => {
+        if (filtro === 'Admins' || filtro === 'Usuários padrões'){
+            return usuario.is_superuser
+        }
+        return true
+    })
+
     const contagemUsuarios = usuarios.length;
     const contagemUsuariosAdmins = usuarios.filter(usuario => usuario.is_superuser === true).length
     const contagemUsuariosMembros = usuarios.filter(usuario => usuario.is_superuser === false).length
     
-    // const contagemUsuarios = 200;
-    // const contagemUsuariosAdmins = 200
-    // const contagemUsuariosMembros = 200
-
-
     return (
         <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
 

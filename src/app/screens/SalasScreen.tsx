@@ -4,32 +4,29 @@ import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, Bottom
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
-
-import { UserStackParamList } from "../navigation/types/UserStackTypes";
+// import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, Sala } from "../types/apiTypes";
 import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService, excluirSalaService } from "../servicos/servicoSalas";
 import { segmentSalaStatus } from "../types/types";
-// import AdminSalaCard from "../components/AdminSalaCard";
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
-// import '../styles/global.css'; // Certifique-se de que o NativeWind está configurado
+
+
+
+
 
 export default function SalasScreen() {
     const authContext = useContext(AuthContext);
 
     if (!authContext) {
-        return <Text>Oi</Text>;
+        return;
     }
-
     if (authContext.userRole === null){
-        return <Text>Oi</Text>
+        return
     }
-
-    // console.log(authContext.user)
-    
     if (authContext.user === null){
-        return <Text>Oi</Text>
+        return
     }
     
     const {signOut, userRole, user} = authContext
@@ -39,7 +36,6 @@ export default function SalasScreen() {
     const [mensagemErro, setMensagemErro] = useState('')
     const [salas, setSalas] = useState<Sala[]>([])
     const [filtro, setFiltro] = useState<segmentSalaStatus>('Todas')
-    const [salasFiltradas, setSalasFiltradas] = useState<Sala[]>([])
     const [criarSalaFormVisible, setCriarSalaFormVisible] = useState(false)
     const [editarSalaFormVisible, setEditarSalaFormVisible] = useState(false)
     const [formEditarData, setFormEditarData] = useState<Sala|null>(null)
@@ -52,10 +48,18 @@ export default function SalasScreen() {
     }
 
     const carregarSalas = async () => {
+        setRefreshingSalas(true)
         try{
             const obtendoSalas = await obterSalas()
-            setSalas(obtendoSalas)
-            setFiltro(filtro)
+            const salasAtivas = obtendoSalas.filter(sala => sala.ativa)
+            const salasInativas = obtendoSalas.filter(sala => !sala.ativa)
+
+            if(userRole === 'user'){
+                setSalas(salasAtivas)
+                return
+            }
+
+            setSalas([...salasAtivas, ...salasInativas])
         } catch(erro: any){
             setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
@@ -64,16 +68,14 @@ export default function SalasScreen() {
             Alert.alert('Erro', mensagemErro)
 
         } finally{
-
+            setRefreshingSalas(false)
         }
     }
 
     const marcarSalaComoLimpa = async (id: string) => {
-        // setCarregando(true)
         try{
             await marcarSalaComoLimpaService(id, '')
             await carregarSalasComLoading()
-            setFiltro(filtro)
         } catch(erro: any){
             setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
@@ -81,36 +83,14 @@ export default function SalasScreen() {
             }                
             
         } finally{
-            // setCarregando(false)
+
         }
     }
-    
-    // async function editarSala(newSala: newSala, id: string|undefined){
-    //     try {
-    //         if(!id){
-    //             console.log('O id não foi passado')
-    //             return
-    //         }
-    //         await editarSalaService(newSala, id);
-    //         await carregarSalasComLoading();
-    //     } catch(erro: any){
-            
-    //         setMensagemErro(erro.message || 'Não foi possivel criar as salas')
-    //         if(erro.message === 'AxiosError: Request failed with status code 400'){
-    //             setMensagemErro('Esse nome de sala está em uso, digite um nome diferente')
-    //         }
-    //         if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-    //             signOut()
-    //         }
-    //         Alert.alert('Erro', mensagemErro)
-    //     }
-
-    // }
 
     async function excluirSala(id: string){
         try{
             await excluirSalaService(id);
-            await carregarSalasComLoading();
+            await carregarSalas();
 
         } catch(erro: any){
             setMensagemErro(erro.message || 'Não foi possivel criar as salas')
@@ -137,57 +117,11 @@ export default function SalasScreen() {
         ])
     }
 
-    function btnEditarSala(sala: Sala){
-        setFormEditarData(sala);
-        setEditarSalaFormVisible(true)
-    }
-
     useFocusEffect( React.useCallback(() => {
-        carregarSalas()
+        carregarSalasComLoading()
     },[]))
     
-    useEffect(() => {
-        setCarregando(true)
-        carregarSalas()
-        setCarregando(false)
-
-    }, [])
-
-    useEffect(() => {
-        let salasAtivasParaInativas
-        if (userRole === 'user'){
-            salasAtivasParaInativas = salas.filter(sala => sala.ativa)
-        } else {
-            const salasAtivas = salas.filter(sala => sala.ativa)
-            const salasInativas = salas.filter(sala => !sala.ativa)
-    
-            salasAtivasParaInativas = [...salasAtivas, ...salasInativas]
-
-        }
-
-
-
-        if (filtro === 'Todas') {
-            setSalasFiltradas(salasAtivasParaInativas)
-        } else if (filtro === 'Limpas'){
-            const salasLimpas = salasAtivasParaInativas.filter(item => item.status_limpeza === 'Limpa')
-            setSalasFiltradas(salasLimpas)
-        } else if (filtro === 'Limpeza pendente'){
-            const salasLimpezaPendente = salasAtivasParaInativas.filter(item => item.status_limpeza === 'Limpeza Pendente')
-            setSalasFiltradas(salasLimpezaPendente)
-        }
-
-    }, [filtro, salas])
-
-    useFocusEffect( React.useCallback(() => {
-        carregarSalas()
-    },[]))
-    
-    
-    const irParaDetalhesSala = (id: string) =>{
-        navigation.navigate('DetalhesSala', {id})
-    }
-
+        
     if(carregando){
         return(
         <View className='flex-1 bg-gray-50 justify-center p-16'>
@@ -196,6 +130,18 @@ export default function SalasScreen() {
         </View>
         )
     }
+
+    const salasFiltradas = salas.filter(sala => {
+        if (filtro === 'Limpas'){
+            return sala.status_limpeza === 'Limpa'
+        }
+        if (filtro === 'Limpeza pendente'){
+            return sala.status_limpeza === 'Limpeza Pendente'
+        }
+
+        return true
+    })
+
 
     const contagemSalas = salas.length
     const contagemSalasLimpas = salas.filter(sala => sala.status_limpeza === 'Limpa').length
@@ -241,9 +187,7 @@ export default function SalasScreen() {
                 ))}
             </ScrollView>
 
-            {userRole === 'user' ?
-                null
-                :
+            {userRole === 'admin' ?
                 <Button
                     mode='contained-tonal'
                     buttonColor={colors.sblue}
@@ -255,7 +199,8 @@ export default function SalasScreen() {
                 >
                     Criar sala
                 </Button>
-
+                :
+                null
             }
         </SafeAreaView>
         </Provider>

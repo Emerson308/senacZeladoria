@@ -10,7 +10,7 @@ import { ImageURISource } from "react-native";
 import { Ionicons } from '@expo/vector-icons'
 import { alterarFotoPerfil } from "../servicos/servicoUsuarios";
 
-interface RodapeImgSelectorProps{
+interface ImgTypeSelectorProps{
     visible: boolean,
     hideModal: () => void,
     aspect? : [number, number]
@@ -21,7 +21,7 @@ interface RodapeImgSelectorProps{
 
 type imageOption = 'camera' | 'galeria'
 
-export default function ImgTypeSelector({visible, hideModal, handleUploadImage, aspect=[1,1], header}: RodapeImgSelectorProps){
+export default function ImgTypeSelector({visible, hideModal, handleUploadImage, aspect=[1,1], header}: ImgTypeSelectorProps){
 
     const handleTakePhoto = async () => {
         const {status} = await ImagePicker.requestCameraPermissionsAsync()

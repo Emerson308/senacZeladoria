@@ -2,6 +2,7 @@ import { TouchableOpacity, View, StyleSheet, Text as TextS } from "react-native"
 import { Card, Text, Button, Avatar } from "react-native-paper"
 import { Sala, UserGroup, Usuario } from "../types/apiTypes";
 import { formatarDataISO } from "../utils/functions";
+import React from "react";
 import { colors } from "../../styles/colors";
 import { apiURL } from "../api/axiosConfig";
 
@@ -11,7 +12,7 @@ interface propsUsuarioCard{
     usersGroups: UserGroup[]
 }
 
-export default function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
+function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
     return (
         <View className="mb-4 mx-3 rounded-lg shadow-md bg-white">
             <Card  style={styles.bgWhite}>
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     }
 })
 
+export default React.memo(UsuarioCard)
 
 
 

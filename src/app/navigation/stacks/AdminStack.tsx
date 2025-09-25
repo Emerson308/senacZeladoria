@@ -41,7 +41,7 @@ export const AdminNavigator = () => (
 
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
     
-    <Stack.Screen name='FormSalaPart1' options={{ headerShown: false }} component={FormSalaScreen} />
+    <Stack.Screen name='FormSala' options={{ headerShown: false }} component={FormSalaScreen} />
     
     {/* <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} /> */}
     

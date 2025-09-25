@@ -3,6 +3,7 @@ import { Card, Text, Button } from "react-native-paper"
 import { RegistroSala, Sala } from "../types/apiTypes";
 import { formatarDataISO } from "../utils/functions";
 import { colors } from "../../styles/colors";
+import React from "react";
 
 interface propsRegistroCard{
     registro: RegistroSala;
@@ -10,7 +11,7 @@ interface propsRegistroCard{
     onPress?: () => void,
 }
 
-export default function RegistroCard({registro, onPress}: propsRegistroCard){
+function RegistroCard({registro, onPress}: propsRegistroCard){
 
 
     return (
@@ -94,3 +95,5 @@ const styles = StyleSheet.create({
         borderRadius: 20
     }
 })
+
+export default React.memo(RegistroCard)

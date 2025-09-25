@@ -1,86 +1,87 @@
-import { imageType, newSala, Sala } from "../types/apiTypes";
-import { useEffect, useState } from "react"
+import { imageType, newSala, Sala, Usuario } from "../types/apiTypes";
+import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, TextInput as TextI, FlatList, ImageURISource } from "react-native"
 import { Button, Portal, TextInput, Provider } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";
 import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import ImgTypeSelector from "../components/ImgTypeSelector";
 import * as z from 'zod'
-import { criarNovaSala } from "../servicos/servicoSalas";
+import { criarNovaSala, editarSalaService } from "../servicos/servicoSalas";
+import { TelaEditarSala } from "../navigation/types/AdminStackTypes";
+import { apiURL } from "../api/axiosConfig";
+import { obterUsuarios } from "../servicos/servicoUsuarios";
+import { AuthContext } from "../AuthContext";
+import ResponsaveisMultiselect from "../components/ResponsaveisMultiselect";
+import { Ionicons } from '@expo/vector-icons'
 
 
 
 
-interface FormSalaScreenProps{
-    sala? : Sala
-    // onSubmit : (newSala: newSala, id? : string) => void
-}
 
-export default function FormSalaScreen({sala}: FormSalaScreenProps){
+// interface FormSalaScreenProps{
+//     sala? : Sala
+//     // onSubmit : (newSala: newSala, id? : string) => void
+// }
+
+export default function FormSalaScreen(){
+
+    const authContext = useContext(AuthContext)
+
+    if (!authContext){
+        return null
+    }
+    if (!authContext.usersGroups){
+        return null
+    }
     
 
+    const {usersGroups} = authContext
     const navigation = useNavigation()
-    // const route = useRoute()
+    // const sala = ''
+    const route = useRoute<TelaEditarSala['route']>()
+    const {sala} = route.params;
     const [imgSelectorVisible, setImgSelectorVisible] = useState(false)
-    const [id, setId] = useState<string| null>('')
+    const [responsaveisMultiselectVisible, setResponsaveisMultiselectVisible] = useState(false)
+    const [zeladores, setZeladores] = useState<Usuario[]>([])
+
     const [nomeSala, setNomeSala] = useState('')
     const [capacidade, setCapacidade] = useState('')
     const [localizacao, setLocalizacao] = useState('')
-
-    const [responsaveisInputText, setResponsaveisInputText] = useState('')
-    const [responsaveisSuggestions, setResponsaveisSuggestions] = useState<testUserType[]>([])
-    const [selectedResponsaveis, setSelectedResponsaveis] = useState<testUserType[]>([])
-
     const [descricao, setDescricao] = useState('')
     const [instrucoes, setInstrucoes] = useState('')
     const [validade_limpeza_horas, setValidade_limpeza_horas] = useState('')
     const [statusSala, setStatusSala] = useState<'Ativa' | 'Inativa'>('Ativa')
     const [image, setImage] = useState<ImageURISource | null>(null)
 
-    const users = [
-        {id: '1', name: 'aklu'},
-        {id: '2', name: 'bklo'},
-        {id: '3', name: 'ckli'},
-        {id: '4', name: 'dkle'},
-        {id: '5', name: 'ekla'},
-        {id: '6', name: 'fklu'},
-    ]
+    useFocusEffect( React.useCallback(() => {
+        carregarZeladores()
 
-    interface testUserType{
-        id: string,
-        name: string
+        if(sala){
+            console.log(sala)
+            setNomeSala(sala.nome_numero)
+            setCapacidade(String(sala.capacidade))
+            setLocalizacao(sala.localizacao)
+            setDescricao(sala.descricao ? sala.descricao : '')
+            setInstrucoes(sala.instrucoes ? sala.instrucoes : '')
+            setValidade_limpeza_horas(String(sala.validade_limpeza_horas))
+            setStatusSala(sala.ativa ? 'Ativa' : 'Inativa')
+            setImage(sala.imagem ? {uri: apiURL + sala.imagem} : null)
+        }
+    }, []))
+
+    const carregarZeladores = async () => {
+        try{
+            // console.log(usersGroups[1].name)
+            const resposta = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
+            // console.log(resposta)
+            setZeladores(resposta)
+
+        } catch(erro: any){
+
+        }
     }
-
-
-    useEffect(() => {
-        if (responsaveisInputText.length > 0) {
-          const filteredUsers = users.filter(user =>
-            user.name.toLowerCase().includes(responsaveisInputText.toLowerCase())
-          );
-          setResponsaveisSuggestions(filteredUsers);
-        } else {
-          setResponsaveisSuggestions([]);
-        }
-    }, [responsaveisInputText]);
-
-
-
-    const handleSelectUser = (user: testUserType) => {
-        if (!selectedResponsaveis.some(u => u.id === user.id)) {
-          setSelectedResponsaveis([...selectedResponsaveis, user]);
-        }
-        setResponsaveisInputText('');
-        setResponsaveisSuggestions([]);
-    };
-
-    const handleRemoveUser = (userId: string) => {
-        const updatedUsers = selectedResponsaveis.filter(user => user.id !== userId);
-        setSelectedResponsaveis(updatedUsers);
-    };
-
-
 
     const handleSubmit = async () => {
         const salaSchema = z.object({
@@ -90,12 +91,11 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
             localizacao: z.string().min(1, 'A localização é obrigatória'),
             descricao: z.string().optional(),
             instrucoes: z.string().optional(),
-            validade_limpeza_horas: z.coerce.number('Validade da limpeza (Horas) deve ser um número inteiro válido').int('Validade da limpeza (Horas) deve ser um número inteiro válido').optional(),
+            validade_limpeza_horas: z.coerce.number('Validade da limpeza (Horas) deve ser um número inteiro válido')
+            .int('Validade da limpeza (Horas) deve ser um número inteiro válido').optional(),
             ativa: z.boolean().optional().default(true),
         })
 
-        
-        
         const formDataJSON: newSala = {
             nome_numero: nomeSala,
             capacidade,
@@ -105,7 +105,7 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
             validade_limpeza_horas,
             ativa: statusSala === 'Ativa',
         }
-        
+
         const validationResult = salaSchema.safeParse(formDataJSON)
 
         if(!validationResult.success){
@@ -117,10 +117,15 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
             return;
         }
 
+        if (Number(validade_limpeza_horas) < 0){
+            Alert.alert('Erro de Validação', 'Validade da limpeza (Horas) deve ser um número inteiro válido')
+            return
+        }
+
         const formData = new FormData()
 
         Object.entries(formDataJSON).forEach(([key, value]) => {
-            if (value){
+            if (value || key === 'ativa'){
                 formData.append(key, value)
             }
         })
@@ -141,7 +146,14 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
     const onSubmit = async (newSala: FormData) => {
         try{
             if(sala){
-                return
+                const resposta = await editarSalaService(newSala, sala.qr_code_id)
+                Alert.alert('Aviso', 'Sala editada com sucesso', [
+                    {
+                        "text": "Ok",
+                        "onPress": () => navigation.navigate('AdminTabs')
+                    }
+                ])
+
             } else{
                 const resposta = await criarNovaSala(newSala)
                 Alert.alert('Aviso', 'Sala criada com sucesso', [
@@ -156,17 +168,19 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
                 Alert.alert('Erro','Esse nome de sala está em uso, digite um nome diferente')
                 return
             }
-            Alert.alert('Erro','Não foi possivel criar sala')
+            if (sala){
+                Alert.alert('Erro','Não foi possivel editar sala')
+
+            } else{
+                Alert.alert('Erro','Não foi possivel criar sala')
+            }
         }
     }
-
     
-
-
-
     return (
         <Provider>
         <SafeAreaView className="bg-white rounded-lg p-8 flex-1">
+            <ResponsaveisMultiselect visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} />
             <ImgTypeSelector visible={imgSelectorVisible} aspect={[1,1]} hideModal={() => setImgSelectorVisible(false)} handleUploadImage={setImage}/>
             {
                 !sala ?
@@ -210,48 +224,14 @@ export default function FormSalaScreen({sala}: FormSalaScreenProps){
                     activeOutlineColor='#004A8D'
                 />
                 
-                {/* Trocar Pra user selection */}
-                {/* <View className=" p-2 rounded-md border-gray-500 border mt-2">
-                    <Text className=" text-base mb-2 font-bold">Responsáveis</Text>
-                    <View className=" flex-row flex-wrap mb-2">
-                        {selectedResponsaveis.map(user => (
-                            <TouchableOpacity onPress={() => handleRemoveUser(user.id)} key={user.id} className=" flex-row bg-gray-200 rounded-full py-1.5 px-3 mb-2 mr-2 items-center">
-                                <Text className=" text-sm">{user.name}</Text>
-                            </TouchableOpacity>
-                        ))}
-
-                        <View key={99999} className=" flex-row opacity-0 bg-gray-200 rounded-full py-1.5 px-3 mb-2 mr-2 items-center">
-                            <Text className=" text-sm">Test</Text>
-                        </View>
-
-                    </View>
-
-                    <View>
-                        <TextI
-                            className=" h-12 border border-gray-300 rounded-lg px-2"
-                            placeholder="Adicione um responsável para a sala..."
-                            onChangeText={setResponsaveisInputText}
-                            value={responsaveisInputText}
-                        />
-
-                        {responsaveisSuggestions.length > 0 && (
-                            <FlatList
-                                className=" absolute w-full mt-12 max-h-32 bg-white border border-gray-300 rounded-lg z-50"
-                                data={responsaveisSuggestions}
-                                keyExtractor={(item) => item.id}
-
-                                renderItem={({item}) => (
-                                    <TouchableOpacity onPress={() => handleSelectUser(item)}>
-                                        <Text className=" p-2 border-b border-gray-200">{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        )}
-
-
-                    </View>
-                </View> */}
-
+                <TouchableOpacity onPress={() => setResponsaveisMultiselectVisible(true)} className=" mt-1.5 border border-gray-700 items-center h-14 flex-row justify-center rounded-lg bg-gray-300">
+                    <Ionicons
+                        name='list-outline' 
+                        size={22} 
+                        color={'black'}
+                    />
+                    <Text className=" text-lg text-center text-black px-2" numberOfLines={1}>Responsáveis pela limpeza</Text>
+                </TouchableOpacity>
                 
                 <TextInput
                     label="Descrição"
