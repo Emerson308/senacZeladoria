@@ -137,13 +137,13 @@ export default function DetalhesSalaScreen(){
                         className=' flex-row aspect-video justify-center'
                         source={{uri: apiURL + dadosSala.imagem}}
                     >
-                        <View className=' bg-black/40 flex-1 items-center justify-center '>
+                        <View className=' bg-black/40 flex-1 px-4 items-center justify-center '>
                             <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                         </View>
                     </ImageBackground>
                 )
                 : (
-                    <View className=' bg-black/40 aspect-video items-center justify-center'>
+                    <View className=' bg-black/40 aspect-video px-4 items-center justify-center'>
                         <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                     </View>
                 )
@@ -232,9 +232,9 @@ export default function DetalhesSalaScreen(){
                         user.is_superuser || user.groups.includes(1)
                         ? (
                         <View className={estilosTailwind.item + ''}>
-                            <Text className={estilosTailwind.info_label}>Responsaveis</Text>
+                            <Text className={estilosTailwind.info_label + ''}>Responsaveis</Text>
                             {/* <Text className=' text-2xl font-regular text-green-900'>{dadosSala1.status_limpeza}</Text> */}
-                            {dadosSala.responsaveis.map(responsavel => <Text className={estilosTailwind.info_values}>{responsavel}</Text>)}
+                            {dadosSala.responsaveis.map(responsavel => <Text key={responsavel} className={estilosTailwind.info_values}>- {responsavel}</Text>)}
                             {dadosSala.responsaveis.length === 0 ? <Text className={estilosTailwind.info_values} >Sem responsaveis</Text>: null}
                             
 

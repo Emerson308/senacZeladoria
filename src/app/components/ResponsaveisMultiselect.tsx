@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { View, StyleSheet, TouchableOpacity, Text, ImageSourcePropType, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, ImageSourcePropType, Alert, FlatList, ListRenderItemInfo, Image } from "react-native";
 import { Modal, Portal, Provider, List, TextInput } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker'
 import { MediaType } from "expo-image-picker";
@@ -8,22 +8,73 @@ import * as NativeImagePicker from 'react-native-image-picker'
 
 import { Ionicons } from '@expo/vector-icons'
 import { Usuario } from "../types/apiTypes";
+import { apiURL } from "../api/axiosConfig";
 
 
 interface ResponsaveisMultiselectProps{
         visible: boolean,
         hideModal: () => void,
-        zeladores?: Usuario[],
-        selectedResponsaveis?: Usuario[] | number[]
+        zeladores: Usuario[],
+        selectedResponsaveis: string[],
+        setSelectedResponsaveis: (usernameList: string[]) => void
+        refreshZeladores: () => void
     
 }
 
-export default function ResponsaveisMultiselect({visible, hideModal}: ResponsaveisMultiselectProps){
+export default function ResponsaveisMultiselect({visible, hideModal, zeladores, selectedResponsaveis, setSelectedResponsaveis, refreshZeladores}: ResponsaveisMultiselectProps){
 
     const [responsaveisInputText, setResponsaveisInputText] = useState('')
+    const [refreshing, setRefreshing] = useState(false)
 
+    const zeladoresFiltrados = zeladores.filter(zelador => {
+        if(!responsaveisInputText){
+            return true
+        }
+        return zelador.username.toLowerCase().includes(responsaveisInputText.toLowerCase())
+    })
 
+    const contadorZeladores = zeladoresFiltrados.length
 
+    const toggleUserSelection = (user: string) => {
+        const isSelected = selectedResponsaveis.some(u => u === user);
+        if (isSelected) {
+          setSelectedResponsaveis(selectedResponsaveis.filter(u => u !== user));
+        } else {
+          setSelectedResponsaveis([...selectedResponsaveis, user]);
+        }
+    };
+
+    const renderZelador = ({item}: ListRenderItemInfo<Usuario>) => {
+        const isSelected = selectedResponsaveis.some(u => u === item.username);
+        return (
+            <TouchableOpacity
+                onPress={() => toggleUserSelection(item.username)}
+                className=" h-20 flex-row items-center p-2 gap-2 rounded-md justify-between pr-4 bg-white shadow-sm"
+            >
+                <View className=" flex-row items-center gap-3">
+                    <View className=" border h-full aspect-square rounded-md">
+                        {item.profile.profile_picture ?
+                        <Image source={{uri: apiURL + item.profile.profile_picture}} className=" flex-1"/>
+                        :
+                        <View className="flex-1 bg-black/20 justify-center items-center">
+                            <Ionicons name="image-outline" size={24} color={'white'}/>
+                        </View>
+                        }
+                    </View>
+                    <Text className=" text-xl" numberOfLines={1} ellipsizeMode="tail">{item.username}</Text>
+                </View>
+                <View className=" border-2 p-1 rounded-lg aspect-square justify-center items-center">
+                    {isSelected ? 
+                        <Ionicons name="checkmark" size={22}/>
+                        :
+                        <Ionicons name="checkmark" size={22} className=" opacity-0"/>
+                    }
+                </View>
+
+            </TouchableOpacity>
+        )
+        
+    }
 
     return (
         <Portal>
@@ -48,20 +99,41 @@ export default function ResponsaveisMultiselect({visible, hideModal}: Responsave
                 <Text className=" text-black text-xl">Zeladores</Text>
                 
             </View>
-            <View className=" flex-col px-4">
-                <TextInput
-                    label="Pesquisar zelador"
-                    value={responsaveisInputText}
-                    onChangeText={setResponsaveisInputText}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    // style={styles.input}
-                    activeOutlineColor='#004A8D'
+            <View className=" flex-col px-4 gap-2 pb-4">
+                <View className=" gap-1">
+                    <TextInput
+                        label="Pesquisar zelador"
+                        value={responsaveisInputText}
+                        onChangeText={setResponsaveisInputText}
+                        autoCapitalize="none"
+                        keyboardType='default'
+                        mode="outlined"
+                        // style={styles.input}
+                        activeOutlineColor='#004A8D'
+                    />
+                    <Text className=" ml-1 text-gray-400">{contadorZeladores > 0 ? contadorZeladores + ' resultados.' : 'Nenhum resultado.'}</Text>
+                </View>
+
+                <FlatList
+                    data={zeladoresFiltrados}
+                    keyExtractor={(item) => String(item.id)}
+                    renderItem={renderZelador}
+                    className=" max-h-96 h-96"
+                    contentContainerClassName=" gap-2"
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        setRefreshing(true)
+                        refreshZeladores()
+                        setRefreshing(false)
+                    }}
+
+
                 />
+
+
                 
 
-                <List.Item
+                {/* <List.Item
                     style={{paddingHorizontal: 15}}
                     titleStyle={{color: 'black'}}
                     title='Câmera'
@@ -75,7 +147,7 @@ export default function ResponsaveisMultiselect({visible, hideModal}: Responsave
                     title='Galeria'
                     left={()=> <Ionicons size={24} color={'black'} name='images-outline' />}
                     onPress={async () => null}
-                />
+                /> */}
             </View>
 
         </Modal>

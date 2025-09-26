@@ -48,6 +48,7 @@ export interface newSala{
     nome_numero: string,
     capacidade: string,
     descricao: string,
+    responsaveis?: string[]
     localizacao: string,
     instrucoes: string,
     validade_limpeza_horas : string,

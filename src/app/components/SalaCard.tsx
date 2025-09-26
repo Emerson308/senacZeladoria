@@ -14,6 +14,7 @@ interface propsSalaCard{
     key: number;
     onPress: () => void,
     marcarSalaComoLimpa: (id:string) => void,
+    marcarSalaComoSuja: (id:string) => void,
     editarSala: (sala: Sala) => void,
     excluirSala: (id: string) => void,
     userRole: 'user' | 'admin',
@@ -21,7 +22,7 @@ interface propsSalaCard{
 
 }
 
-function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userGroups, userRole}: propsSalaCard){
+function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
 
     return (
         <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
@@ -62,14 +63,14 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                     : <Text style={styles.textGray} className=" my-1 mr-auto" variant="bodyMedium">{sala.status_limpeza}</Text>
                                     
                                 }
-                            <View className=" flex-row gap-2 items-center ml-2">
+                            <View className=" flex-row gap-2 items-center mx-2 mr-4">
                                 <Ionicons
                                     name='people-outline'
                                     size={18}
                                 />
                                 <Text variant="bodyMedium" numberOfLines={1} ellipsizeMode="tail">{sala.capacidade}</Text>
                             </View>
-                            <View className=" flex-row gap-2 items-center ml-2">
+                            <View className=" flex-row gap-2 items-center mx-2 mr-4">
                                 <Ionicons
                                     name='location-outline'
                                     size={18}
@@ -113,7 +114,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                     className=" "
                                     onPress={(e) => {
                                         e.stopPropagation();
-                                        marcarSalaComoLimpa(sala.qr_code_id)
+                                        marcarSalaComoSuja(sala.qr_code_id)
                                     }}
                                     
                                 >

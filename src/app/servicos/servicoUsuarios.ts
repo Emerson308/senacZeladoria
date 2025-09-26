@@ -6,7 +6,7 @@ export async function obterUsuarios(group?: string):Promise<Usuario[]>{
     try{
         if (group){
             const resposta = await api.get<Usuario[]>('accounts/list_users/?group='+group)
-            console.log(resposta.data)
+            // console.log(resposta.data)
             return resposta.data
         }
         const resposta = await api.get<Usuario[]>('accounts/list_users/')
@@ -93,7 +93,7 @@ export async function alterarFotoPerfil(newPhoto: FormData){
                 "Content-Type" : 'multipart/form-data'
             }
         })
-        console.log(resposta.data)
+        // console.log(resposta.data)
         return resposta.data
     } catch(erro: any){
         console.error(erro)

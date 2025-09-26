@@ -7,7 +7,7 @@ import { colors } from "../../styles/colors";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, Sala } from "../types/apiTypes";
 import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
-import { marcarSalaComoLimpaService, excluirSalaService } from "../servicos/servicoSalas";
+import { marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
 import { segmentSalaStatus } from "../types/types";
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
@@ -81,6 +81,22 @@ export default function SalasScreen() {
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
                 signOut()
             }                
+            
+        } finally{
+
+        }
+    }
+
+    const marcarSalaComoSuja = async (id: string) => {
+        try{
+            await marcarSalaComoSujaService(id)
+            await carregarSalasComLoading()
+        } catch(erro: any){
+            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
+            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+                signOut()
+            }           
+            // console.log(erro)     
             
         } finally{
 
@@ -183,7 +199,7 @@ export default function SalasScreen() {
                 refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
             >
                 {salasFiltradas.map((sala) => (
-                    <SalaCard key={sala.id} userGroups={user.groups} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={() => navigation.navigate('FormSala', {sala: sala})} excluirSala={handleExcluirSala} sala={sala} onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>
+                    <SalaCard key={sala.id} marcarSalaComoSuja={ async (id) => await marcarSalaComoSuja(id)} userGroups={user.groups} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={() => navigation.navigate('FormSala', {sala: sala})} excluirSala={handleExcluirSala} sala={sala} onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>
                 ))}
             </ScrollView>
 

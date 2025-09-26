@@ -1,7 +1,7 @@
 import { imageType, newSala, Sala, Usuario } from "../types/apiTypes";
 import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, TextInput as TextI, FlatList, ImageURISource } from "react-native"
-import { Button, Portal, TextInput, Provider } from "react-native-paper"
+import { Button, Portal, TextInput, Provider, ActivityIndicator } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";
 import { Picker } from "@react-native-picker/picker";
@@ -44,11 +44,15 @@ export default function FormSalaScreen(){
     const {sala} = route.params;
     const [imgSelectorVisible, setImgSelectorVisible] = useState(false)
     const [responsaveisMultiselectVisible, setResponsaveisMultiselectVisible] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+
     const [zeladores, setZeladores] = useState<Usuario[]>([])
 
     const [nomeSala, setNomeSala] = useState('')
     const [capacidade, setCapacidade] = useState('')
     const [localizacao, setLocalizacao] = useState('')
+    const [selectedResponsaveis, setSelectedResponsaveis] = useState<string[]>([])
     const [descricao, setDescricao] = useState('')
     const [instrucoes, setInstrucoes] = useState('')
     const [validade_limpeza_horas, setValidade_limpeza_horas] = useState('')
@@ -65,6 +69,7 @@ export default function FormSalaScreen(){
             setLocalizacao(sala.localizacao)
             setDescricao(sala.descricao ? sala.descricao : '')
             setInstrucoes(sala.instrucoes ? sala.instrucoes : '')
+            setSelectedResponsaveis(sala.responsaveis)
             setValidade_limpeza_horas(String(sala.validade_limpeza_horas))
             setStatusSala(sala.ativa ? 'Ativa' : 'Inativa')
             setImage(sala.imagem ? {uri: apiURL + sala.imagem} : null)
@@ -73,13 +78,16 @@ export default function FormSalaScreen(){
 
     const carregarZeladores = async () => {
         try{
+            // setLoading(true)
             // console.log(usersGroups[1].name)
             const resposta = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
             // console.log(resposta)
             setZeladores(resposta)
-
+            
         } catch(erro: any){
-
+            
+        } finally{
+            // setLoading(false)
         }
     }
 
@@ -100,6 +108,7 @@ export default function FormSalaScreen(){
             nome_numero: nomeSala,
             capacidade,
             descricao,
+            responsaveis: selectedResponsaveis,
             localizacao,
             instrucoes,
             validade_limpeza_horas,
@@ -122,23 +131,32 @@ export default function FormSalaScreen(){
             return
         }
 
+        console.log(selectedResponsaveis)
+
         const formData = new FormData()
+        // formData.append('responsaveis', 'Eb')
 
         Object.entries(formDataJSON).forEach(([key, value]) => {
-            if (value || key === 'ativa'){
+            if(key === 'responsaveis'){
+                selectedResponsaveis.map(item => {
+                    formData.append(key, item)
+                })
+            }
+            if ((value || key === 'ativa') && key !== 'responsaveis'){
                 formData.append(key, value)
             }
         })
 
-        if (image && image.uri){
+        if (image && image.uri && !sala){
             const imageName = image.uri.split('/').pop();
             formData.append('imagem', {
                 uri: image.uri,
                 name: imageName,
                 type: 'image/jpeg',
 
-            } as any)
+        } as any)
         }
+        console.log(formData)
 
         await onSubmit(formData)
     }
@@ -176,11 +194,21 @@ export default function FormSalaScreen(){
             }
         }
     }
+
+    if(loading){
+        return(
+        <View className='flex-1 bg-gray-50 justify-center p-16'>
+
+            <ActivityIndicator size={80}/>
+        </View>
+        )
+    }
+
     
     return (
         <Provider>
         <SafeAreaView className="bg-white rounded-lg p-8 flex-1">
-            <ResponsaveisMultiselect visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} />
+            <ResponsaveisMultiselect refreshZeladores={carregarZeladores} visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} zeladores={zeladores} selectedResponsaveis={selectedResponsaveis} setSelectedResponsaveis={setSelectedResponsaveis}/>
             <ImgTypeSelector visible={imgSelectorVisible} aspect={[1,1]} hideModal={() => setImgSelectorVisible(false)} handleUploadImage={setImage}/>
             {
                 !sala ?
@@ -270,6 +298,8 @@ export default function FormSalaScreen(){
                 <Picker
                     selectedValue={statusSala}
                     onValueChange={setStatusSala}
+                    itemStyle={{paddingLeft: 10}}
+                    
                     
                 >
                     <Picker.Item
@@ -278,13 +308,17 @@ export default function FormSalaScreen(){
                         label="Sala ativa"
                         color={colors.sgreen}
                         
-                    />
+                        // style={{paddingLeft: 10}}
+                        
+                        
+                        />
 
                     <Picker.Item
                         key={'Inativa'}
                         value={'Inativa'}
                         label="Sala inativa"
                         color={colors.syellow}
+                        style={{marginLeft: 8}}
                     />
                 </Picker>
 

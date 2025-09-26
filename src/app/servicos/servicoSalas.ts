@@ -17,7 +17,7 @@ export async function obterSalas():Promise<Sala[]>{
 export async function obterDetalhesSala(id: string):Promise<Sala>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
-        console.log(resposta.data)
+        // console.log(resposta.data)
         return resposta.data
     } catch (erro: any){
         console.log(erro);
@@ -96,4 +96,16 @@ export async function getRegistrosService(id?: number){
         console.error(erro)
         throw new Error(erro)
     }
+}
+
+export async function marcarSalaComoSujaService(id: string){
+    try{
+        const resposta = await api.post(`salas/${id}/marcar_como_suja/`)
+        // console.log(resposta.data)
+        return resposta.data
+    } catch(erro: any){
+        console.error(erro)
+        throw new Error(erro)
+    }
+
 }
