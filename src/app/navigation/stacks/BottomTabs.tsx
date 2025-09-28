@@ -13,7 +13,6 @@ import { AuthContext } from "../../AuthContext";
 
 
 
-
 const Tab = createBottomTabNavigator<AdminStackParamList>()
 
 export default function BottomTabs(){
@@ -27,7 +26,6 @@ export default function BottomTabs(){
     const {userRole} = authContext
 
     if(userRole === 'admin'){
-
         return(
             <Tab.Navigator
                 screenOptions={({ route }) => ({
@@ -81,43 +79,41 @@ export default function BottomTabs(){
     
             </Tab.Navigator>
         )
-    } else{
-        return(
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    tabBarIcon: ({focused, color, size}) => {
-                        let iconName: keyof typeof Ionicons.glyphMap = 'home';
-                        if( route.name === 'Home' ){
-                            iconName = focused ? 'home' : 'home-outline'
-                        } else if(route.name === 'Perfil'){
-                            iconName = focused ? 'person' : 'person-outline'
-                            
-                        }
-
-                        return <Ionicons name={iconName} size={size} color={color} />;
-                    },
-                    tabBarActiveTintColor: colors.sblue,
-                    tabBarInactiveTintColor: 'gray',
-                    headerShown: true,
-                })}
-            >
-                <Tab.Screen
-                    name="Home"
-                    component={SalasScreen}
-                    options={{title: 'Início'}}
-                />
-
-                <Tab.Screen
-                    name="Perfil"
-                    component={PerfilScreen}
-                    options={{title: 'Perfil', headerShown: false}}
-                />
-                
-            </Tab.Navigator>
-        )
-        
     }
 
+    return(
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({focused, color, size}) => {
+                    let iconName: keyof typeof Ionicons.glyphMap = 'home';
+                    if( route.name === 'Home' ){
+                        iconName = focused ? 'home' : 'home-outline'
+                    } else if(route.name === 'Perfil'){
+                        iconName = focused ? 'person' : 'person-outline'
+                        
+                    }
+
+                    return <Ionicons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: colors.sblue,
+                tabBarInactiveTintColor: 'gray',
+                headerShown: true,
+            })}
+        >
+            <Tab.Screen
+                name="Home"
+                component={SalasScreen}
+                options={{title: 'Início'}}
+            />
+
+            <Tab.Screen
+                name="Perfil"
+                component={PerfilScreen}
+                options={{title: 'Perfil', headerShown: false}}
+            />
+            
+        </Tab.Navigator>
+    )
 }
 
 

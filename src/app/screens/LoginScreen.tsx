@@ -57,7 +57,6 @@ const LoginScreen = () => {
         </View>
 
         <View className='max-w-sm w-full self-center'>
-          {/* Campo de Usuário */}
           <TextInput
             label="Usuário"
             value={username}
@@ -69,7 +68,6 @@ const LoginScreen = () => {
             activeOutlineColor='#004A8D'
             />
 
-          {/* Campo de Senha */}
           <TextInput
             label="Senha"
             value={password}
@@ -83,15 +81,9 @@ const LoginScreen = () => {
             right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
           />
           
-          {/* Botão de Esqueceu a senha */}
-          {/* <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
-          </TouchableOpacity> */}
-
-          {/* Botão de Conectar */}
           <Button
             mode="contained"
-            onPress={lidarComLogin} //() => signIn('user')
+            onPress={lidarComLogin}
             style={styles.button}
             className='mb-6'
             contentStyle={styles.buttonContent}
@@ -117,18 +109,18 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    height: 96, // h-24
-    width: 160, // w-40
-    marginBottom: 24, // mb-10
+    height: 96,
+    width: 160,
+    marginBottom: 24,
   },
   title: {
-    fontSize: 32, // text-3xl
-    fontWeight: 'bold', // font-bold
+    fontSize: 32,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   formContainer: {
     width: '100%',
-    maxWidth: 384, // max-w-sm
+    maxWidth: 384,
     alignSelf: 'center',
   },
   input: {
@@ -139,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   forgotPasswordText: {
-    color: '#667eea', // A cor padrão de um link do Tailwind
+    color: '#667eea',
     fontWeight: '600',
   },
   button: {

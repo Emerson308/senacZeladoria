@@ -5,12 +5,13 @@ import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
 import { NovoUsuario, UserGroup, Usuario } from "../types/apiTypes";
-import { segmentUsuarioStatus } from "../types/types";
 import { criarUsuarioService, getAllUsersGroups, obterUsuarios } from "../servicos/servicoUsuarios";
 import UsuarioCard from "../components/UsuarioCard";
 import UsuariosForms from "../components/UsuarioForms";
 
 
+
+type segmentUsuarioStatus = 'Todos' | 'Admins' | 'Usuários padrões'
 
 export default function UsuariosScreen(){
 
@@ -29,8 +30,6 @@ export default function UsuariosScreen(){
     const [usersGroups, setUsersGroups] = useState<UserGroup[]>([])
     const [refreshing, setRefreshing] = useState(false)
     
-
-
     const carregarUsuarios = async () => {
         setRefreshing(true)
         try{
@@ -55,7 +54,6 @@ export default function UsuariosScreen(){
             await carregarUsuarios();
             setCarregando(false)
             Alert.alert('Usuário criado', `O usuário ${novoUsuario.username} foi criado com sucesso`)
-            // setUsuarios(obtendoUsuarios)
         } catch(erro: any){
             setMensagemErro(erro.message || 'Não foi possivel criar o usuario')
             if(erro.message.includes('Token de autenticação expirado ou inválido.')){
@@ -117,7 +115,7 @@ export default function UsuariosScreen(){
             <SegmentedButtons
                 value={filtro}
                 onValueChange={setFiltro}
-                style={styles.segmentButtons}
+                style={{marginHorizontal:15, marginVertical: 15}}
                 density="regular"
                 theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
                 buttons={[
@@ -126,9 +124,6 @@ export default function UsuariosScreen(){
                         label: `Todos (${contagemUsuarios})`,
                         checkedColor: 'black',
                         labelStyle:{fontSize: 12, flexWrap: 'wrap', flex: 1, height: 'auto'},
-                        // style: {height: 70},
-                        // style: {}
-                        // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
                     {
@@ -136,8 +131,6 @@ export default function UsuariosScreen(){
                         label: `Admins (${contagemUsuariosAdmins})`,
                         checkedColor: 'black',
                         labelStyle:{fontSize: 12, flexWrap: 'wrap', flex: 1, height: 'auto'},
-                        // style: {height: 70},
-                        // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
                     {
@@ -145,25 +138,14 @@ export default function UsuariosScreen(){
                         label: `Membros (${contagemUsuariosMembros})`,
                         checkedColor: 'black',
                         labelStyle:{fontSize: 12, flexWrap: 'wrap', textAlign: 'center', flex: 1, height: 'auto'},
-                        // style: {height: 70},
-                        // style:{paddingHorizontal: 0, marginHorizontal: 0}
-                        // style: {shadowOpacity: 0.3, shadowColor: colors.sblue},
                         
                     },
                 ]}
             />
 
-
-            
-
             <ScrollView className="p-3 flex-1" refreshControl={<RefreshControl onRefresh={carregarUsuarios} refreshing={refreshing}/>}>
                 {usuariosFiltrados.map((usuario) => (
-                    // <View key={usuario.id} className=" border-2 border-black h-6 mb-2">
-
-                    // </View>
                     <UsuarioCard key={usuario.id} usuario={usuario} usersGroups={usersGroups}/>
-                    // <AdminSalaCard key={sala.id} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={btnEditarSala} excluirSala={excluirSala} sala={sala} onPress={async () => irParaDetalhesSala(sala.id)}/>
-                    // <View></View>
                 ))}
             </ScrollView>
             
@@ -184,11 +166,3 @@ export default function UsuariosScreen(){
     )
 }
 
-
-
-const styles = StyleSheet.create({
-    segmentButtons: {
-        marginVertical: 15,
-        marginHorizontal: 15
-    }
-})

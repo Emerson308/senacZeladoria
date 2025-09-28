@@ -78,15 +78,6 @@ export async function getAllUsersGroups(){
 }
 
 export async function alterarFotoPerfil(newPhoto: FormData){
-    const formData = new FormData()
-
-    // const imgName = n
-
-    // formData.append('profile_picture', {
-    //     uri: newPhoto,
-    //     name
-    // })
-
     try{
         const resposta = await api.put('accounts/profile/', newPhoto, {
             headers: {

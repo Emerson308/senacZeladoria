@@ -38,11 +38,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUsersGroups(resposta)
         // console.log(resposta)
     } catch(erro: any){
-        // setMensagemErro(erro.message || 'Não foi possivel carregar os grupos de usuario')
-        // if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-        //     signOut()
-        // }
-        // Alert.alert('Erro', mensagemErro)
 
     }
   }
@@ -62,10 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUserRole('user')
       }
       // setUserRole('user')
-      
     }
-
-
   }
   setIsLoading(false);
 }
@@ -99,11 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally{
 
     }
-    
-    
   }
-
-  
 
   useEffect(() => {
     carregarGroups()
@@ -125,10 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
   };
 
-  // console.log(authContext.user)
-
   if (isLoading) {
-    // Você pode retornar uma tela de carregamento aqui
     return( 
       <View className='flex-1 bg-gray-50 justify-center p-16'>
 

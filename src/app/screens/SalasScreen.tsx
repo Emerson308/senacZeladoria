@@ -8,13 +8,12 @@ import { colors } from "../../styles/colors";
 import { newSala, Sala } from "../types/apiTypes";
 import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
-import { segmentSalaStatus } from "../types/types";
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 
 
 
-
+type segmentSalaStatus = 'Todas' | 'Limpas' | 'Limpeza pendente'
 
 export default function SalasScreen() {
     const authContext = useContext(AuthContext);
@@ -170,7 +169,7 @@ export default function SalasScreen() {
             <SegmentedButtons 
                 value={filtro}
                 onValueChange={setFiltro}
-                style={styles.segmentButtons}
+                style={{marginHorizontal: 15, marginVertical: 15}}
                 theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
                 buttons={[
                     {
@@ -224,9 +223,3 @@ export default function SalasScreen() {
 };
 
 
-const styles = StyleSheet.create({
-    segmentButtons: {
-        marginVertical: 15,
-        marginHorizontal: 15
-    }
-})

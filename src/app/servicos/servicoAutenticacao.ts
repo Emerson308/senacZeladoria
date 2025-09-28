@@ -1,5 +1,3 @@
-
-
 import api from "../api/axiosConfig";
 import { CredenciaisLogin, RespostaLoginAPI, Usuario } from "../types/apiTypes";
 

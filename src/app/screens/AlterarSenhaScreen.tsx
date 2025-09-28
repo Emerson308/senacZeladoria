@@ -19,15 +19,12 @@ export default function AlterarSenhaScreen(){
     }
 
     const {signOut} = authContext
-
     const navigation = useNavigation()
 
     const [oldPassword, setOldPassword] = useState('')
     const [showOldPassword, setShowOldPassword] = useState(false)
-
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
-
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 

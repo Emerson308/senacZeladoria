@@ -14,7 +14,7 @@ import {Ionicons} from '@expo/vector-icons'
 
 import SalasScreen from '../../screens/SalasScreen';
 import { AdminStackParamList } from '../types/AdminStackTypes';
-import Logout from '../../screens/logout';
+// import Logout from '../../screens/logout';
 // import AdminDetalhesSala from '../../screens/AdminDetalhesSala';
 import BottomTabs from './BottomTabs';
 import UsuariosScreen from '../../screens/UsuariosScreen';
@@ -47,9 +47,9 @@ export const AdminNavigator = () => (
     
     {/* <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} /> */}
 
-    <Stack.Screen name='Logout' component={Logout} options={{
+    {/* <Stack.Screen name='Logout' component={Logout} options={{
       headerShown: false,
-    }}/>
+    }}/> */}
 
   </Stack.Navigator>
 );

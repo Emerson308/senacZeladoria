@@ -13,7 +13,7 @@ import { Usuario } from '../../types/apiTypes';
 import {Ionicons} from '@expo/vector-icons'
 
 import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
-import Logout from '../../screens/logout';
+// import Logout from '../../screens/logout';
 import BottomTabs from './BottomTabs';
 import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 
@@ -34,11 +34,7 @@ export const UserNavigator = () => (
     <Stack.Screen name='DetalhesSala' options={{ headerTitle: 'Detalhes da sala'}} component={DetalhesSalaScreen} />
     
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
-    
-    <Stack.Screen name='Logout' component={Logout} options={{
-      headerShown: false,
-    }}/>
-    
+        
   </Stack.Navigator>
 );
 

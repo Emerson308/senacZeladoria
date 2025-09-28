@@ -1,4 +1,3 @@
-
 import api from "../api/axiosConfig";
 import { newSala, RegistroSala, Sala } from "../types/apiTypes";
 
@@ -26,7 +25,6 @@ export async function obterDetalhesSala(id: string):Promise<Sala>{
 }
 
 export async function marcarSalaComoLimpaService(id: string, observacoes?: string){
-    // console.log('teste')
     try{
         const resposta = await api.post(`salas/${id}/marcar_como_limpa/`, {observacoes})
         // console.log(resposta.data)

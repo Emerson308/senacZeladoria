@@ -19,12 +19,6 @@ import { Ionicons } from '@expo/vector-icons'
 
 
 
-
-// interface FormSalaScreenProps{
-//     sala? : Sala
-//     // onSubmit : (newSala: newSala, id? : string) => void
-// }
-
 export default function FormSalaScreen(){
 
     const authContext = useContext(AuthContext)
@@ -39,14 +33,11 @@ export default function FormSalaScreen(){
 
     const {usersGroups} = authContext
     const navigation = useNavigation()
-    // const sala = ''
     const route = useRoute<TelaEditarSala['route']>()
     const {sala} = route.params;
     const [imgSelectorVisible, setImgSelectorVisible] = useState(false)
     const [responsaveisMultiselectVisible, setResponsaveisMultiselectVisible] = useState(false)
     const [loading, setLoading] = useState(false)
-
-
     const [zeladores, setZeladores] = useState<Usuario[]>([])
 
     const [nomeSala, setNomeSala] = useState('')
@@ -63,7 +54,6 @@ export default function FormSalaScreen(){
         carregarZeladores()
 
         if(sala){
-            console.log(sala)
             setNomeSala(sala.nome_numero)
             setCapacidade(String(sala.capacidade))
             setLocalizacao(sala.localizacao)
@@ -79,9 +69,7 @@ export default function FormSalaScreen(){
     const carregarZeladores = async () => {
         try{
             // setLoading(true)
-            // console.log(usersGroups[1].name)
             const resposta = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
-            // console.log(resposta)
             setZeladores(resposta)
             
         } catch(erro: any){
@@ -131,10 +119,9 @@ export default function FormSalaScreen(){
             return
         }
 
-        console.log(selectedResponsaveis)
+        // console.log(selectedResponsaveis)
 
         const formData = new FormData()
-        // formData.append('responsaveis', 'Eb')
 
         Object.entries(formDataJSON).forEach(([key, value]) => {
             if(key === 'responsaveis'){
@@ -153,10 +140,9 @@ export default function FormSalaScreen(){
                 uri: image.uri,
                 name: imageName,
                 type: 'image/jpeg',
-
-        } as any)
+            } as any)
         }
-        console.log(formData)
+        // console.log(formData)
 
         await onSubmit(formData)
     }
@@ -198,13 +184,11 @@ export default function FormSalaScreen(){
     if(loading){
         return(
         <View className='flex-1 bg-gray-50 justify-center p-16'>
-
             <ActivityIndicator size={80}/>
         </View>
         )
     }
 
-    
     return (
         <Provider>
         <SafeAreaView className="bg-white rounded-lg p-8 flex-1">
@@ -215,9 +199,9 @@ export default function FormSalaScreen(){
                 <Text className=" text-center mb-8 text-4xl font-bold">Criar sala</Text>
                 :
                 <Text className=" text-center mb-8 text-4xl font-bold">Editar sala</Text>
-
             }
             <View className=" h-80 gap-2 flex-1 mb-8 flex-col">
+                
                 <TextInput
                     label="Nome da sala"
                     value={nomeSala}
@@ -340,18 +324,6 @@ export default function FormSalaScreen(){
                     </TouchableOpacity>
 
                 </View>
-
-
-                {/* <TextInput
-                    label="Responsáveis"
-                    value={localizacao}
-                    onChangeText={setLocalizacao}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    activeOutlineColor='#004A8D'
-                /> */}
             </View>
 
             <View className=" flex-row justify-between gap-8">
