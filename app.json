@@ -20,12 +20,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.emerson308.senacZeladoria"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-
     },
     "plugins": [
       [
@@ -34,8 +37,15 @@
           "photosPermission": "The app acesses your photos to let you share them with your friends.",
           "cameraPermission": "The app acesses your camera to let you share them with your friends."
         }
-      ]
-    ]
+      ],
+      "expo-router"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ff5237eb-3a4a-49ff-b5f8-634fbe1af5e6"
+      }
+    }
   },
   "permissions": [
     "CAMERA",

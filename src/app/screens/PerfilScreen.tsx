@@ -86,7 +86,7 @@ export default function PerfilScreen(){
             {
                 text: 'Confirmar',
                 style: 'destructive',
-                onPress: () => navigation.navigate('Logout')
+                onPress: async () => await signOut()
             }
         ])
     }
@@ -146,12 +146,12 @@ export default function PerfilScreen(){
     
     return (
         <Provider>
-        <SafeAreaView className=" flex-1 bg-gray-100">
+        <SafeAreaView edges={['top']} className=" flex-1 flex-col pb-4 bg-gray-100" >
             <ImgTypeSelector visible={rodapeImgSelectorVisible} header="Foto de perfil" hideModal={() => setRodapeImgSelectorVisible(false)} handleUploadImage={handleUploadImage}/>
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <Text className=" text-2xl" >Perfil</Text>
             </View>
-            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarDadosDoUsuario}/>}>
+            <ScrollView style={{}} className=" flex-1 " contentContainerClassName=" flex-1" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarDadosDoUsuario}/>}>
                 <View className=" items-center py-10 bg-white border-b border-gray-200">
                     <TouchableOpacity onPress={() => setRodapeImgSelectorVisible(true)}>
                     {
@@ -165,7 +165,7 @@ export default function PerfilScreen(){
                     <Text className=" text-xl font-bold text-gray-800">{userData.username}</Text>
                 </View>
 
-                <View className="flex-1 p-5">
+                <View className="flex-1 px-5 pt-5">
                     <View className=" flex-row flex-wrap justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
                         <Text className=" text-base font-bold text-gray-600">Email:</Text>
                         <Text className=" text-base text-gray-800">{userData.email ? userData.email : 'Sem email'}</Text>
@@ -181,7 +181,7 @@ export default function PerfilScreen(){
                         {userData.is_superuser ? <Text className="text-base font-bold text-sgreen">Admin</Text> : <Text className="text-base font-bold text-syellow">Usuário comum</Text>}
                     </View>
 
-                    <View className=" flex-row justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
+                    <View className=" flex-row flex-wrap gap-2 justify-between items-center bg-white p-4 rounded-lg mb-2 shadow-sm">
                         <Text className=" text-base font-bold text-gray-600">Grupos do usuário: </Text>
                         <View className=" flex-row gap-2 flex-wrap">
 
@@ -212,7 +212,7 @@ export default function PerfilScreen(){
                         </View>
                     </View>
 
-                    <TouchableOpacity onPress={irParaAlterarSenha} className=" flex-row flex-wrap items-center bg-white p-4 rounded-lg mt-20 shadow-sm">
+                    <TouchableOpacity onPress={irParaAlterarSenha} className=" flex-row flex-wrap items-center bg-white p-4 rounded-lg mt-10 shadow-sm">
                         <Ionicons
                             name="key-outline"
                             size={24}
@@ -239,6 +239,7 @@ export default function PerfilScreen(){
                 </Button>
 
             </ScrollView>
+            {/* <View className=" h-10 border"></View> */}
         </SafeAreaView>
         </Provider>
     )

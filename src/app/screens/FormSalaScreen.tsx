@@ -79,6 +79,26 @@ export default function FormSalaScreen(){
         }
     }
 
+    const adicionarImageNoFormdata = (formData: FormData) => {
+        if(image && image.uri){
+            if(sala && sala.imagem && image.uri.includes(sala.imagem)){
+                return
+            }
+            const imageName = image.uri.split('/').pop();
+            formData.append('imagem', {
+                uri: image.uri,
+                name: imageName,
+                type: 'image/jpeg',
+            } as any)
+            return
+            
+        }
+        if(sala && sala.imagem){
+            formData.append('imagem', 'null')
+            return
+        }
+    }
+
     const handleSubmit = async () => {
         const salaSchema = z.object({
             nome_numero: z.string().min(1, 'O nome da sala é obrigatório'),
@@ -134,14 +154,8 @@ export default function FormSalaScreen(){
             }
         })
 
-        if (image && image.uri && !sala){
-            const imageName = image.uri.split('/').pop();
-            formData.append('imagem', {
-                uri: image.uri,
-                name: imageName,
-                type: 'image/jpeg',
-            } as any)
-        }
+        adicionarImageNoFormdata(formData)
+
         // console.log(formData)
 
         await onSubmit(formData)

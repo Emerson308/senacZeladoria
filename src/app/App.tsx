@@ -8,6 +8,7 @@ import { AuthProvider, AuthContext } from './AuthContext';
 import { AuthNavigator } from './navigation/stacks/AuthStack';
 import { UserNavigator } from './navigation/stacks/UserStack';
 import { AdminNavigator } from './navigation/stacks/AdminStack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const RootNavigation = () => {
   const authContext = useContext(AuthContext);
@@ -19,15 +20,17 @@ const RootNavigation = () => {
   const { userRole, signOut } = authContext;
 
   return (
-    <NavigationContainer>
-      {userRole === 'admin' ? (
-        <AdminNavigator />
-      ) : userRole === 'user' ? (
-        <UserNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        {userRole === 'admin' ? (
+          <AdminNavigator />
+        ) : userRole === 'user' ? (
+          <UserNavigator />
+        ) : (
+          <AuthNavigator />
+        )}
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 

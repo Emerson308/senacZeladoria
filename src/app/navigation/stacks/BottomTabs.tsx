@@ -9,6 +9,7 @@ import UsuariosScreen from "../../screens/UsuariosScreen";
 import PerfilScreen from "../../screens/PerfilScreen";
 import RegistrosLimpezaScreen from "../../screens/RegistrosLimpezaScreen";
 import { AuthContext } from "../../AuthContext";
+import { Platform } from "react-native";
 
 
 
@@ -47,6 +48,17 @@ export default function BottomTabs(){
                     tabBarActiveTintColor: colors.sblue,
                     tabBarInactiveTintColor: 'gray',
                     headerShown: true,
+                    tabBarStyle: {
+                        // zIndex: 100,
+
+                        // ...Platform.select({
+                        //     android: {
+                        //         elevation: 10
+                        //     }
+                        // }),
+
+                        // // paddingBottom: insets
+                    }
                 })
                 }
                 
