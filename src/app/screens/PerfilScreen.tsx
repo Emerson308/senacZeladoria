@@ -43,38 +43,14 @@ export default function PerfilScreen(){
     }, [])
 
     const carregarDadosDoUsuario = async () => {
-        try{
-            const resposta = await usuarioLogado()
-            if (resposta === null){
-                Alert.alert('Erro', 'Erro ao carregar dados', [
-                    {
-                        text: 'Ok',
-                        style: 'default',
-                        onPress: () => navigation.navigate('Home')
-                    }
-                ])
-                // navigation.navigate('Home')
-                return
-                
-            }        
-            setUserData(resposta)
-            // console.log(resposta)
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar seu perfil')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro, [
-                {
-                    text: 'Ok',
-                    style:'default',
-                    // onPress: () => navigation.navigate('Home')
-                    
-                }
-            ])
-            
-
+        const usuarioLogadoResult = await usuarioLogado()
+        if(!usuarioLogadoResult.success){
+            Alert.alert('Erro', usuarioLogadoResult.errMessage)
+            return
         }
+        
+        setUserData(usuarioLogadoResult.data)
+        
     }
     
     const handleExit = () => {
@@ -111,16 +87,14 @@ export default function PerfilScreen(){
             name: imageName,
             type: 'image/jpeg',
         } as any);
+        
 
-        try {
-            const resposta = await alterarFotoPerfil(formData)
-            
-        } catch (error: any) {
-            console.error('Erro ao enviar a imagem:', error);
-            Alert.alert('Erro', `Falha ao enviar a imagem: ${error.message}`);
-        } finally {
-            await carregarDadosDoUsuario()
+        const alterarFotoPerfilResult = await alterarFotoPerfil(formData)
+        if(!alterarFotoPerfilResult.success){
+            Alert.alert('Erro', alterarFotoPerfilResult.errMessage)
         }
+        
+        await carregarDadosDoUsuario()
     }
 
 

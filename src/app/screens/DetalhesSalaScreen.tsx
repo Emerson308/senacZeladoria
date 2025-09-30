@@ -55,20 +55,14 @@ export default function DetalhesSalaScreen(){
     
     const carregarSala = async () => {
         setCarregando(true)
-        try{
-            const obterDadosSalas = await obterDetalhesSala(id)
-            setDadosSala(obterDadosSalas)
-
-        } catch(erro:any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }                
-            Alert.alert('Erro', mensagemErro)
-            
-        } finally{
-            setCarregando(false)
+        const obterDetalhesSalaResult = await obterDetalhesSala(id);
+        if(!obterDetalhesSalaResult.success){
+            Alert.alert('Erro', obterDetalhesSalaResult.errMessage);
+            return;
         }
+        
+        setDadosSala(obterDetalhesSalaResult.data)
+        setCarregando(false)
     }
 
     useEffect(() => {

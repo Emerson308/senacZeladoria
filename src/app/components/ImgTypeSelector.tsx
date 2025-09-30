@@ -8,7 +8,6 @@ import * as NativeImagePicker from 'react-native-image-picker'
 import { ImageURISource } from "react-native";
 
 import { Ionicons } from '@expo/vector-icons'
-import { alterarFotoPerfil } from "../servicos/servicoUsuarios";
 
 interface ImgTypeSelectorProps{
     visible: boolean,

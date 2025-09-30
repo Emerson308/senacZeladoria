@@ -45,31 +45,19 @@ export default function AlterarSenhaScreen(){
             confirm_new_password: confirmPassword
         }
 
-        try{
-            const resposta = await alterarSenha(senhas)
-            Alert.alert('Senha alterada', 'Sua senha foi alterada com sucesso', [
-                {
-                    text: 'Ok',
-                    onPress: async () => await signOut(),
-                    style: 'default'
-                }
-            ])
-        } catch(erro: any){
-            // console.error(erro)
-            // console.log(erro.message)
-            // console.log(typeof erro)
-            if (erro.message.includes('A senha antiga está incorreta')){
-                Alert.alert('Erro', 'A senha antiga está incorreta')
-                return
-                
-            }
-            if(erro.message.includes('Token inválido.')){
-                signOut()
-                return
-            }
-            Alert.alert('Erro', 'Erro ao conectar com o servidor. Tente novamente mais tarde.')
-            
+        const alterarSenhaResult = await alterarSenha(senhas)
+        if(!alterarSenhaResult.success){
+            Alert.alert('Erro', alterarSenhaResult.errMessage)
+            return
         }
+
+        Alert.alert('Senha alterada', 'Sua senha foi alterada com sucesso', [
+            {
+                text: 'Ok',
+                onPress: async () => await signOut(),
+                style: 'default'
+            }
+        ])
 
     }
 

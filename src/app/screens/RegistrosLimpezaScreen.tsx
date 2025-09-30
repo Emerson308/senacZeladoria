@@ -64,9 +64,14 @@ export default function RegistrosLimpezaScreen(){
     }, []))
 
     const carregarRegistros = async () => {
+        const getRegistrosServiceResult = await getRegistrosService()
+        if(!getRegistrosServiceResult.success){
+            Alert.alert('Erro', getRegistrosServiceResult.errMessage)
+            return
+        }
+        setRegistros(getRegistrosServiceResult.data)
+
         try {
-            const resposta = await getRegistrosService()
-            setRegistros(resposta)
 
         } catch (erro: any){
             setMensagemErro(erro.message || 'Não foi possivel carregar seu perfil')

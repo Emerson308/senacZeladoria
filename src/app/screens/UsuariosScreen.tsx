@@ -21,68 +21,43 @@ export default function UsuariosScreen(){
         return null
     }
 
-    const {signOut} = authContext
+    if(authContext.usersGroups.length === 0){
+        return null
+    }
+
+    const {signOut, usersGroups} = authContext
     const [carregando, setCarregando] = useState(false)
-    const [mensagemErro, setMensagemErro] = useState('')
     const [usuarios, setUsuarios] = useState<Usuario[]>([])
     const [filtro, setFiltro] = useState<segmentUsuarioStatus>('Todos')
     const [criarUsuarioForm, setCriarUsuarioFormVisible] = useState(false)
-    const [usersGroups, setUsersGroups] = useState<UserGroup[]>([])
     const [refreshing, setRefreshing] = useState(false)
     
     const carregarUsuarios = async () => {
         setRefreshing(true)
-        try{
-            const obtendoUsuarios = await obterUsuarios()
-            setUsuarios(obtendoUsuarios)
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar os usuarios')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro)
-            
-        } finally{
-            setRefreshing(false)
+        const obterUsuariosResult = await obterUsuarios()
+        if(!obterUsuariosResult.success){
+            Alert.alert('Erro', obterUsuariosResult.errMessage);
+            return;
         }
+        setUsuarios(obterUsuariosResult.data)
+        setRefreshing(false)
+
     }
 
     const criarUsuario = async (novoUsuario: NovoUsuario) => {
         setCarregando(true)
-        try{
-            const resposta = await criarUsuarioService(novoUsuario)
-            await carregarUsuarios();
-            setCarregando(false)
-            Alert.alert('Usuário criado', `O usuário ${novoUsuario.username} foi criado com sucesso`)
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel criar o usuario')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro)
-            
-        } finally{
-            setCarregando(false)
+        const criarUsuarioServiceResult = await criarUsuarioService(novoUsuario)
+        if(!criarUsuarioServiceResult.success){
+            Alert.alert('Erro', criarUsuarioServiceResult.errMessage)
         }
-    }
-
-    const carregarGroups = async () => {
-        try{
-            const resposta = await getAllUsersGroups()
-            setUsersGroups(resposta)
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar os grupos de usuario')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro)
-
-        }
+        await carregarUsuarios();
+        Alert.alert('Usuário criado', `O usuário ${novoUsuario.username} foi criado com sucesso`)
+        setCarregando(false)
     }
 
     useFocusEffect( React.useCallback(() => {
         setCarregando(true)
-        carregarGroups()
+        // carregarGroups()
         carregarUsuarios()
         setCarregando(false)
     },[]))

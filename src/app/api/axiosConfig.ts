@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { obterToken, removerToken } from '../servicos/servicoArmazenamento';
+import { obterToken } from '../servicos/servicoArmazenamento';
 import { AuthContext } from "../AuthContext";
 import { useContext } from "react";
 import eventBus from "../utils/eventBus";
@@ -17,9 +17,9 @@ const api = axios.create({
 
 api.interceptors.request.use(
     async (config) => {
-        const token = await obterToken();
-        if (token){
-            config.headers.Authorization = `Token ${token}`
+        const obterTokenResult = await obterToken();
+        if(obterTokenResult.success && obterTokenResult.data){
+            config.headers.Authorization = `Token ${obterTokenResult.data}`
         }
         return config
     },
@@ -32,21 +32,7 @@ api.interceptors.response.use(
     (response) => response, 
     async (erro) => {
         if (erro.response && erro.response.status === 401) {
-            await removerToken();
-            console.warn('Token de autenticação expirado ou inválido. Realize o login novamente.')
-
-            delete api.defaults.headers.common['Authorization']
             eventBus.emit('LOGOUT')
-            // const authContext = useContext(AuthContext);
-
-            // if (!authContext){
-            //     return
-            // }
-
-            // const {signOut} = authContext
-            // signOut()
-            // const { sign } = authContext
-            // await removerToken()
 
         }
         return Promise.reject(erro)

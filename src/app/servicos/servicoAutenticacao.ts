@@ -1,22 +1,24 @@
 import api from "../api/axiosConfig";
-import { CredenciaisLogin, RespostaLoginAPI, Usuario } from "../types/apiTypes";
+import { CredenciaisLogin, RespostaLoginAPI, ServiceResult, Usuario } from "../types/apiTypes";
 
-export async function realizarLogin(credenciais: CredenciaisLogin):Promise<RespostaLoginAPI> {
-    
+
+export async function realizarLogin(credenciais: CredenciaisLogin):Promise<ServiceResult<RespostaLoginAPI>> {
     try{
         const resposta = await api.post<RespostaLoginAPI>('accounts/login/', {
             username: credenciais.username,
             password: credenciais.password
         })
         // console.log(resposta)
-        return resposta.data;
-
+        return {success: true, data: resposta.data};
+        
     } catch (erro: any) {
         console.log(erro)
-        if (erro.response && erro.response.status === 401){
-            throw new Error('Credenciais inválidas. Verifique seu usuário e senha.');
+        if(erro.response && erro.response.status === 400){
+            // console.log('Erro 400')
+            return {success: false, errMessage: 'Credenciais inválidas'};
         }
-        throw new Error('Erro ao conectar com o servidor. Tente novamente mais tarde.');
+
+        return {success: false, errMessage: 'Erro ao conectar com o servidor'}
         
     }
 

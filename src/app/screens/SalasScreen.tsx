@@ -6,7 +6,7 @@ import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, Sala } from "../types/apiTypes";
-import { criarNovaSala, editarSalaService, obterSalas } from "../servicos/servicoSalas";
+import {obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
@@ -48,27 +48,23 @@ export default function SalasScreen() {
 
     const carregarSalas = async () => {
         setRefreshingSalas(true)
-        try{
-            const obtendoSalas = await obterSalas()
-            const salasAtivas = obtendoSalas.filter(sala => sala.ativa)
-            const salasInativas = obtendoSalas.filter(sala => !sala.ativa)
-
-            if(userRole === 'user'){
-                setSalas(salasAtivas)
-                return
-            }
-
-            setSalas([...salasAtivas, ...salasInativas])
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro)
-
-        } finally{
-            setRefreshingSalas(false)
+        const obterSalasResult = await obterSalas()
+        if (!obterSalasResult.success){
+            Alert.alert('Erro', obterSalasResult.errMessage)
+            return
         }
+        
+        const salasAtivas = obterSalasResult.data.filter(sala => sala.ativa)
+        const salasInativas = obterSalasResult.data.filter(sala => !sala.ativa)
+
+        if(userRole === 'user'){
+            setSalas(salasAtivas)
+            return
+        }
+
+        setSalas([...salasAtivas, ...salasInativas])
+        
+        setRefreshingSalas(false)
     }
 
     const marcarSalaComoLimpa = async (id: string) => {
@@ -87,35 +83,21 @@ export default function SalasScreen() {
     }
 
     const marcarSalaComoSuja = async (id: string) => {
-        try{
-            await marcarSalaComoSujaService(id)
-            await carregarSalasComLoading()
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }           
-            // console.log(erro)     
-            
-        } finally{
-
+        const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id)
+        if(!marcarSalaComoSujaServiceResult.success){
+            Alert.alert('Erro', marcarSalaComoSujaServiceResult.errMessage);
+            return;
         }
+        await carregarSalasComLoading()
+
     }
 
     async function excluirSala(id: string){
-        try{
-            await excluirSalaService(id);
-            await carregarSalas();
-
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel criar as salas')
-
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro)
+        const excluirSalaServiceResult = await excluirSalaService(id);
+        if(!excluirSalaServiceResult.success){
+            Alert.alert('Erro', excluirSalaServiceResult.errMessage)
         }
-
+        await carregarSalas();
     }
 
     async function handleExcluirSala(id: string){

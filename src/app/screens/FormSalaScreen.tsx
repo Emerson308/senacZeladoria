@@ -67,16 +67,12 @@ export default function FormSalaScreen(){
     }, []))
 
     const carregarZeladores = async () => {
-        try{
-            // setLoading(true)
-            const resposta = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
-            setZeladores(resposta)
-            
-        } catch(erro: any){
-            
-        } finally{
-            // setLoading(false)
+        const obterUsuariosResult = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
+        if(!obterUsuariosResult.success){
+            Alert.alert('Erro', obterUsuariosResult.errMessage);
+            return;
         }
+        setZeladores(obterUsuariosResult.data)
     }
 
     const adicionarImageNoFormdata = (formData: FormData) => {
@@ -162,36 +158,32 @@ export default function FormSalaScreen(){
     }
 
     const onSubmit = async (newSala: FormData) => {
-        try{
-            if(sala){
-                const resposta = await editarSalaService(newSala, sala.qr_code_id)
-                Alert.alert('Aviso', 'Sala editada com sucesso', [
-                    {
-                        "text": "Ok",
-                        "onPress": () => navigation.navigate('AdminTabs')
-                    }
-                ])
-
-            } else{
-                const resposta = await criarNovaSala(newSala)
-                Alert.alert('Aviso', 'Sala criada com sucesso', [
-                    {
-                        "text": "Ok",
-                        "onPress": () => navigation.navigate('AdminTabs')
-                    }
-                ])
-            }
-        } catch (erro: any){
-            if(erro.message === 'AxiosError: Request failed with status code 400'){
-                Alert.alert('Erro','Esse nome de sala está em uso, digite um nome diferente')
+        if(!sala){
+            const criarNovaSalaResult = await criarNovaSala(newSala)
+            if(!criarNovaSalaResult.success){
+                Alert.alert('Erro', criarNovaSalaResult.errMessage)
                 return
             }
-            if (sala){
-                Alert.alert('Erro','Não foi possivel editar sala')
-
-            } else{
-                Alert.alert('Erro','Não foi possivel criar sala')
+            Alert.alert('Aviso', 'Sala criada com sucesso', [
+                {
+                    "text": "Ok",
+                    "onPress": () => navigation.navigate('AdminTabs')
+                }
+            ])
+        }
+        if(sala){
+            const editarSalaServiceResult = await editarSalaService(newSala, sala.qr_code_id)
+            if(!editarSalaServiceResult.success){
+                Alert.alert('Erro', editarSalaServiceResult.errMessage)
+                return
             }
+            Alert.alert('Aviso', 'Sala editada com sucesso', [
+                {
+                    "text": "Ok",
+                    "onPress": () => navigation.navigate('AdminTabs')
+                }
+            ])
+
         }
     }
 

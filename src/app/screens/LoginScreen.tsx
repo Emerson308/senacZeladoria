@@ -2,8 +2,6 @@ import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 import { TextInput, Button, Text, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
-import { realizarLogin } from '../servicos/servicoAutenticacao';
-import { salvarToken } from '../servicos/servicoArmazenamento';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {

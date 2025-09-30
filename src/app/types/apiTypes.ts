@@ -62,18 +62,6 @@ export interface imageType{
     type: string
 }
 
-// export interface Usuario1{
-//     id: number,
-//     username: string,
-//     email: string,
-//     // is_staff: boolean,
-//     is_superuser: boolean,
-//     groups: number[],
-//     profile: {
-//         profile_picture: string
-//     }
-
-// }
 
 export interface NovoUsuario{
     username: string,
@@ -108,11 +96,21 @@ export interface UserGroup{
     name: string
 }
 
-// export interface Responsavel{
-//     id: number,
-//     username: string
-// }
 
+
+
+
+interface ServiceFailure{
+    success: false,
+    errMessage: string
+}
+
+interface ServiceSuccess<T>{
+    success: true,
+    data: T
+}
+
+export type ServiceResult<T> = ServiceSuccess<T> | ServiceFailure
 
 
 

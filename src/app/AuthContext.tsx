@@ -5,7 +5,7 @@ import api from './api/axiosConfig';
 // import { usuarioLogado } from './servicos/servicoAutenticacao';
 import { getAllUsersGroups, usuarioLogado } from './servicos/servicoUsuarios';
 import { UserGroup, Usuario } from './types/apiTypes';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator, Text, Alert } from 'react-native';
 import eventBus from './utils/eventBus';
 
 type UserRole = 'user' | 'admin' | null;
@@ -33,37 +33,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 
   const carregarGroups = async () => {
-    try{
-        const resposta = await getAllUsersGroups()
-        setUsersGroups(resposta)
-        // console.log(resposta)
-    } catch(erro: any){
-
+    const getAllUsersGroupsResult = await getAllUsersGroups()
+    if(!getAllUsersGroupsResult.success){
+      Alert.alert('Erro', getAllUsersGroupsResult.errMessage)
+      return;
     }
+
+    setUsersGroups(getAllUsersGroupsResult.data)
   }
 
   const verificarAutenticacao = async () => {
-  const token = await obterToken();
-  if (token){
-    api.defaults.headers.common['Authorization'] = `Token ${token}`
-    const usuario = await usuarioLogado();
-    // console.log(usuario)
+    const obterTokenResult = await obterToken();
+    if (!obterTokenResult.success){
+      Alert.alert('Erro', obterTokenResult.errMessage)
+      return
+    }
+
+    api.defaults.headers.common['Authorization'] = `Token ${obterTokenResult.data}`;
+
+    const usuarioLogadoResult = await usuarioLogado();
+    if(!usuarioLogadoResult.success){
+      Alert.alert('Erro', usuarioLogadoResult.errMessage)
+      return
+    }
+
+    const usuario = usuarioLogadoResult.data
     if(usuario){
       setUser(usuario)
       if(usuario.is_superuser){
         setUserRole('admin')
-      } else{
-        
+      } else{        
         setUserRole('user')
       }
       // setUserRole('user')
     }
-  }
-  setIsLoading(false);
+    setIsLoading(false);
 }
 
   const deslogarUsuario = async () => {
-    await removerToken()
+
+    const removerTokenResult = await removerToken()
+    if(!removerTokenResult.success){
+      console.log(removerTokenResult.errMessage)
+    }
     setUserRole(null);
     setUser(null)
     setUsersGroups([])
@@ -73,23 +85,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const logarUsuario = async (username: string, password: string) => {
-    try{
-      const resposta = await realizarLogin({username: username, password: password})
-      // console.log(resposta)
-      await salvarToken(resposta.token)
-      api.defaults.headers.common['Authorization'] = `Token ${resposta.token}`
-      setUser(resposta.user_data)
-      if (resposta.user_data.is_superuser){
-        setUserRole('admin')
-      } else{
-        setUserRole('user')
-        
-      }
-      await carregarGroups()
-    } catch(erro: any){
-      throw new Error(erro)
-    } finally{
-
+    const resposta = await realizarLogin({username: username, password: password})
+    const {success} = resposta
+    if(!success){
+      Alert.alert('Erro', resposta.errMessage)
+      return
+    }
+    
+    const loginData = resposta.data
+    
+    api.defaults.headers.common['Authorization'] = `Token ${loginData.token}`
+    setUser(loginData.user_data)
+    if (loginData.user_data.is_superuser){
+      setUserRole('admin')
+    } else{
+      setUserRole('user')
+    }
+    await carregarGroups()
+    
+    const resultSalvarToken = await salvarToken(resposta.data.token)
+    if(!resultSalvarToken.success){
+      Alert.alert('Erro', resultSalvarToken.errMessage)
     }
   }
 
