@@ -9,6 +9,7 @@ import { AuthNavigator } from './navigation/stacks/AuthStack';
 import { UserNavigator } from './navigation/stacks/UserStack';
 import { AdminNavigator } from './navigation/stacks/AdminStack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message'
 
 const RootNavigation = () => {
   const authContext = useContext(AuthContext);
@@ -20,7 +21,6 @@ const RootNavigation = () => {
   const { userRole, signOut } = authContext;
 
   return (
-    <SafeAreaProvider>
       <NavigationContainer>
         {userRole === 'admin' ? (
           <AdminNavigator />
@@ -30,15 +30,18 @@ const RootNavigation = () => {
           <AuthNavigator />
         )}
       </NavigationContainer>
-    </SafeAreaProvider>
   );
 };
 
 export default function App() {
   return (
-    <AuthProvider>
-      <RootNavigation />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <RootNavigation />
+        <Toast/>
+      </AuthProvider>
+    </SafeAreaProvider>
+
   );
 }
 

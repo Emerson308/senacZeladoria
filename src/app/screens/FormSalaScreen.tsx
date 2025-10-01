@@ -15,6 +15,7 @@ import { obterUsuarios } from "../servicos/servicoUsuarios";
 import { AuthContext } from "../AuthContext";
 import ResponsaveisMultiselect from "../components/ResponsaveisMultiselect";
 import { Ionicons } from '@expo/vector-icons'
+import Toast from "react-native-toast-message";
 
 
 
@@ -69,7 +70,14 @@ export default function FormSalaScreen(){
     const carregarZeladores = async () => {
         const obterUsuariosResult = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
         if(!obterUsuariosResult.success){
-            Alert.alert('Erro', obterUsuariosResult.errMessage);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: obterUsuariosResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
+
             return;
         }
         setZeladores(obterUsuariosResult.data)
@@ -123,15 +131,27 @@ export default function FormSalaScreen(){
 
         if(!validationResult.success){
             const errorMessages = validationResult.error.issues.map(err => {
-                console.log(err.message)
+                // console.log(err.message)
                 return err.message
             }).join('\n\n');
-            Alert.alert('Erro de Validação', errorMessages);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro de validação',
+                text2: errorMessages,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return;
         }
-
+        
         if (Number(validade_limpeza_horas) < 0){
-            Alert.alert('Erro de Validação', 'Validade da limpeza (Horas) deve ser um número inteiro válido')
+            Toast.show({
+                type: 'error',
+                text1: 'Erro de validação',
+                text2:'Validade da limpeza (Horas) deve ser um número inteiro válido',
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return
         }
 
@@ -161,7 +181,13 @@ export default function FormSalaScreen(){
         if(!sala){
             const criarNovaSalaResult = await criarNovaSala(newSala)
             if(!criarNovaSalaResult.success){
-                Alert.alert('Erro', criarNovaSalaResult.errMessage)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erro',
+                    text2: criarNovaSalaResult.errMessage,
+                    position: 'bottom',
+                    visibilityTime: 3000
+                })
                 return
             }
             Alert.alert('Aviso', 'Sala criada com sucesso', [
@@ -174,7 +200,13 @@ export default function FormSalaScreen(){
         if(sala){
             const editarSalaServiceResult = await editarSalaService(newSala, sala.qr_code_id)
             if(!editarSalaServiceResult.success){
-                Alert.alert('Erro', editarSalaServiceResult.errMessage)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erro',
+                    text2: editarSalaServiceResult.errMessage,
+                    position: 'bottom',
+                    visibilityTime: 3000
+                })
                 return
             }
             Alert.alert('Aviso', 'Sala editada com sucesso', [
