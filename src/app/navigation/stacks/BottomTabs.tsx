@@ -34,7 +34,7 @@ export default function BottomTabs(){
             // <SafeAreaView className=" flex-1" edges={['bottom']}>
 
             <Tab.Navigator
-                safeAreaInsets={{bottom: 10}}
+                safeAreaInsets={{bottom: 0}}
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({focused, color, size}) => {
                         let iconName: keyof typeof Ionicons.glyphMap = 'home';
@@ -56,6 +56,7 @@ export default function BottomTabs(){
                     headerShown: true,
                     tabBarHideOnKeyboard: true,
                     tabBarStyle: {
+                        height: 60,
                         marginBottom: insets.bottom,
                     }
                 })
