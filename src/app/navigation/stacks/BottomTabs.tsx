@@ -10,6 +10,7 @@ import PerfilScreen from "../../screens/PerfilScreen";
 import RegistrosLimpezaScreen from "../../screens/RegistrosLimpezaScreen";
 import { AuthContext } from "../../AuthContext";
 import { Platform } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 
 
@@ -24,11 +25,16 @@ export default function BottomTabs(){
         return null
     }
 
+    const insets = useSafeAreaInsets()
+
     const {userRole} = authContext
 
     if(userRole === 'admin'){
         return(
+            // <SafeAreaView className=" flex-1" edges={['bottom']}>
+
             <Tab.Navigator
+                safeAreaInsets={{bottom: 10}}
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({focused, color, size}) => {
                         let iconName: keyof typeof Ionicons.glyphMap = 'home';
@@ -48,16 +54,9 @@ export default function BottomTabs(){
                     tabBarActiveTintColor: colors.sblue,
                     tabBarInactiveTintColor: 'gray',
                     headerShown: true,
+                    tabBarHideOnKeyboard: true,
                     tabBarStyle: {
-                        // zIndex: 100,
-
-                        // ...Platform.select({
-                        //     android: {
-                        //         elevation: 10
-                        //     }
-                        // }),
-
-                        // // paddingBottom: insets
+                        marginBottom: insets.bottom,
                     }
                 })
                 }
@@ -90,11 +89,13 @@ export default function BottomTabs(){
     
     
             </Tab.Navigator>
+            // </SafeAreaView>
         )
     }
 
     return(
         <Tab.Navigator
+            safeAreaInsets={{bottom: 10}}
             screenOptions={({ route }) => ({
                 tabBarIcon: ({focused, color, size}) => {
                     let iconName: keyof typeof Ionicons.glyphMap = 'home';
@@ -110,6 +111,7 @@ export default function BottomTabs(){
                 tabBarActiveTintColor: colors.sblue,
                 tabBarInactiveTintColor: 'gray',
                 headerShown: true,
+                tabBarStyle: {marginBottom: insets.bottom}
             })}
         >
             <Tab.Screen

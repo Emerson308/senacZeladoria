@@ -10,6 +10,7 @@ import {obterSalas } from "../servicos/servicoSalas";
 import { marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
+import Toast from "react-native-toast-message";
 
 
 
@@ -53,12 +54,19 @@ export default function SalasScreen() {
             Alert.alert('Erro', obterSalasResult.errMessage)
             return
         }
+        // Toast.show({
+        //     type: 'info',
+        //     text1: 'Aviso',
+        //     text2: 'Salas carregadas',
+        //     position: 'bottom'
+        // })
         
         const salasAtivas = obterSalasResult.data.filter(sala => sala.ativa)
         const salasInativas = obterSalasResult.data.filter(sala => !sala.ativa)
 
         if(userRole === 'user'){
             setSalas(salasAtivas)
+            setRefreshingSalas(false)
             return
         }
 
