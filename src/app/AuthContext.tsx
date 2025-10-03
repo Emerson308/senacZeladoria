@@ -8,6 +8,7 @@ import { UserGroup, Usuario } from './types/apiTypes';
 import { View, ActivityIndicator, Text, Alert, TouchableOpacity } from 'react-native';
 import eventBus from './utils/eventBus';
 import Toast from 'react-native-toast-message';
+import { listarNotificações } from './servicos/servicoSalas';
 
 type UserRole = 'user' | 'admin' | null;
 
@@ -63,6 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     api.defaults.headers.common['Authorization'] = `Token ${obterTokenResult.data}`;
+    // const result = await listarNotificações()
 
     const usuarioLogadoResult = await usuarioLogado();
     if(!usuarioLogadoResult.success){

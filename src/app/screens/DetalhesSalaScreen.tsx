@@ -10,7 +10,7 @@ import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
 import { formatarDataISO } from '../utils/functions';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {Ionicons} from '@expo/vector-icons'
+import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';
 import Toast from 'react-native-toast-message';
 
@@ -97,7 +97,7 @@ export default function DetalhesSalaScreen(){
 
     const estilosTailwind = {
         item: "bg-white mt-5 border-l-4 border-l-sblue p-4 rounded-xl",
-        info_label: "text-xl font-regular text-gray-400 uppercase tracking-wider mb-1",
+        info_label: "text-xl font-regular text-gray-400 uppercase tracking-wider ",
         info_values: " text-2xl font-semibold text-gray-800 break-words"
     }
 
@@ -139,7 +139,11 @@ export default function DetalhesSalaScreen(){
 
 
                     <View className={estilosTailwind.item}>
-                        <Text className={estilosTailwind.info_label}>Status da limpeza</Text>
+                        <View className='flex-row gap-2 mb-3 items-center'>
+                            {/* <Ionicons size={24} name='browsers-outline' color={colors.sgray} className=''/> */}
+                            <MaterialCommunityIcons size={24} name='broom' color={colors.sgray}/>
+                            <Text className={estilosTailwind.info_label + ''}>Status de limpeza</Text>
+                        </View>
                         {
                             dadosSala.status_limpeza === 'Limpa' 
                             ? <Text className='text-sgreen bg-sgreen/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
@@ -156,12 +160,20 @@ export default function DetalhesSalaScreen(){
                         ? (
                             <>
                             <View className={estilosTailwind.item + ''}>
-                                <Text className={estilosTailwind.info_label}>Instruções</Text>
+                                <View className='flex-row gap-2 mb-3 items-center'>
+                                    {/* <Ionicons size={24} name='document-text-outline' color={colors.sgray} className=''/> */}
+                                    <MaterialCommunityIcons size={24} name='file-document-outline' color={colors.sgray}/>
+                                    <Text className={estilosTailwind.info_label}>Instruções</Text>
+                                </View>
                                 <Text className={estilosTailwind.info_values}>{dadosSala.instrucoes ? dadosSala.instrucoes : 'Sem instruções'}</Text>
                             </View>
 
                             <View className={estilosTailwind.item}>
-                                <Text className={estilosTailwind.info_label}>Última limpeza</Text>
+                                <View className='flex-row gap-2 mb-3 items-center'>
+                                    {/* <Ionicons size={24} name='time-outline' color={colors.sgray} className=''/> */}
+                                    <MaterialCommunityIcons size={24} name='update' color={colors.sgray}/>
+                                    <Text className={estilosTailwind.info_label}>Última limpeza</Text>
+                                </View>
                                 {
                                     dadosSala.ultima_limpeza_funcionario ? 
                                     <View>
@@ -173,12 +185,18 @@ export default function DetalhesSalaScreen(){
                             </View>
 
                             <View className={estilosTailwind.item + ''}>
-                                <Text className={estilosTailwind.info_label}>Validade da limpeza</Text>
+                                <View className='flex-row gap-2 mb-3 items-center'>
+                                    <Ionicons size={24} name='timer-outline' color={colors.sgray} className=''/>
+                                    <Text className={estilosTailwind.info_label}>Validade da limpeza</Text>
+                                </View>
                                 <Text className={estilosTailwind.info_values}>{dadosSala.validade_limpeza_horas} horas</Text>
                             </View>
 
                             <View className={estilosTailwind.item + ''}>
-                                <Text className={estilosTailwind.info_label}>Status da sala</Text>
+                                <View className='flex-row gap-2 mb-3 items-center'>
+                                    <Ionicons size={24} name='key-outline' color={colors.sgray} className=''/>
+                                    <Text className={estilosTailwind.info_label}>Status da sala</Text>
+                                </View>
                                 <Text className={(dadosSala.ativa) ? 'bg-sgreen/20 px-4 py-1 rounded-md text-2xl text-sgreen' + estilosTailwind.info_values : 'bg-sred/20 px-4 py-1 rounded-md text-2xl text-sred' + estilosTailwind.info_values}>{dadosSala.ativa ? 'Ativa' : 'Inativa'}</Text>
                             </View>
                                     
@@ -187,30 +205,52 @@ export default function DetalhesSalaScreen(){
                     }
     
                     <View className={estilosTailwind.item + ''}>
-                        <Text className={estilosTailwind.info_label}>Capacidade</Text>
+                        <View className='flex-row gap-2 mb-3 items-center'>
+                            <MaterialCommunityIcons size={24} name='account-group' color={colors.sgray}/>
+                            {/* <Ionicons size={24} name='people-outline' color={colors.sgray} className=''/> */}
+                            <Text className={estilosTailwind.info_label}>Capacidade</Text>
+                        </View>
                         <Text className={estilosTailwind.info_values}>{dadosSala.capacidade} pessoas</Text>
                     </View>
 
                     <View className={estilosTailwind.item}>
-                        <Text className={estilosTailwind.info_label}>Localização</Text>
+                        <View className='flex-row gap-2 mb-3 items-center'>
+                            {/* <Ionicons size={24} name='location-outline' color={colors.sgray} className=''/> */}
+                            <MaterialCommunityIcons size={24} name='map-marker' color={colors.sgray}/>
+                            <Text className={estilosTailwind.info_label}>Localização</Text>
+                        </View>
                         <Text className={estilosTailwind.info_values}>{dadosSala.localizacao}</Text>
                     </View>
 
                     {
                         user.is_superuser || user.groups.includes(1)
                         ? (
-                        <View className={estilosTailwind.item + ''}>
-                            <Text className={estilosTailwind.info_label + ''}>Responsaveis</Text>
+                            <View className={estilosTailwind.item + ''}>
+                            <View className='flex-row gap-2 mb-3 items-center'>
+                                {/* <Ionicons size={24} name='person-outline' color={colors.sgray} className=''/> */}
+                                <MaterialCommunityIcons size={24} name='account' color={colors.sgray}/>
+                                <Text className={estilosTailwind.info_label + ''}>Responsáveis</Text>
+                            </View>
                             {dadosSala.responsaveis.map(responsavel => <Text key={responsavel} className={estilosTailwind.info_values}>- {responsavel}</Text>)}
-                            {dadosSala.responsaveis.length === 0 ? <Text className={estilosTailwind.info_values} >Sem responsaveis</Text>: null}
+                            {dadosSala.responsaveis.length === 0 ? <Text className={estilosTailwind.info_values + 'font-regular text-gray-300'} >Sem responsáveis</Text>: null}
                         </View>
                         ) : null
                     }
 
 
                     <View className={estilosTailwind.item}>
-                        <Text className={estilosTailwind.info_label}>Descrição</Text>
-                        <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
+                        <View className='flex-row gap-2 mb-3 items-center'>
+                            {/* <Ionicons size={24} name='list-outline' color={colors.sgray} className=''/> */}
+                            <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
+                            <Text className={estilosTailwind.info_label}>Descrição</Text>
+                        </View>
+                        {
+                            dadosSala.descricao ?
+                            <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
+                            :
+                            <Text className={estilosTailwind.info_values + ' font-regular text-gray-300'}>Sem descrição</Text>
+
+                        }
                     </View>
                 </View>
             </ScrollView>

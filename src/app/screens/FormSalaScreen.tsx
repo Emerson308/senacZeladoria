@@ -165,7 +165,7 @@ export default function FormSalaScreen(){
                     formData.append(key, item)
                 })
             }
-            if ((value || key === 'ativa') && key !== 'responsaveis'){
+            if ((value || key === 'ativa' || sala) && key !== 'responsaveis'){
                 formData.append(key, value)
             }
         })

@@ -1,9 +1,9 @@
-import { TouchableOpacity, View, StyleSheet, Text as TextN, Image } from "react-native"
-import { Card, Button, Text } from "react-native-paper"
+import { TouchableOpacity, View, StyleSheet, Text, Image } from "react-native"
+import { Card, Button, Text as TextP } from "react-native-paper"
 import { Sala } from "../types/apiTypes";
 import { formatarDataISO } from "../utils/functions";
 import { colors } from "../../styles/colors";
-import {Ionicons} from '@expo/vector-icons'
+import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from "../api/axiosConfig";
 import React, { useContext } from "react";
 import { AuthContext } from "../AuthContext";
@@ -24,157 +24,146 @@ interface propsSalaCard{
 
 function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
 
-    return (
-        <TouchableOpacity className="mb-4 mx-3 rounded-lg shadow-md bg-white" onPress={onPress}>
-            <Card  style={{backgroundColor: 'white'}}>
-                <Card.Content style={styles.contentCard}>
-                    <View className=" flex-row aspect-video">
-                    {
-                        sala.imagem ?
-                            <Image
-                                source={{uri: apiURL + sala.imagem}}
-                                className=" flex-1 rounded-md rounded-b-none"
-                                resizeMode='cover'
-                            />
-                        : 
-                            <View className="  flex-1 bg-gray-200 rounded-md rounded-b-none items-center justify-center" >
-                                <TextN className=" text-xl text-center">Sem Imagem</TextN>
-                            </View>
-                    }
-                    </View>
-                    <View className=" flex-1 flex-row px-4 py-2 gap-3">
-                        <View className=" flex-1 ">
-                            <View className=" flex-row items-center">
-                                <Text className=" flex-1" variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{sala.nome_numero}</Text>
-                                {
-                                    sala.ativa ? null :
-                                    <TextN className=" p-2 px-8 bg-black/20 text-black rounded-full">Inativa</TextN>
+    // const userGroups: number[] = []
 
-                                }
-                                
-                            </View>
+    return (
+        <TouchableOpacity className="mb-4 rounded-xl shadow-md" onPress={onPress}>
+            <Card  style={styles.cardAtivo}>
+                <Card.Content className=" flex-col gap-0 px-0 py-0">
+                    <View className=" gap-1 flex-row ">
+                        <View className=" aspect-square h-40">
+                            {
+                                sala.imagem ?
+                                <Image
+                                    className={
+                                        (userGroups.length === 0 && userRole === 'user') ?
+                                        " flex-1 rounded-l-xl"
+                                        :
+                                        " flex-1 rounded-tl-xl"
+                                    }
+                                    source={{uri: apiURL + sala.imagem}}
+                                    resizeMode="cover"
+                                />
+                                :
+                                <View className={
+                                        (userGroups.length === 0 && userRole === 'user') ?
+                                        "flex-1 bg-gray-200 rounded-l-xl items-center justify-center"
+                                        :
+                                        "flex-1 bg-gray-200 rounded-tl-xl items-center justify-center"
+                                    }>
+                                    <Ionicons size={30} name="image-outline" />
+                                </View>
+                            }
+                        </View>
+                        <View className=" flex-1 rounded-r-lg p-2 flex-col gap-1">
+                            <Text className=" text-2xl" numberOfLines={1} ellipsizeMode="tail">{sala.nome_numero}</Text>
+                            <View>
                                 {
                                     sala.status_limpeza === 'Limpa'
-                                    ? <Text style={styles.textGreen} className=" my-1 mr-auto" variant="bodyMedium">{sala.status_limpeza}</Text>
+                                    ? <Text className=" p-1 text-sm px-5 rounded-3xl bg-sgreen/20 text-sgreen mr-auto">{sala.status_limpeza}</Text>
                                     : sala.status_limpeza === 'Limpeza Pendente'
-                                    ? <Text style={styles.textYellow} className=" my-1 mr-auto" variant="bodyMedium">{sala.status_limpeza}</Text>
+                                    ? <Text className=" p-1 text-sm px-5 rounded-3xl bg-syellow/20 text-syellow mr-auto">{sala.status_limpeza}</Text>
                                     : sala.status_limpeza === 'Suja' 
-                                    ? <Text style={styles.textRed} className=" my-1 mr-auto" variant="bodyMedium">{sala.status_limpeza}</Text>
-                                    : <Text style={styles.textGray} className=" my-1 mr-auto" variant="bodyMedium">{sala.status_limpeza}</Text>
+                                    ? <Text className=" p-1 text-sm px-5 rounded-3xl bg-sred/20 text-sred mr-auto">{sala.status_limpeza}</Text>
+                                    : <Text className=" p-1 text-sm px-5 rounded-3xl bg-sgray/20 text-sgray mr-auto">{sala.status_limpeza}</Text>
                                     
                                 }
-                            <View className=" flex-row gap-2 items-center mx-2 mr-4">
-                                <Ionicons
-                                    name='people-outline'
-                                    size={18}
-                                />
-                                <Text variant="bodyMedium" numberOfLines={1} ellipsizeMode="tail">{sala.capacidade}</Text>
+
                             </View>
-                            <View className=" flex-row gap-2 items-center mx-2 mr-4">
-                                <Ionicons
-                                    name='location-outline'
-                                    size={18}
-                                />
-                                <Text variant="bodyMedium" numberOfLines={1} ellipsizeMode="tail">{sala.localizacao}</Text>
+                            <View className="flex-1 gap-2 flex-col pl-2 justify-center">
+                                <View className=" flex-row items-center gap-1">
+                                    <MaterialCommunityIcons size={20} name='account-group' color={colors.sgray}/>
+                                    <Text className=" text-sm" numberOfLines={1} ellipsizeMode="tail">{sala.capacidade}</Text>
+                                </View>
+                                <View className=" flex-row items-center gap-1">
+                                    <MaterialCommunityIcons size={20} name='map-marker' color={colors.sgray}/>
+                                    <Text className=" text-sm" numberOfLines={1} ellipsizeMode="tail">{sala.localizacao}</Text>
+                                </View>
+
                             </View>
                         </View>
                     </View>
-                </Card.Content>
-                    <Card.Actions>
-                        <View className=" flex-row items-center mt-1 gap-4">
-                            
-                            <View className="flex-1 flex-col mx-auto gap-2">
-                            {
-                                userGroups.includes(1) && sala.ativa ?
-                                <Button
-                                    mode='contained-tonal'
-                                    buttonColor={colors.sgreen + '20'}
-                                    textColor={colors.sgreen}
-                                    icon={'broom'}
-                                    className=" "
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        marcarSalaComoLimpa(sala.qr_code_id)
-                                    }}
-                                    
-                                >
-                                    Iniciar limpeza da sala
-                                </Button>
-                                :
-                                null
 
-                            }
-                            {
-                                userGroups.includes(2) && sala.ativa ?
-                                <Button
-                                    mode='contained-tonal'
-                                    buttonColor={colors.syellow + '20'}
-                                    textColor={colors.syellow}
-                                    icon={'delete'}
-                                    className=" "
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        marcarSalaComoSuja(sala.qr_code_id)
-                                    }}
-                                    
-                                >
-                                    Marcar como suja
-                                </Button>
-                                :
-                                // <View className=" flex-1"></View>
-                                null
-
-                            }
-                            </View>
-
-                            {
-                                userRole === 'user' ? null :
-                                (
-                                    <View className={(userGroups.length <= 1 || !sala.ativa) ? 'flex-row gap-2 h-full' : 'flex-col gap-2 h-full'}>
-                                        {
-                                            sala.ativa ? 
-                                            <TouchableOpacity
-                                                className="flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
-                                                style={{backgroundColor: colors.sred + '20'}}
-                                                onPress={(e) => {
-                                                    e.stopPropagation();
-                                                    excluirSala(sala.qr_code_id)
-                                                    
-                                                }
-                                            }
-                                            >
-                                                <Ionicons
-                                                    name='trash-outline' 
-                                                    size={22} 
-                                                    color={colors.sred}
-                                                    // style={{ marginLeft: 15 }} 
-                                                />
-                                            </TouchableOpacity>
-                                            : null
-                                        }    
+                    {
+                        (userRole === 'user' && userGroups.length === 0) ? null : 
+                        <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
+                            <View className="flex-col flex-1 gap-2">
+                                {sala.ativa ? 
+                                <>
+                                    {
+                                        !userGroups.includes(1) ? null : 
                                         <TouchableOpacity
-                                            className="flex-row rounded-full p-2 px-4 gap-2 items-center justify-center"
-                                            style={{backgroundColor: colors.sblue + '20'}}
+                                            className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+                                            onPress={(e) => {
+                                                e.stopPropagation()
+                                            }}
+                                            >
+                                            <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
+                                            <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
+                                        </TouchableOpacity>
+                                    }
+
+                                    {
+                                        !userGroups.includes(2) ? null : 
+                                        <TouchableOpacity
+                                            className=" h-14 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
                                             onPress={(e) => {
                                                 e.stopPropagation();
-                                                editarSala(sala)
-                                                
-                                            }
-                                        }
+                                                marcarSalaComoSuja(sala.qr_code_id)
+                                            }}
                                         >
-                                            <Ionicons
-                                                name='pencil-outline' 
-                                                size={22} 
-                                                color={colors.sblue}
-                                                // style={{ marginLeft: 15 }} 
-                                            />
-                                        </TouchableOpacity>
-                                    </View>
+                                            <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
+                                            <Text className=" text-syellow text-base">Reportar sujeira</Text>
+                                        </TouchableOpacity>                            
+                                    }
+                                </>
+                                :
+                                <TouchableOpacity
+                                    className=" h-14 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
+                                    <Text className=" text-sgray text-base">Sala inativa</Text>
+                                </TouchableOpacity>
+                                }
+                            </View>
+                            {
+                                userRole === 'user' ? null : 
+                                <View className={
+                                    (userGroups.length < 2) ?
+                                    "flex-row-reverse gap-2"
+                                    :
+                                    "flex-col gap-2"
 
-                                )
+                                }>
+                                    <TouchableOpacity
+                                        className=" h-14 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
+                                        onPress={(e) => {
+                                            e.stopPropagation();
+                                            editarSala(sala)
+                                        }}
+                                    >
+                                        <MaterialCommunityIcons size={24} name='pen' color={colors.sblue}/>
+                                    </TouchableOpacity>
+                                    {
+                                        !sala.ativa ? null :
+                                        <TouchableOpacity
+                                            className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+                                            onPress={(e) => {
+                                                e.stopPropagation();
+                                                excluirSala(sala.qr_code_id)
+                                            }}
+                                        >
+                                            <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
+                                        </TouchableOpacity>
+                                    }
+                                </View>
                             }
                         </View>
-                    </Card.Actions>
+                    }
+                </Card.Content>
             </Card>
         </TouchableOpacity>
     )
@@ -183,53 +172,15 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
 
 
 const styles = StyleSheet.create({
-    contentCard: {
-        flexDirection: 'column',
-        gap: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
-        paddingTop: 0
-        // padding: 0
-    },
-
-    bgWhite:{
+    cardAtivo: {
         backgroundColor: 'white'
     },
 
-    textYellow:{
-        color: colors.syellow,
-        backgroundColor: colors.syellow + '20',
-        padding: 1,
-        paddingHorizontal: 5,
-        borderRadius: 20,
-        // height: 
-    },
-
-    textRed:{
-        color: colors.sred,
-        backgroundColor: colors.sred + '20',
-        padding: 1,
-        paddingHorizontal: 5,
-        borderRadius: 20,
-        // height: 
-    },
-
-    textGray:{
-        color: colors.sgray,
-        backgroundColor: colors.sgray + '20',
-        padding: 1,
-        paddingHorizontal: 5,
-        borderRadius: 20,
-        // height: 
-    },
-    
-    textGreen:{
-        color: colors.sgreen,
-        backgroundColor: colors.sgreen + '20',
-        padding: 1,
-        paddingHorizontal: 5,
-        borderRadius: 20
+    cardInativo: {
+        backgroundColor: 'white',
+        opacity: 0.7
     }
 })
 
-export default React.memo(SalaCard)
+// export default React.memo(SalaCard)
+export default SalaCard

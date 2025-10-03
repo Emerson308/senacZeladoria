@@ -19,7 +19,7 @@ const RootNavigation = () => {
     throw new Error('AuthContext must be used within an AuthProvider');
   }
 
-  const { userRole, signOut } = authContext;
+  const { userRole } = authContext;
 
   return (
       <NavigationContainer>

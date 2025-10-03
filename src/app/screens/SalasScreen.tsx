@@ -33,12 +33,8 @@ export default function SalasScreen() {
     // const userRole = 'user'
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     const [carregando, setCarregando] = useState(false)
-    const [mensagemErro, setMensagemErro] = useState('')
     const [salas, setSalas] = useState<Sala[]>([])
     const [filtro, setFiltro] = useState<segmentSalaStatus>('Todas')
-    const [criarSalaFormVisible, setCriarSalaFormVisible] = useState(false)
-    const [editarSalaFormVisible, setEditarSalaFormVisible] = useState(false)
-    const [formEditarData, setFormEditarData] = useState<Sala|null>(null)
     const [refreshingSalas, setRefreshingSalas] = useState(false)
 
     const carregarSalasComLoading = async () => {
@@ -80,10 +76,10 @@ export default function SalasScreen() {
             await marcarSalaComoLimpaService(id, '')
             await carregarSalasComLoading()
         } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }                
+            // setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
+            // if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+            //     signOut()
+            // }                
             
         } finally{
 

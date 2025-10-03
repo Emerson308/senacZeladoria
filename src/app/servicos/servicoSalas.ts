@@ -20,7 +20,7 @@ export async function obterSalas():Promise<ServiceResult<Sala[]>>{
 export async function obterDetalhesSala(id: string):Promise<ServiceResult<Sala>>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
-        // console.log(resposta.data)
+        console.log(resposta.data)
         return {success: true, data: resposta.data}
     } catch (erro: any){
         console.log(erro);
@@ -167,4 +167,22 @@ export async function marcarSalaComoSujaService(id: string): Promise<ServiceResu
         return {success: false, errMessage: 'Erro ao marcar sala como suja'}
     }
 
+}
+
+
+
+export async function listarNotificações() : Promise<ServiceResult<null>>{
+    try{
+        const resposta = await api.get(`notificacoes/`)
+        // console.log(resposta.data)
+        console.log(resposta.data)
+        return {success: true, data: null}
+    } catch(erro: any){
+        console.error(erro)
+        if(erro.response.status === 401){
+            return {success: false, errMessage: 'As credenciais de autenticação enviadas não possuem autorização para essa ação'}
+        }
+        
+        return {success: false, errMessage: 'Erro ao marcar sala como suja'}
+    }
 }
