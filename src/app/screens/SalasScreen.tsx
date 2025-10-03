@@ -51,15 +51,15 @@ export default function SalasScreen() {
         setRefreshingSalas(true)
         const obterSalasResult = await obterSalas()
         if (!obterSalasResult.success){
-            Alert.alert('Erro', obterSalasResult.errMessage)
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: obterSalasResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return
         }
-        // Toast.show({
-        //     type: 'info',
-        //     text1: 'Aviso',
-        //     text2: 'Salas carregadas',
-        //     position: 'bottom'
-        // })
         
         const salasAtivas = obterSalasResult.data.filter(sala => sala.ativa)
         const salasInativas = obterSalasResult.data.filter(sala => !sala.ativa)
@@ -93,7 +93,13 @@ export default function SalasScreen() {
     const marcarSalaComoSuja = async (id: string) => {
         const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id)
         if(!marcarSalaComoSujaServiceResult.success){
-            Alert.alert('Erro', marcarSalaComoSujaServiceResult.errMessage);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: marcarSalaComoSujaServiceResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            });
             return;
         }
         await carregarSalasComLoading()
@@ -103,7 +109,13 @@ export default function SalasScreen() {
     async function excluirSala(id: string){
         const excluirSalaServiceResult = await excluirSalaService(id);
         if(!excluirSalaServiceResult.success){
-            Alert.alert('Erro', excluirSalaServiceResult.errMessage)
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: excluirSalaServiceResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
         }
         await carregarSalas();
     }

@@ -340,7 +340,7 @@ export default function FormSalaScreen(){
                         value={'Inativa'}
                         label="Sala inativa"
                         color={colors.syellow}
-                        style={{marginLeft: 8}}
+                        // style={{marginLeft: 8}}
                     />
                 </Picker>
 

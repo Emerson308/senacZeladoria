@@ -12,6 +12,7 @@ import { formatarDataISO } from '../utils/functions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';
+import Toast from 'react-native-toast-message';
 
 // import { Alert } from 'react-native';
 
@@ -36,28 +37,34 @@ export default function DetalhesSalaScreen(){
     const [observacoes, setObservacoes] = useState('')
     // const [reload, setReload] = useState(false)
 
-    const marcarSalaComoLimpa = async (id: string) => {
-        setCarregando(true)
-        try{
-            await marcarSalaComoLimpaService(id ,observacoes)
-            await carregarSala()
-        } catch(erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }                
-            Alert.alert('Erro', mensagemErro)
+    // const marcarSalaComoLimpa = async (id: string) => {
+    //     setCarregando(true)
+    //     try{
+    //         await marcarSalaComoLimpaService(id ,observacoes)
+    //         await carregarSala()
+    //     } catch(erro: any){
+    //         setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
+    //         if(erro.message.includes('Token de autenticação expirado ou inválido.')){
+    //             signOut()
+    //         }                
+    //         Alert.alert('Erro', mensagemErro)
             
-        } finally{
-            setCarregando(false)
-        }
-    }
+    //     } finally{
+    //         setCarregando(false)
+    //     }
+    // }
     
     const carregarSala = async () => {
         setCarregando(true)
         const obterDetalhesSalaResult = await obterDetalhesSala(id);
         if(!obterDetalhesSalaResult.success){
-            Alert.alert('Erro', obterDetalhesSalaResult.errMessage);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: obterDetalhesSalaResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return;
         }
         
@@ -108,26 +115,26 @@ export default function DetalhesSalaScreen(){
                 <Text className=" text-2xl text-white" >Perfil</Text>
             </View>
 
-            {
-                dadosSala.imagem
-                ? (
-                    <ImageBackground
-                        className=' flex-row aspect-video justify-center'
-                        source={{uri: apiURL + dadosSala.imagem}}
-                    >
-                        <View className=' bg-black/40 flex-1 px-4 items-center justify-center '>
+        </View>
+            <ScrollView className=" flex-1 mb-3">
+                {
+                    dadosSala.imagem
+                    ? (
+                        <ImageBackground
+                            className=' flex-row aspect-video justify-center'
+                            source={{uri: apiURL + dadosSala.imagem}}
+                        >
+                            <View className=' bg-black/40 flex-1 px-4 items-center justify-center '>
+                                <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
+                            </View>
+                        </ImageBackground>
+                    )
+                    : (
+                        <View className=' bg-black/40 aspect-video px-4 items-center justify-center'>
                             <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                         </View>
-                    </ImageBackground>
-                )
-                : (
-                    <View className=' bg-black/40 aspect-video px-4 items-center justify-center'>
-                        <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
-                    </View>
-                )
-            }
-        </View>
-            <ScrollView className=" flex-1 my-3">
+                    )
+                }
                 <View className=' p-5 pt-0 pb-10 md:p-8'>
 
 

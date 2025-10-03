@@ -81,7 +81,7 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
     return (
         <Modal className=" m-20" visible={visible} onRequestClose={() => onClose} onDismiss={onClose} animationType="slide" transparent={true} style={styles.modal}>
             <Pressable onPress={onClose} style={styles.centeredView} className=" flex-1 justify-center items-center">
-                <Pressable className="bg-white rounded-lg p-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
+                <Pressable className="bg-white rounded-lg p-4 py-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
                     <Text className=" text-center mb-8 text-4xl font-bold">Criar Usuário</Text>
                     <TextInput
                         label="Nome de usuário"
@@ -178,18 +178,22 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                         selectedValue={role}
                         onValueChange={setRole}
                         style={styles.picker}
+                        // itemStyle={{paddingLeft: 100}}
                         // className=" w-full border-2 border-solid border-sblue"
                     >
                         <Picker.Item
                             key={'User'}
                             label="Usuário comum"
                             value={'User'}
-                        />
+                            color={colors.syellow}
+                            />
 
                         <Picker.Item
                             key={'Admin'}
                             label="Admin"
                             value={'Admin'}
+                            color={colors.sgreen}
+                            // style={{paddingLeft: 100}}
                         />
                     </Picker>
                     

@@ -8,6 +8,7 @@ import { NovoUsuario, UserGroup, Usuario } from "../types/apiTypes";
 import { criarUsuarioService, getAllUsersGroups, obterUsuarios } from "../servicos/servicoUsuarios";
 import UsuarioCard from "../components/UsuarioCard";
 import UsuariosForms from "../components/UsuarioForms";
+import Toast from "react-native-toast-message";
 
 
 
@@ -36,7 +37,13 @@ export default function UsuariosScreen(){
         setRefreshing(true)
         const obterUsuariosResult = await obterUsuarios()
         if(!obterUsuariosResult.success){
-            Alert.alert('Erro', obterUsuariosResult.errMessage);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: obterUsuariosResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            });
             return;
         }
         setUsuarios(obterUsuariosResult.data)
@@ -48,10 +55,22 @@ export default function UsuariosScreen(){
         setCarregando(true)
         const criarUsuarioServiceResult = await criarUsuarioService(novoUsuario)
         if(!criarUsuarioServiceResult.success){
-            Alert.alert('Erro', criarUsuarioServiceResult.errMessage)
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: criarUsuarioServiceResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
         }
         await carregarUsuarios();
-        Alert.alert('Usuário criado', `O usuário ${novoUsuario.username} foi criado com sucesso`)
+        Toast.show({
+            type: 'success',
+            text1: 'Usuário criado',
+            text2: `O usuário ${novoUsuario.username} foi criado com sucesso`,
+            position: 'bottom',
+            visibilityTime: 3000
+        })
         setCarregando(false)
     }
 
@@ -72,8 +91,11 @@ export default function UsuariosScreen(){
     }
 
     const usuariosFiltrados = usuarios.filter(usuario => {
-        if (filtro === 'Admins' || filtro === 'Usuários padrões'){
+        if (filtro === 'Admins'){
             return usuario.is_superuser
+        }
+        if(filtro === 'Usuários padrões'){
+            return !usuario.is_superuser
         }
         return true
     })

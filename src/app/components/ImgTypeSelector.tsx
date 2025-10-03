@@ -6,6 +6,7 @@ import { MediaType } from "expo-image-picker";
 // import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import * as NativeImagePicker from 'react-native-image-picker'
 import { ImageURISource } from "react-native";
+import Toast from "react-native-toast-message";
 
 import { Ionicons } from '@expo/vector-icons'
 
@@ -25,7 +26,13 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
     const handleTakePhoto = async () => {
         const {status} = await ImagePicker.requestCameraPermissionsAsync()
         if ( status !== 'granted'){
-            Alert.alert('Permissão negada', 'Precisamos de permissão para acessar a câmera!');
+            Toast.show({
+                type: 'error',
+                text1: 'Permissão negada',
+                text2: 'Precisamos de permissão para acessar a câmera!',
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             console.log('negada')
             return null;
         }
@@ -47,7 +54,13 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
     const handlePickPhoto = async () => {
         const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if ( status !== 'granted'){
-            Alert.alert('Permissão negada', 'Precisamos de permissão para acessar a câmera!');
+            Toast.show({
+                type: 'error',
+                text1: 'Permissão negada',
+                text2: 'Precisamos de permissão para acessar a galeria!',
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return null;
         }
         let result = await ImagePicker.launchImageLibraryAsync({

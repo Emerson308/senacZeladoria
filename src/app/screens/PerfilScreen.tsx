@@ -11,6 +11,7 @@ import {Ionicons} from '@expo/vector-icons'
 import { apiURL } from "../api/axiosConfig";
 import ImgTypeSelector from "../components/ImgTypeSelector";
 import { ImageURISource } from "react-native";
+import Toast from "react-native-toast-message";
 
 
 
@@ -45,7 +46,13 @@ export default function PerfilScreen(){
     const carregarDadosDoUsuario = async () => {
         const usuarioLogadoResult = await usuarioLogado()
         if(!usuarioLogadoResult.success){
-            Alert.alert('Erro', usuarioLogadoResult.errMessage)
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: usuarioLogadoResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return
         }
         
@@ -67,15 +74,17 @@ export default function PerfilScreen(){
         ])
     }
 
-    const handleUploadImage = async (photo:ImageURISource|null) => {
+    const handleUploadImage = async (photo:ImageURISource) => {
         console.log(photo)
-        if (!photo) {
-            Alert.alert('Erro', 'Nenhuma imagem selecionada para enviar.');
-            return;
-        }
         
         if(!photo.uri){
-            Alert.alert('Erro', 'Nenhuma imagem selecionada para enviar.');
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: 'Nenhuma imagem selecionada para enviar',
+                position: 'bottom',
+                visibilityTime: 3000
+            });
             return
         }
 
@@ -91,7 +100,13 @@ export default function PerfilScreen(){
 
         const alterarFotoPerfilResult = await alterarFotoPerfil(formData)
         if(!alterarFotoPerfilResult.success){
-            Alert.alert('Erro', alterarFotoPerfilResult.errMessage)
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: alterarFotoPerfilResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
         }
         
         await carregarDadosDoUsuario()

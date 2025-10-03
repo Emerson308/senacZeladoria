@@ -5,8 +5,9 @@ import api from './api/axiosConfig';
 // import { usuarioLogado } from './servicos/servicoAutenticacao';
 import { getAllUsersGroups, usuarioLogado } from './servicos/servicoUsuarios';
 import { UserGroup, Usuario } from './types/apiTypes';
-import { View, ActivityIndicator, Text, Alert } from 'react-native';
+import { View, ActivityIndicator, Text, Alert, TouchableOpacity } from 'react-native';
 import eventBus from './utils/eventBus';
+import Toast from 'react-native-toast-message';
 
 type UserRole = 'user' | 'admin' | null;
 
@@ -35,7 +36,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const carregarGroups = async () => {
     const getAllUsersGroupsResult = await getAllUsersGroups()
     if(!getAllUsersGroupsResult.success){
-      Alert.alert('Erro', getAllUsersGroupsResult.errMessage)
+      Toast.show({
+          type: 'error',
+          text1: 'Erro',
+          text2: getAllUsersGroupsResult.errMessage,
+          position: 'bottom',
+          visibilityTime: 3000
+      })
       return;
     }
 
@@ -45,7 +52,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const verificarAutenticacao = async () => {
     const obterTokenResult = await obterToken();
     if (!obterTokenResult.success){
-      Alert.alert('Erro', obterTokenResult.errMessage)
+      Toast.show({
+          type: 'error',
+          text1: 'Erro',
+          text2: obterTokenResult.errMessage,
+          position: 'bottom',
+          visibilityTime: 3000
+      })
       return
     }
 
@@ -53,7 +66,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const usuarioLogadoResult = await usuarioLogado();
     if(!usuarioLogadoResult.success){
-      Alert.alert('Erro', usuarioLogadoResult.errMessage)
+      Toast.show({
+          type: 'error',
+          text1: 'Erro',
+          text2: usuarioLogadoResult.errMessage,
+          position: 'bottom',
+          visibilityTime: 3000
+      })
       return
     }
 
@@ -88,7 +107,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const resposta = await realizarLogin({username: username, password: password})
     const {success} = resposta
     if(!success){
-      Alert.alert('Erro', resposta.errMessage)
+      Toast.show({
+          type: 'error',
+          text1: 'Erro',
+          text2: resposta.errMessage,
+          position: 'bottom',
+          visibilityTime: 3000
+      })
       return
     }
     
@@ -105,7 +130,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     const resultSalvarToken = await salvarToken(resposta.data.token)
     if(!resultSalvarToken.success){
-      Alert.alert('Erro', resultSalvarToken.errMessage)
+      Toast.show({
+          type: 'error',
+          text1: 'Erro',
+          text2: resultSalvarToken.errMessage,
+          position: 'bottom',
+          visibilityTime: 3000
+      })
     }
   }
 
@@ -132,8 +163,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   if (isLoading) {
     return( 
       <View className='flex-1 bg-gray-50 justify-center p-16'>
-
-        <ActivityIndicator size={80}/>
+        <TouchableOpacity onPress={async () => await verificarAutenticacao()}>
+          <ActivityIndicator size={80}/>
+        </TouchableOpacity>
         <Text className=' mt-2 text-center'>Erro ao conectar na sua conta, Tente novamente mais tarde</Text>
       </View>
       

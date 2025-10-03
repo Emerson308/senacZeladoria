@@ -21,15 +21,8 @@ const LoginScreen = () => {
   const lidarComLogin = async () => {
     setCarregando(true);
     setMensagemErro('');
-    try{
-      await signIn(username, password)
-    } catch(erro: any){
-      setMensagemErro(erro.message || 'Ocorreu um erro ao tentar fazer login. Tente novamente.')
-      Alert.alert('Erro no login', mensagemErro)
-    } finally{
-      setCarregando(false)
-    }
-
+    signIn(username, password)
+    setCarregando(false)
   }
 
   if(carregando){

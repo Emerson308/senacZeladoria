@@ -10,6 +10,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { getRegistrosService } from "../servicos/servicoSalas";
 import RegistroCard from "../components/RegistroCard";
+import Toast from "react-native-toast-message";
 // import { TextInput } from "react-native-gesture-handler";
 
 
@@ -66,29 +67,16 @@ export default function RegistrosLimpezaScreen(){
     const carregarRegistros = async () => {
         const getRegistrosServiceResult = await getRegistrosService()
         if(!getRegistrosServiceResult.success){
-            Alert.alert('Erro', getRegistrosServiceResult.errMessage)
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: getRegistrosServiceResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return
         }
         setRegistros(getRegistrosServiceResult.data)
-
-        try {
-
-        } catch (erro: any){
-            setMensagemErro(erro.message || 'Não foi possivel carregar seu perfil')
-            if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-                signOut()
-            }
-            Alert.alert('Erro', mensagemErro, [
-                {
-                    text: 'Ok',
-                    style:'default',
-                    // onPress: () => navigation.navigate('Home')
-                    
-                }
-            ])
-            
-
-        }
     }
 
     if (carregando){

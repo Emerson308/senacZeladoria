@@ -27,18 +27,18 @@ function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
                             }
                         </View>
                         <View className=" flex-1 flex-col">
-                            <Text numberOfLines={1} className=" mb-1" ellipsizeMode="tail" variant="headlineSmall">{usuario.username}</Text>
+                            <View className=" flex-row gap-2 items-center">
+                                <Text numberOfLines={1} className=" flex-1" ellipsizeMode="tail" variant="headlineSmall">{usuario.username}</Text>
+                                {
+                                    usuario.is_superuser
+                                    ? <Text style={styles.textGreen} variant="bodyMedium">Admin</Text>
+                                    : <Text style={styles.textYellow} variant="bodyMedium">Usuário padrão</Text>
+                                }
+
+                            </View>
                             <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Email: {usuario.email ? usuario.email : 'Sem email'}</Text>
                             <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Nome: {usuario.nome ? usuario.nome : 'Sem nome'}</Text>
                         </View>
-                        <View className=" ">
-                        {
-                            usuario.is_superuser
-                            ? <Text style={styles.textGreen} variant="bodyMedium">Admin</Text>
-                            : <Text style={styles.textYellow} variant="bodyMedium">Usuário Padrão</Text>
-                        }
-                        </View>
-
                     </View>
                     <View className=" flex-1 flex-row gap-2 px-4 flex-wrap">
                         {
