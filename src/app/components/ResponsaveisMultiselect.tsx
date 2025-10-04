@@ -15,16 +15,22 @@ interface ResponsaveisMultiselectProps{
         visible: boolean,
         hideModal: () => void,
         zeladores: Usuario[],
-        selectedResponsaveis: string[],
-        setSelectedResponsaveis: (usernameList: string[]) => void
+        selectedResponsaveisProps: string[],
+        setSelectedResponsaveisProps: (usernameList: string[]) => void
         refreshZeladores: () => void
     
 }
 
-export default function ResponsaveisMultiselect({visible, hideModal, zeladores, selectedResponsaveis, setSelectedResponsaveis, refreshZeladores}: ResponsaveisMultiselectProps){
+export default function ResponsaveisMultiselect({visible, hideModal, zeladores, selectedResponsaveisProps, setSelectedResponsaveisProps,  refreshZeladores}: ResponsaveisMultiselectProps){
 
+    
     const [responsaveisInputText, setResponsaveisInputText] = useState('')
     const [refreshing, setRefreshing] = useState(false)
+    const [selectedResponsaveis, setSelectedResponsaveis] = useState<string[]>([...selectedResponsaveisProps])
+    
+    // if(visible){
+    //     setSelectedResponsaveis([...selectedResponsaveisProps])
+    // }
 
     const zeladoresFiltrados = zeladores.filter(zelador => {
         if(!responsaveisInputText){
@@ -36,16 +42,17 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
     const contadorZeladores = zeladoresFiltrados.length
 
     const toggleUserSelection = (user: string) => {
-        const isSelected = selectedResponsaveis.some(u => u === user);
-        if (isSelected) {
-          setSelectedResponsaveis(selectedResponsaveis.filter(u => u !== user));
-        } else {
-          setSelectedResponsaveis([...selectedResponsaveis, user]);
+        // const isSelected = selectedResponsaveis.some(u => u === user);
+        if(selectedResponsaveis.includes(user)){
+            setSelectedResponsaveis(selectedResponsaveis.filter(u => u !== user));
+        } else{
+            setSelectedResponsaveis([...selectedResponsaveis, user]);
         }
     };
 
     const renderZelador = ({item}: ListRenderItemInfo<Usuario>) => {
-        const isSelected = selectedResponsaveis.some(u => u === item.username);
+        // const isSelected = selectedResponsaveis.some(u => u === item.username);
+        const isSelected = selectedResponsaveis.includes(item.username);
         return (
             <TouchableOpacity
                 onPress={() => toggleUserSelection(item.username)}
@@ -80,7 +87,10 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
         <Portal>
         <Modal
             visible={visible}
-            onDismiss={hideModal}
+            onDismiss={() => {
+                setSelectedResponsaveis([...selectedResponsaveisProps])
+                hideModal()
+            }}
             contentContainerStyle={{
                 marginHorizontal: 16,
                 borderRadius: 15,
@@ -129,6 +139,27 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
 
 
                 />
+
+                <View className=" flex-row gap-2">
+                    <TouchableOpacity
+                        className=" flex-1 h-14 border-2 items-center justify-center rounded-full"
+                        onPress={() => {
+                            setSelectedResponsaveis([...selectedResponsaveisProps])
+                            hideModal()
+                        }}
+                    >
+                        <Text className=" text-base">Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        className=" flex-1 h-14 items-center justify-center rounded-full bg-sblue"
+                        onPress={() => {
+                            setSelectedResponsaveisProps([...selectedResponsaveis])
+                            hideModal()
+                        }}
+                    >
+                        <Text className=" text-base text-white">Selecionar</Text>
+                    </TouchableOpacity>
+                </View>
 
 
                 

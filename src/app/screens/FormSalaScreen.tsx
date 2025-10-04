@@ -98,7 +98,7 @@ export default function FormSalaScreen(){
             
         }
         if(sala && sala.imagem){
-            formData.append('imagem', 'null')
+            formData.append('imagem', '')
             return
         }
     }
@@ -107,7 +107,7 @@ export default function FormSalaScreen(){
         const salaSchema = z.object({
             nome_numero: z.string().min(1, 'O nome da sala é obrigatório'),
             capacidade: z.coerce.number().int('A capacidade deve ser um número inteiro válido')
-                .positive('A capacidade deve ser um número inteiro válido'),
+                .positive('A capacidade deve ser um número inteiro válido').max(2000, 'A capacidade deve ser menor ou igual á 2000'),
             localizacao: z.string().min(1, 'A localização é obrigatória'),
             descricao: z.string().optional(),
             instrucoes: z.string().optional(),
@@ -133,7 +133,7 @@ export default function FormSalaScreen(){
             const errorMessages = validationResult.error.issues.map(err => {
                 // console.log(err.message)
                 return err.message
-            }).join('\n\n');
+            }).join('\n');
             Toast.show({
                 type: 'error',
                 text1: 'Erro de validação',
@@ -190,12 +190,17 @@ export default function FormSalaScreen(){
                 })
                 return
             }
-            Alert.alert('Aviso', 'Sala criada com sucesso', [
-                {
-                    "text": "Ok",
-                    "onPress": () => navigation.navigate('AdminTabs')
-                }
-            ])
+            
+            navigation.navigate('AdminTabs')
+            setTimeout(() => {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Aviso',
+                    text2: 'Sala criada com sucesso!',
+                    position: 'bottom',
+                    visibilityTime: 3000
+                })
+            }, 3000)
         }
         if(sala){
             const editarSalaServiceResult = await editarSalaService(newSala, sala.qr_code_id)
@@ -209,13 +214,16 @@ export default function FormSalaScreen(){
                 })
                 return
             }
-            Alert.alert('Aviso', 'Sala editada com sucesso', [
-                {
-                    "text": "Ok",
-                    "onPress": () => navigation.navigate('AdminTabs')
-                }
-            ])
-
+            navigation.navigate('AdminTabs')
+            setTimeout(() => {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Aviso',
+                    text2: 'Sala editada com sucesso!',
+                    position: 'bottom',
+                    visibilityTime: 3000
+                })
+            }, 3000)
         }
     }
 
@@ -229,8 +237,8 @@ export default function FormSalaScreen(){
 
     return (
         <Provider>
-        <SafeAreaView className="bg-white rounded-lg p-8 flex-1">
-            <ResponsaveisMultiselect refreshZeladores={carregarZeladores} visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} zeladores={zeladores} selectedResponsaveis={selectedResponsaveis} setSelectedResponsaveis={setSelectedResponsaveis}/>
+        <SafeAreaView className="bg-white rounded-lg p-8 px-4 flex-1">
+            <ResponsaveisMultiselect refreshZeladores={carregarZeladores} visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} zeladores={zeladores} selectedResponsaveisProps={selectedResponsaveis} setSelectedResponsaveisProps={setSelectedResponsaveis}/>
             <ImgTypeSelector visible={imgSelectorVisible} aspect={[1,1]} hideModal={() => setImgSelectorVisible(false)} handleUploadImage={setImage}/>
             {
                 !sala ?
@@ -238,7 +246,7 @@ export default function FormSalaScreen(){
                 :
                 <Text className=" text-center mb-8 text-4xl font-bold">Editar sala</Text>
             }
-            <View className=" h-80 gap-2 flex-1 mb-8 flex-col">
+            <ScrollView className=" flex-1 mb-8 px-4" contentContainerClassName="gap-2 flex-col">
                 
                 <TextInput
                     label="Nome da sala"
@@ -274,13 +282,14 @@ export default function FormSalaScreen(){
                     activeOutlineColor='#004A8D'
                 />
                 
-                <TouchableOpacity onPress={() => setResponsaveisMultiselectVisible(true)} className=" mt-1.5 border border-gray-700 items-center h-14 flex-row justify-center rounded-lg bg-gray-300">
+                <TouchableOpacity onPress={() => setResponsaveisMultiselectVisible(true)} 
+                className=" mt-1.5 border border-gray-700 items-center h-14 flex-row justify-center rounded-lg bg-sgray/20">
                     <Ionicons
-                        name='list-outline' 
+                        name='people-outline' 
                         size={22} 
                         color={'black'}
                     />
-                    <Text className=" text-lg text-center text-black px-2" numberOfLines={1}>Responsáveis pela limpeza</Text>
+                    <Text className=" text-lg text-center text-black px-2" numberOfLines={1}>Selecionar responsáveis pela limpeza</Text>
                 </TouchableOpacity>
                 
                 <TextInput
@@ -344,27 +353,37 @@ export default function FormSalaScreen(){
                     />
                 </Picker>
 
-                <View className=" gap-4 flex-row mt-1 items-center">
-                    <View className=" border aspect-video flex-1">
+                <View className=" gap-4 flex-row flex-1 h-44 items-center">
+                    <View className=" border aspect-square h-full">
                     {image ? 
                         <Image
                             source={{uri: image.uri}}
                             className=" flex-1"
                         />
 
-                        : null
+                        : 
+                        <View className=" flex-1 bg-gray-200 items-center justify-center">
+                            <Ionicons name="image-outline" size={32}/>
+                        </View>
                     }
 
                     </View>
 
-                    <TouchableOpacity onPress={() => setImgSelectorVisible(true)} className=" border border-gray-700 items-center h-14 justify-center rounded-lg bg-gray-300">
-                        <Text className=" text-lg text-center text-black px-2" numberOfLines={1}>Inserir imagem da sala</Text>
-                    </TouchableOpacity>
+                    <View className=" flex-1 flex-col gap-2">
+                        <TouchableOpacity onPress={() => setImgSelectorVisible(true)} className=" items-center h-14 justify-center rounded-lg bg-sblue/20">
+                            <Text className=" text-lg text-center text-sblue px-2" numberOfLines={1}>Inserir imagem</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setImage(null)} className=" items-center h-14 justify-center rounded-lg px-6 bg-sred/20">
+                            <Ionicons name="trash-bin-outline" size={28} color={colors.sred}/>
+                        </TouchableOpacity>
+
+                    </View>
+
 
                 </View>
-            </View>
+            </ScrollView>
 
-            <View className=" flex-row justify-between gap-8">
+            <View className=" flex-row justify-between px-4 gap-8">
                 <Button
                     mode="outlined"
                     textColor="black"

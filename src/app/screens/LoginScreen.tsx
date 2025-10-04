@@ -1,8 +1,20 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
-import { TextInput, Button, Text, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
+import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView, Text } from 'react-native';
+import { TextInput, Button, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as z from 'zod'
+import {useForm, Controller} from 'react-hook-form'
+import {zodResolver} from '@hookform/resolvers/zod'
+
+const LoginSchema = z.object({
+  username: z.string().min(1, 'O nome de usuário é obrigatório'),
+  password: z.string().min(1, 'A senha é obrigatória')
+})
+
+type LoginFormData = z.infer<typeof LoginSchema>;
+
+
 
 const LoginScreen = () => {
   const authContext = useContext(AuthContext);
@@ -12,18 +24,25 @@ const LoginScreen = () => {
   }
 
   const { signIn } = authContext;
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
   const [carregando, setCarregando] = useState(false);
-  const [mensagemErro, setMensagemErro] = useState('');
   const [showPassword, setShowPassword] = useState(false)
 
-  const lidarComLogin = async () => {
+  const {
+    control,
+    handleSubmit, 
+    formState: {errors}
+  } = useForm<LoginFormData>({resolver: zodResolver(LoginSchema), defaultValues: {
+    username: '',
+    password: ''
+  }})
+
+  const onSubmit = async (data: LoginFormData) => {
     setCarregando(true);
-    setMensagemErro('');
-    signIn(username, password)
+    signIn(data.username, data.password)
     setCarregando(false)
   }
+
 
   if(carregando){
     return(
@@ -47,34 +66,56 @@ const LoginScreen = () => {
           <Text className='items-center text-3xl font-bold font-regular'>Login</Text>
         </View>
 
-        <View className='max-w-sm w-full self-center'>
-          <TextInput
-            label="Usuário"
-            value={username}
-            onChangeText={setUsername}
-            autoCapitalize="none"
-            keyboardType="default"
-            mode="outlined"
-            style={styles.input}
-            activeOutlineColor='#004A8D'
+        <View className='max-w-sm w-full gap-4 self-center'>
+          <View>
+            <Controller
+              control={control}
+              name="username"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  label="Usuário"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoCapitalize="none"
+                  keyboardType="default"
+                  mode="outlined"
+                  // style={styles.input}
+                  activeOutlineColor='#004A8D'
+                />
+            )}
             />
+            {errors.username && <Text className=' text-red-500 text-sm'>{errors.username.message}</Text>}
 
-          <TextInput
-            label="Senha"
-            value={password}
-            onChangeText={setPassword}
-            autoCapitalize="none"
-            keyboardType='default'
-            mode="outlined"
-            style={styles.input}
-            activeOutlineColor='#004A8D'
-            secureTextEntry={!showPassword}
-            right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
-          />
+          </View>
+
+          <View>
+            <Controller
+              control={control}
+              name='password'
+              render={({ field: {onChange, onBlur, value} }) => (
+                <TextInput
+                  label="Senha"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoCapitalize="none"
+                  keyboardType='default'
+                  mode="outlined"
+                  // style={styles.input}
+                  activeOutlineColor='#004A8D'
+                  secureTextEntry={!showPassword}
+                  right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                />
+            )}
+            />
+            {errors.password && <Text className=' text-red-500 text-sm'>{errors.password.message}</Text>}
+
+          </View>
           
           <Button
             mode="contained"
-            onPress={lidarComLogin}
+            onPress={handleSubmit(onSubmit)}
             style={styles.button}
             className='mb-6'
             contentStyle={styles.buttonContent}
@@ -138,10 +179,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function App() {
-  return (
-    <PaperProvider>
-      <LoginScreen />
-    </PaperProvider>
-  );
-}
+export default LoginScreen
+
+// export default function App() {
+//   return (
+//     <PaperProvider>
+//       <LoginScreen />
+//     </PaperProvider>
+//   );
+// }

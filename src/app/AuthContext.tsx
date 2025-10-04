@@ -60,6 +60,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           position: 'bottom',
           visibilityTime: 3000
       })
+      setIsLoading(false);
+      return
+    }
+
+    if(!obterTokenResult.data){
+      setIsLoading(false);
       return
     }
 
@@ -88,7 +94,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       // setUserRole('user')
     }
-    setIsLoading(false);
 }
 
   const deslogarUsuario = async () => {

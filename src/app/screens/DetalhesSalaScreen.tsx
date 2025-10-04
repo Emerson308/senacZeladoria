@@ -4,7 +4,7 @@ import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
 import React, { useContext, useEffect, useState } from 'react';
-import { obterDetalhesSala, marcarSalaComoLimpaService } from '../servicos/servicoSalas';
+import { obterDetalhesSala, marcarSalaComoLimpaService, excluirSalaService } from '../servicos/servicoSalas';
 import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
@@ -14,7 +14,6 @@ import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';
 import Toast from 'react-native-toast-message';
 
-// import { Alert } from 'react-native';
 
 
 export default function DetalhesSalaScreen(){
@@ -26,7 +25,7 @@ export default function DetalhesSalaScreen(){
         return null
     }
     
-    const {signOut, user} = authContext
+    const {signOut, user, userRole, usersGroups} = authContext
     const route = useRoute<TelaDetalhesSala['route']>()
     const navigation = useNavigation()
     const {id} = route.params;
@@ -35,24 +34,37 @@ export default function DetalhesSalaScreen(){
     const [mensagemErro, setMensagemErro] = useState('')
     const [dadosSala, setDadosSala] = useState<Sala|null>(null)
     const [observacoes, setObservacoes] = useState('')
-    // const [reload, setReload] = useState(false)
 
-    // const marcarSalaComoLimpa = async (id: string) => {
-    //     setCarregando(true)
-    //     try{
-    //         await marcarSalaComoLimpaService(id ,observacoes)
-    //         await carregarSala()
-    //     } catch(erro: any){
-    //         setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-    //         if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-    //             signOut()
-    //         }                
-    //         Alert.alert('Erro', mensagemErro)
-            
-    //     } finally{
-    //         setCarregando(false)
-    //     }
-    // }
+    
+
+    const excluirSala = async (id: string) => {
+        const excluirSalaServiceResult = await excluirSalaService(id);
+        if(!excluirSalaServiceResult.success){
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: excluirSalaServiceResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
+        }
+
+        navigation.goBack()
+    }
+
+    const handleExcluirSala = () => {
+        Alert.alert('Excluir sala', 'Tem certeza que deseja excluir essa sala?', [
+            {
+                text: 'Cancelar',
+                style: 'cancel',
+            },
+            {
+                text: 'Excluir',
+                style: 'destructive',
+                onPress: async () => await excluirSala(id)
+            }
+        ])
+    }
     
     const carregarSala = async () => {
         setCarregando(true)
@@ -116,144 +128,224 @@ export default function DetalhesSalaScreen(){
             </View>
 
         </View>
-            <ScrollView className=" flex-1 mb-3">
-                {
-                    dadosSala.imagem
-                    ? (
-                        <ImageBackground
-                            className=' flex-row aspect-video justify-center'
-                            source={{uri: apiURL + dadosSala.imagem}}
-                        >
-                            <View className=' bg-black/40 flex-1 px-4 items-center justify-center '>
-                                <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
-                            </View>
-                        </ImageBackground>
-                    )
-                    : (
-                        <View className=' bg-black/40 aspect-video px-4 items-center justify-center'>
+        <ScrollView className=" mt-4 flex-1">
+            {
+                dadosSala.imagem
+                ? (
+                    <ImageBackground
+                        className=' flex-row mx-4 aspect-video justify-center'
+                        source={{uri: apiURL + dadosSala.imagem}}
+                    >
+                        <View className=' bg-black/40 flex-1 px-4 items-center justify-center '>
                             <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                         </View>
-                    )
-                }
-                <View className=' p-5 pt-0 pb-10 md:p-8'>
-
-
-                    <View className={estilosTailwind.item}>
-                        <View className='flex-row gap-2 mb-3 items-center'>
-                            {/* <Ionicons size={24} name='browsers-outline' color={colors.sgray} className=''/> */}
-                            <MaterialCommunityIcons size={24} name='broom' color={colors.sgray}/>
-                            <Text className={estilosTailwind.info_label + ''}>Status de limpeza</Text>
-                        </View>
-                        {
-                            dadosSala.status_limpeza === 'Limpa' 
-                            ? <Text className='text-sgreen bg-sgreen/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                            : dadosSala.status_limpeza === 'Limpeza Pendente'
-                            ? <Text className='text-syellow bg-syellow/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                            : dadosSala.status_limpeza === 'Em Limpeza'
-                            ? <Text className='text-sgray bg-sgray/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                            : <Text className='text-sred bg-sred/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
-                        }
+                    </ImageBackground>
+                )
+                : (
+                    <View className=' bg-black/40 aspect-video mx-4 px-4 items-center justify-center'>
+                        <Text className=' text-3xl text-center font-bold mb-3 text-white'>{dadosSala.nome_numero}</Text>
                     </View>
+                )
+            }
+            <View className=' p-5 pt-0 pb-10 md:p-8'>
 
+
+                <View className={estilosTailwind.item}>
+                    <View className='flex-row gap-2 mb-3 items-center'>
+                        {/* <Ionicons size={24} name='browsers-outline' color={colors.sgray} className=''/> */}
+                        <MaterialCommunityIcons size={24} name='broom' color={colors.sgray}/>
+                        <Text className={estilosTailwind.info_label + ''}>Status de limpeza</Text>
+                    </View>
                     {
-                        user.is_superuser || user.groups.includes(1)
-                        ? (
-                            <>
-                            <View className={estilosTailwind.item + ''}>
-                                <View className='flex-row gap-2 mb-3 items-center'>
-                                    {/* <Ionicons size={24} name='document-text-outline' color={colors.sgray} className=''/> */}
-                                    <MaterialCommunityIcons size={24} name='file-document-outline' color={colors.sgray}/>
-                                    <Text className={estilosTailwind.info_label}>Instruções</Text>
-                                </View>
-                                <Text className={estilosTailwind.info_values}>{dadosSala.instrucoes ? dadosSala.instrucoes : 'Sem instruções'}</Text>
-                            </View>
-
-                            <View className={estilosTailwind.item}>
-                                <View className='flex-row gap-2 mb-3 items-center'>
-                                    {/* <Ionicons size={24} name='time-outline' color={colors.sgray} className=''/> */}
-                                    <MaterialCommunityIcons size={24} name='update' color={colors.sgray}/>
-                                    <Text className={estilosTailwind.info_label}>Última limpeza</Text>
-                                </View>
-                                {
-                                    dadosSala.ultima_limpeza_funcionario ? 
-                                    <View>
-                                        <Text className={estilosTailwind.info_values + 'font-normal text-3sm'}>{formatarDataISO(dadosSala.ultima_limpeza_data_hora)}</Text>
-                                        <Text className={estilosTailwind.info_values + 'text-gray-600 font-regular text-2sm'}>Por {dadosSala.ultima_limpeza_funcionario}</Text>
-                                    </View> : 
-                                    <Text className={estilosTailwind.info_values}>Sem histórico de limpeza</Text>
-                                }
-                            </View>
-
-                            <View className={estilosTailwind.item + ''}>
-                                <View className='flex-row gap-2 mb-3 items-center'>
-                                    <Ionicons size={24} name='timer-outline' color={colors.sgray} className=''/>
-                                    <Text className={estilosTailwind.info_label}>Validade da limpeza</Text>
-                                </View>
-                                <Text className={estilosTailwind.info_values}>{dadosSala.validade_limpeza_horas} horas</Text>
-                            </View>
-
-                            <View className={estilosTailwind.item + ''}>
-                                <View className='flex-row gap-2 mb-3 items-center'>
-                                    <Ionicons size={24} name='key-outline' color={colors.sgray} className=''/>
-                                    <Text className={estilosTailwind.info_label}>Status da sala</Text>
-                                </View>
-                                <Text className={(dadosSala.ativa) ? 'bg-sgreen/20 px-4 py-1 rounded-md text-2xl text-sgreen' + estilosTailwind.info_values : 'bg-sred/20 px-4 py-1 rounded-md text-2xl text-sred' + estilosTailwind.info_values}>{dadosSala.ativa ? 'Ativa' : 'Inativa'}</Text>
-                            </View>
-                                    
-                            </>
-                        ) : null
+                        dadosSala.status_limpeza === 'Limpa' 
+                        ? <Text className='text-sgreen bg-sgreen/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                        : dadosSala.status_limpeza === 'Limpeza Pendente'
+                        ? <Text className='text-syellow bg-syellow/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                        : dadosSala.status_limpeza === 'Em Limpeza'
+                        ? <Text className='text-sgray bg-sgray/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
+                        : <Text className='text-sred bg-sred/20 text-xl font-medium px-2 pl-3 py-1 rounded-full'>{dadosSala.status_limpeza}</Text>
                     }
-    
-                    <View className={estilosTailwind.item + ''}>
-                        <View className='flex-row gap-2 mb-3 items-center'>
-                            <MaterialCommunityIcons size={24} name='account-group' color={colors.sgray}/>
-                            {/* <Ionicons size={24} name='people-outline' color={colors.sgray} className=''/> */}
-                            <Text className={estilosTailwind.info_label}>Capacidade</Text>
-                        </View>
-                        <Text className={estilosTailwind.info_values}>{dadosSala.capacidade} pessoas</Text>
-                    </View>
-
-                    <View className={estilosTailwind.item}>
-                        <View className='flex-row gap-2 mb-3 items-center'>
-                            {/* <Ionicons size={24} name='location-outline' color={colors.sgray} className=''/> */}
-                            <MaterialCommunityIcons size={24} name='map-marker' color={colors.sgray}/>
-                            <Text className={estilosTailwind.info_label}>Localização</Text>
-                        </View>
-                        <Text className={estilosTailwind.info_values}>{dadosSala.localizacao}</Text>
-                    </View>
-
-                    {
-                        user.is_superuser || user.groups.includes(1)
-                        ? (
-                            <View className={estilosTailwind.item + ''}>
-                            <View className='flex-row gap-2 mb-3 items-center'>
-                                {/* <Ionicons size={24} name='person-outline' color={colors.sgray} className=''/> */}
-                                <MaterialCommunityIcons size={24} name='account' color={colors.sgray}/>
-                                <Text className={estilosTailwind.info_label + ''}>Responsáveis</Text>
-                            </View>
-                            {dadosSala.responsaveis.map(responsavel => <Text key={responsavel} className={estilosTailwind.info_values}>- {responsavel}</Text>)}
-                            {dadosSala.responsaveis.length === 0 ? <Text className={estilosTailwind.info_values + 'font-regular text-gray-300'} >Sem responsáveis</Text>: null}
-                        </View>
-                        ) : null
-                    }
-
-
-                    <View className={estilosTailwind.item}>
-                        <View className='flex-row gap-2 mb-3 items-center'>
-                            {/* <Ionicons size={24} name='list-outline' color={colors.sgray} className=''/> */}
-                            <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
-                            <Text className={estilosTailwind.info_label}>Descrição</Text>
-                        </View>
-                        {
-                            dadosSala.descricao ?
-                            <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
-                            :
-                            <Text className={estilosTailwind.info_values + ' font-regular text-gray-300'}>Sem descrição</Text>
-
-                        }
-                    </View>
                 </View>
-            </ScrollView>
+
+                {
+                    user.is_superuser || user.groups.includes(1)
+                    ? (
+                        <>
+                        <View className={estilosTailwind.item + ''}>
+                            <View className='flex-row gap-2 mb-3 items-center'>
+                                {/* <Ionicons size={24} name='document-text-outline' color={colors.sgray} className=''/> */}
+                                <MaterialCommunityIcons size={24} name='file-document-outline' color={colors.sgray}/>
+                                <Text className={estilosTailwind.info_label}>Instruções</Text>
+                            </View>
+                            <Text className={estilosTailwind.info_values}>{dadosSala.instrucoes ? dadosSala.instrucoes : 'Sem instruções'}</Text>
+                        </View>
+
+                        <View className={estilosTailwind.item}>
+                            <View className='flex-row gap-2 mb-3 items-center'>
+                                {/* <Ionicons size={24} name='time-outline' color={colors.sgray} className=''/> */}
+                                <MaterialCommunityIcons size={24} name='update' color={colors.sgray}/>
+                                <Text className={estilosTailwind.info_label}>Última limpeza</Text>
+                            </View>
+                            {
+                                dadosSala.ultima_limpeza_funcionario ? 
+                                <View>
+                                    <Text className={estilosTailwind.info_values + 'font-normal text-3sm'}>{formatarDataISO(dadosSala.ultima_limpeza_data_hora)}</Text>
+                                    <Text className={estilosTailwind.info_values + 'text-gray-600 font-regular text-2sm'}>Por {dadosSala.ultima_limpeza_funcionario}</Text>
+                                </View> : 
+                                <Text className={estilosTailwind.info_values}>Sem histórico de limpeza</Text>
+                            }
+                        </View>
+
+                        <View className={estilosTailwind.item + ''}>
+                            <View className='flex-row gap-2 mb-3 items-center'>
+                                <Ionicons size={24} name='timer-outline' color={colors.sgray} className=''/>
+                                <Text className={estilosTailwind.info_label}>Validade da limpeza</Text>
+                            </View>
+                            <Text className={estilosTailwind.info_values}>{dadosSala.validade_limpeza_horas} horas</Text>
+                        </View>
+
+                        <View className={estilosTailwind.item + ''}>
+                            <View className='flex-row gap-2 mb-3 items-center'>
+                                <Ionicons size={24} name='key-outline' color={colors.sgray} className=''/>
+                                <Text className={estilosTailwind.info_label}>Status da sala</Text>
+                            </View>
+                            <Text className={(dadosSala.ativa) ? 'bg-sgreen/20 px-4 py-1 rounded-md text-2xl text-sgreen' + estilosTailwind.info_values : 'bg-sred/20 px-4 py-1 rounded-md text-2xl text-sred' + estilosTailwind.info_values}>{dadosSala.ativa ? 'Ativa' : 'Inativa'}</Text>
+                        </View>
+                                
+                        </>
+                    ) : null
+                }
+
+                <View className={estilosTailwind.item + ''}>
+                    <View className='flex-row gap-2 mb-3 items-center'>
+                        <MaterialCommunityIcons size={24} name='account-group' color={colors.sgray}/>
+                        {/* <Ionicons size={24} name='people-outline' color={colors.sgray} className=''/> */}
+                        <Text className={estilosTailwind.info_label}>Capacidade</Text>
+                    </View>
+                    <Text className={estilosTailwind.info_values}>{dadosSala.capacidade} pessoas</Text>
+                </View>
+
+                <View className={estilosTailwind.item}>
+                    <View className='flex-row gap-2 mb-3 items-center'>
+                        {/* <Ionicons size={24} name='location-outline' color={colors.sgray} className=''/> */}
+                        <MaterialCommunityIcons size={24} name='map-marker' color={colors.sgray}/>
+                        <Text className={estilosTailwind.info_label}>Localização</Text>
+                    </View>
+                    <Text className={estilosTailwind.info_values}>{dadosSala.localizacao}</Text>
+                </View>
+
+                {
+                    user.is_superuser || user.groups.includes(1)
+                    ? (
+                        <View className={estilosTailwind.item + ''}>
+                        <View className='flex-row gap-2 mb-3 items-center'>
+                            {/* <Ionicons size={24} name='person-outline' color={colors.sgray} className=''/> */}
+                            <MaterialCommunityIcons size={24} name='account' color={colors.sgray}/>
+                            <Text className={estilosTailwind.info_label + ''}>Responsáveis</Text>
+                        </View>
+                        {dadosSala.responsaveis.map(responsavel => <Text key={responsavel} className={estilosTailwind.info_values}>- {responsavel}</Text>)}
+                        {dadosSala.responsaveis.length === 0 ? <Text className={estilosTailwind.info_values + 'font-regular text-gray-300'} >Sem responsáveis</Text>: null}
+                    </View>
+                    ) : null
+                }
+
+
+                <View className={estilosTailwind.item}>
+                    <View className='flex-row gap-2 mb-3 items-center'>
+                        {/* <Ionicons size={24} name='list-outline' color={colors.sgray} className=''/> */}
+                        <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
+                        <Text className={estilosTailwind.info_label}>Descrição</Text>
+                    </View>
+                    {
+                        dadosSala.descricao ?
+                        <Text className={estilosTailwind.info_values + ' font-regular text-gray-800'}>{dadosSala.descricao}</Text>
+                        :
+                        <Text className={estilosTailwind.info_values + ' font-regular text-gray-300'}>Sem descrição</Text>
+
+                    }
+                </View>
+            </View>
+        </ScrollView>
+
+        {
+            (userRole === 'user' && user.groups.length === 0) ? null : 
+            <View className=" flex-row gap-2 p-2">
+                <View className="flex-col flex-1 gap-2">
+                    {dadosSala.ativa ? 
+                    <>
+                        {
+                            !user.groups.includes(1) ? null : 
+                            <TouchableOpacity
+                                className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation()
+                                }}
+                                >
+                                <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
+                                <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
+                            </TouchableOpacity>
+                        }
+
+                        {
+                            !user.groups.includes(2) ? null : 
+                            <TouchableOpacity
+                                className=" h-14 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    // marcarSalaComoSuja(sala.qr_code_id)
+                                }}
+                            >
+                                <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
+                                <Text className=" text-syellow text-base">Reportar sujeira</Text>
+                            </TouchableOpacity>                            
+                        }
+                    </>
+                    :
+                    <TouchableOpacity
+                        className=" h-14 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
+                        onPress={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
+                        <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
+                        <Text className=" text-sgray text-base">Sala inativa</Text>
+                    </TouchableOpacity>
+                    }
+                </View>
+                {
+                    userRole === 'user' ? null : 
+                    <View className={
+                        (usersGroups.length < 2) ?
+                        "flex-row-reverse gap-2"
+                        :
+                        "flex-col gap-2"
+
+                    }>
+                        <TouchableOpacity
+                            className=" h-14 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                navigation.navigate('FormSala', {sala: dadosSala})
+                            }}
+                        >
+                            <MaterialCommunityIcons size={24} name='pen' color={colors.sblue}/>
+                        </TouchableOpacity>
+                        {
+                            !dadosSala.ativa ? null :
+                            <TouchableOpacity
+                                className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    handleExcluirSala()
+                                }}
+                            >
+                                <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
+                            </TouchableOpacity>
+                        }
+                    </View>
+                }
+            </View>
+        }
             
         </SafeAreaView>
     )

@@ -93,7 +93,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                     {
                                         !userGroups.includes(1) ? null : 
                                         <TouchableOpacity
-                                            className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+                                            className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
                                             onPress={(e) => {
                                                 e.stopPropagation()
                                             }}
@@ -106,7 +106,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                     {
                                         !userGroups.includes(2) ? null : 
                                         <TouchableOpacity
-                                            className=" h-14 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
+                                            className=" h-12 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
                                             onPress={(e) => {
                                                 e.stopPropagation();
                                                 marcarSalaComoSuja(sala.qr_code_id)
@@ -119,7 +119,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                 </>
                                 :
                                 <TouchableOpacity
-                                    className=" h-14 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
+                                    className=" h-12 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
                                     onPress={(e) => {
                                         e.stopPropagation();
                                     }}
@@ -139,7 +139,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
 
                                 }>
                                     <TouchableOpacity
-                                        className=" h-14 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
+                                        className=" h-12 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
                                         onPress={(e) => {
                                             e.stopPropagation();
                                             editarSala(sala)
@@ -150,7 +150,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                     {
                                         !sala.ativa ? null :
                                         <TouchableOpacity
-                                            className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+                                            className=" h-12 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
                                             onPress={(e) => {
                                                 e.stopPropagation();
                                                 excluirSala(sala.qr_code_id)

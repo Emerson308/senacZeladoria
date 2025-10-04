@@ -2,12 +2,14 @@ import { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Modal, Pressable, Alert } from "react-native"
 // import toast
 // import { Alert } from "react-native";
-import { Button, Portal, TextInput } from "react-native-paper"
+import { Button, Portal, TextInput, HelperText } from "react-native-paper"
 import { colors } from "../../styles/colors";
+import * as z from 'zod'
 import { SafeAreaView } from "react-native-safe-area-context";
 import { newSala, NovoUsuario, Sala, Usuario } from "../types/apiTypes";
 import {Picker} from '@react-native-picker/picker'
 import { AuthContext } from "../AuthContext";
+import Toast from "react-native-toast-message";
 
 interface propsCriarUsuarioForm{
     visible: boolean,
@@ -17,6 +19,22 @@ interface propsCriarUsuarioForm{
 }
 
 type typeRole = 'User' | 'Admin'
+
+const RoleEnum = z.enum(['User', 'Admin'])
+
+const usuarioSchema = z.object({
+    username: z.string().min(1, 'O nome do usuário é obrigatório'),
+    password: z.string().min(1, 'O campo senha é obrigatório'),
+    confirmPassword: z.string().min(1, 'O campo confirme a senha é obrigatório'),
+    nome: z.string().optional().or(z.literal('')),
+    email: z.email('E-mail inválido').optional().or(z.literal('')),
+    role: RoleEnum.default('User'),
+    selectedGroups: z.array(z.number('Os IDs, de grupo devem ser números inteiros').min(0, 'O número de grupo deve ser no mínimo 0'))
+}).refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não coincidem.',
+    path: ['confirmPassword']
+})
+
 
 export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarUsuarioForm){
 
@@ -48,20 +66,39 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
     },[visible])
 
     const handleSubmit = () => {
-        if (username === '' || password === '' || confirmPassword === ''){
-            Alert.alert('Erro', 'Insira todos os campos');
-            return
+
+        const usuarioJSON = {
+            username,
+            password,
+            confirmPassword,
+            nome,
+            email
         }
 
-        if(password !== confirmPassword){
-            Alert.alert('Erro', 'As senhas não coincidem')
+        const validationResult = usuarioSchema.safeParse(usuarioJSON)
+
+        if(!validationResult.success){
+            const errorMessages = validationResult.error.issues.map(err => {
+                console.log(err)
+                return err.message
+            }).join('\n');
+            Toast.show({
+                type: 'error',
+                text1: 'Erro de validação',
+                text2: errorMessages,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
             return;
         }
+        
 
         let isSuperuser = false;
         if (role === 'Admin'){
             isSuperuser = true
         }
+
+        return
 
         onSubmit({
             username,
@@ -83,16 +120,19 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
             <Pressable onPress={onClose} style={styles.centeredView} className=" flex-1 justify-center items-center">
                 <Pressable className="bg-white rounded-lg p-4 py-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
                     <Text className=" text-center mb-8 text-4xl font-bold">Criar Usuário</Text>
-                    <TextInput
-                        label="Nome de usuário"
-                        value={username}
-                        onChangeText={setUsername}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
+                    <View className=" mb-4">
+                        <TextInput
+                            label="Nome de usuário"
+                            value={username}
+                            onChangeText={setUsername}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            // style={styles.input}
+                            activeOutlineColor='#004A8D'
+                            
+                        />
+                    </View>
                     
 
                     <TextInput

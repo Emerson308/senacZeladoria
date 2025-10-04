@@ -117,7 +117,7 @@ export default function SalasScreen() {
     }
 
     async function handleExcluirSala(id: string){
-        Alert.alert('Excluir sala', "Tem certeza de que deseja excluir este item?", [
+        Alert.alert('Excluir sala', "Tem certeza de que deseja excluir esta sala?", [
             {
                 text: 'Cancelar',
                 style: 'cancel',
