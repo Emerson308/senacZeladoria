@@ -53,16 +53,17 @@ export default function UsuariosScreen(){
 
     const criarUsuario = async (novoUsuario: NovoUsuario) => {
         setCarregando(true)
-        // const criarUsuarioServiceResult = await criarUsuarioService(novoUsuario)
-        // if(!criarUsuarioServiceResult.success){
-        //     Toast.show({
-        //         type: 'error',
-        //         text1: 'Erro',
-        //         text2: criarUsuarioServiceResult.errMessage,
-        //         position: 'bottom',
-        //         visibilityTime: 3000
-        //     })
-        // }
+        // console.log(novoUsuario)
+        const criarUsuarioServiceResult = await criarUsuarioService(novoUsuario)
+        if(!criarUsuarioServiceResult.success){
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: criarUsuarioServiceResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            })
+        }
         await carregarUsuarios();
         Toast.show({
             type: 'success',

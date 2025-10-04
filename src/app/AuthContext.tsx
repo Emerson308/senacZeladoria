@@ -51,6 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const verificarAutenticacao = async () => {
+    // console.log(verificarAutenticacao)
     const obterTokenResult = await obterToken();
     if (!obterTokenResult.success){
       Toast.show({
@@ -60,12 +61,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           position: 'bottom',
           visibilityTime: 3000
       })
-      setIsLoading(false);
       return
     }
 
     if(!obterTokenResult.data){
-      setIsLoading(false);
       return
     }
 
@@ -83,6 +82,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       })
       return
     }
+
+    await carregarGroups()
+
 
     const usuario = usuarioLogadoResult.data
     if(usuario){
@@ -138,18 +140,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const resultSalvarToken = await salvarToken(resposta.data.token)
     if(!resultSalvarToken.success){
       Toast.show({
-          type: 'error',
-          text1: 'Erro',
-          text2: resultSalvarToken.errMessage,
-          position: 'bottom',
-          visibilityTime: 3000
+        type: 'error',
+        text1: 'Erro',
+        text2: resultSalvarToken.errMessage,
+        position: 'bottom',
+        visibilityTime: 3000
       })
     }
   }
-
+  
   useEffect(() => {
-    carregarGroups()
-    verificarAutenticacao()
+    setIsLoading(true)
+    verificarAutenticacao().then(() => setIsLoading(false))
+    // setIsLoading(false)
 
     eventBus.on('LOGOUT', async () => await deslogarUsuario())
 

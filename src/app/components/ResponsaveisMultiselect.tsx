@@ -28,10 +28,6 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
     const [refreshing, setRefreshing] = useState(false)
     const [selectedResponsaveis, setSelectedResponsaveis] = useState<string[]>([...selectedResponsaveisProps])
     
-    // if(visible){
-    //     setSelectedResponsaveis([...selectedResponsaveisProps])
-    // }
-
     const zeladoresFiltrados = zeladores.filter(zelador => {
         if(!responsaveisInputText){
             return true
@@ -44,8 +40,10 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
     const toggleUserSelection = (user: string) => {
         // const isSelected = selectedResponsaveis.some(u => u === user);
         if(selectedResponsaveis.includes(user)){
+            setSelectedResponsaveisProps(selectedResponsaveis.filter(u => u !== user));
             setSelectedResponsaveis(selectedResponsaveis.filter(u => u !== user));
         } else{
+            setSelectedResponsaveisProps([...selectedResponsaveis, user]);
             setSelectedResponsaveis([...selectedResponsaveis, user]);
         }
     };
@@ -141,7 +139,7 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
                 />
 
                 <View className=" flex-row gap-2">
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         className=" flex-1 h-14 border-2 items-center justify-center rounded-full"
                         onPress={() => {
                             setSelectedResponsaveis([...selectedResponsaveisProps])
@@ -149,11 +147,11 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
                         }}
                     >
                         <Text className=" text-base">Cancelar</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity
                         className=" flex-1 h-14 items-center justify-center rounded-full bg-sblue"
                         onPress={() => {
-                            setSelectedResponsaveisProps([...selectedResponsaveis])
+                            // setSelectedResponsaveisProps([...selectedResponsaveis])
                             hideModal()
                         }}
                     >

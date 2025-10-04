@@ -1,7 +1,10 @@
 import { imageType, newSala, Sala, Usuario } from "../types/apiTypes";
 import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, TextInput as TextI, FlatList, ImageURISource } from "react-native"
-import { Button, Portal, TextInput, Provider, ActivityIndicator } from "react-native-paper"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
+import { Button, Portal, TextInput as TextInputPaper, Provider, ActivityIndicator } from "react-native-paper"
+import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";
 import { Picker } from "@react-native-picker/picker";
@@ -17,6 +20,30 @@ import ResponsaveisMultiselect from "../components/ResponsaveisMultiselect";
 import { Ionicons } from '@expo/vector-icons'
 import Toast from "react-native-toast-message";
 
+
+const salaSchema = z.object({
+    nome_numero: z.string().min(1, 'O nome da sala é obrigatório'),
+    capacidade: z.string().min(1, 'Esse campo é obrigatório').refine(num => !isNaN(Number(num)), {
+        error: 'Capacidade tem que ser um número inteiro válido'
+    }).refine(num => Number(num)%1 === 0 && Number(num) > 0, {
+        error: 'Capacidade tem que ser um número inteiro válido'
+    }).refine(num => Number(num) <= 2000, {
+        error: 'Capacidade tem que ser menor ou igual à 2000'
+    })
+    ,
+    localizacao: z.string().min(1, 'A localização é obrigatória'),
+    descricao: z.string().optional(),
+    instrucoes: z.string().optional(),
+    validade_limpeza_horas: z.string().refine(num => !!num ? !isNaN(Number(num)) : true, {
+        error: 'Capacidade tem que ser um número inteiro válido'
+    }).refine(num => !!num ? (Number(num)%1 === 0 && Number(num) > 0) : true, {
+        error: 'Capacidade tem que ser um número inteiro válido'
+    }),
+    ativa: z.enum(['Ativa', 'Inativa']).default('Ativa').optional(),
+    responsaveis: z.array(z.string('A lista deve ter os usernames dos usuários'))
+})
+
+type salaFormData = z.infer<typeof salaSchema>
 
 
 
@@ -40,30 +67,28 @@ export default function FormSalaScreen(){
     const [responsaveisMultiselectVisible, setResponsaveisMultiselectVisible] = useState(false)
     const [loading, setLoading] = useState(false)
     const [zeladores, setZeladores] = useState<Usuario[]>([])
-
-    const [nomeSala, setNomeSala] = useState('')
-    const [capacidade, setCapacidade] = useState('')
-    const [localizacao, setLocalizacao] = useState('')
-    const [selectedResponsaveis, setSelectedResponsaveis] = useState<string[]>([])
-    const [descricao, setDescricao] = useState('')
-    const [instrucoes, setInstrucoes] = useState('')
-    const [validade_limpeza_horas, setValidade_limpeza_horas] = useState('')
-    const [statusSala, setStatusSala] = useState<'Ativa' | 'Inativa'>('Ativa')
     const [image, setImage] = useState<ImageURISource | null>(null)
+    
+    const { control, handleSubmit } = useForm<salaFormData>({
+        resolver: zodResolver(salaSchema),
+        defaultValues: {
+            ativa: 'Ativa',
+            nome_numero: '',
+            capacidade: '',
+            localizacao: '',
+            validade_limpeza_horas: '',
+            descricao: '',
+            instrucoes: '',
+            responsaveis: []
+        }
+    })
+
 
     useFocusEffect( React.useCallback(() => {
         carregarZeladores()
 
         if(sala){
-            setNomeSala(sala.nome_numero)
-            setCapacidade(String(sala.capacidade))
-            setLocalizacao(sala.localizacao)
-            setDescricao(sala.descricao ? sala.descricao : '')
-            setInstrucoes(sala.instrucoes ? sala.instrucoes : '')
-            setSelectedResponsaveis(sala.responsaveis)
-            setValidade_limpeza_horas(String(sala.validade_limpeza_horas))
-            setStatusSala(sala.ativa ? 'Ativa' : 'Inativa')
-            setImage(sala.imagem ? {uri: apiURL + sala.imagem} : null)
+
         }
     }, []))
 
@@ -103,83 +128,29 @@ export default function FormSalaScreen(){
         }
     }
 
-    const handleSubmit = async () => {
-        const salaSchema = z.object({
-            nome_numero: z.string().min(1, 'O nome da sala é obrigatório'),
-            capacidade: z.coerce.number().int('A capacidade deve ser um número inteiro válido')
-                .positive('A capacidade deve ser um número inteiro válido').max(2000, 'A capacidade deve ser menor ou igual á 2000'),
-            localizacao: z.string().min(1, 'A localização é obrigatória'),
-            descricao: z.string().optional(),
-            instrucoes: z.string().optional(),
-            validade_limpeza_horas: z.coerce.number('Validade da limpeza (Horas) deve ser um número inteiro válido')
-            .int('Validade da limpeza (Horas) deve ser um número inteiro válido').optional(),
-            ativa: z.boolean().optional().default(true),
+    const onSubmit = async (data: salaFormData) => {
+
+        const {ativa, responsaveis, ...salaData} = data
+            
+        const formData = new FormData()
+        
+        responsaveis.map(item => {
+            formData.append('responsaveis', item)
         })
 
-        const formDataJSON: newSala = {
-            nome_numero: nomeSala,
-            capacidade,
-            descricao,
-            responsaveis: selectedResponsaveis,
-            localizacao,
-            instrucoes,
-            validade_limpeza_horas,
-            ativa: statusSala === 'Ativa',
-        }
-
-        const validationResult = salaSchema.safeParse(formDataJSON)
-
-        if(!validationResult.success){
-            const errorMessages = validationResult.error.issues.map(err => {
-                // console.log(err.message)
-                return err.message
-            }).join('\n');
-            Toast.show({
-                type: 'error',
-                text1: 'Erro de validação',
-                text2: errorMessages,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
-            return;
-        }
+        formData.append('ativa', String(ativa === 'Ativa'))
         
-        if (Number(validade_limpeza_horas) < 0){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro de validação',
-                text2:'Validade da limpeza (Horas) deve ser um número inteiro válido',
-                position: 'bottom',
-                visibilityTime: 3000
-            })
-            return
-        }
-
-        // console.log(selectedResponsaveis)
-
-        const formData = new FormData()
-
-        Object.entries(formDataJSON).forEach(([key, value]) => {
-            if(key === 'responsaveis'){
-                selectedResponsaveis.map(item => {
-                    formData.append(key, item)
-                })
-            }
-            if ((value || key === 'ativa' || sala) && key !== 'responsaveis'){
+        Object.entries(salaData).forEach(([key, value]) => {
+            if ((value || sala)){
                 formData.append(key, value)
             }
         })
-
+    
         adicionarImageNoFormdata(formData)
+    
 
-        // console.log(formData)
-
-        await onSubmit(formData)
-    }
-
-    const onSubmit = async (newSala: FormData) => {
         if(!sala){
-            const criarNovaSalaResult = await criarNovaSala(newSala)
+            const criarNovaSalaResult = await criarNovaSala(formData)
             if(!criarNovaSalaResult.success){
                 Toast.show({
                     type: 'error',
@@ -203,7 +174,7 @@ export default function FormSalaScreen(){
             }, 3000)
         }
         if(sala){
-            const editarSalaServiceResult = await editarSalaService(newSala, sala.qr_code_id)
+            const editarSalaServiceResult = await editarSalaService(formData, sala.qr_code_id)
             if(!editarSalaServiceResult.success){
                 Toast.show({
                     type: 'error',
@@ -238,7 +209,14 @@ export default function FormSalaScreen(){
     return (
         <Provider>
         <SafeAreaView className="bg-white rounded-lg p-8 px-4 flex-1">
-            <ResponsaveisMultiselect refreshZeladores={carregarZeladores} visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} zeladores={zeladores} selectedResponsaveisProps={selectedResponsaveis} setSelectedResponsaveisProps={setSelectedResponsaveis}/>
+            <Controller
+                control={control}
+                name="responsaveis"
+                render={({field, fieldState}) => (
+                    <ResponsaveisMultiselect refreshZeladores={carregarZeladores} visible={responsaveisMultiselectVisible} hideModal={() => setResponsaveisMultiselectVisible(false)} zeladores={zeladores} selectedResponsaveisProps={field.value} setSelectedResponsaveisProps={field.onChange}/>
+
+                )}
+            />
             <ImgTypeSelector visible={imgSelectorVisible} aspect={[1,1]} hideModal={() => setImgSelectorVisible(false)} handleUploadImage={setImage}/>
             {
                 !sala ?
@@ -248,40 +226,61 @@ export default function FormSalaScreen(){
             }
             <ScrollView className=" flex-1 mb-8 px-4" contentContainerClassName="gap-2 flex-col">
                 
-                <TextInput
-                    label="Nome da sala"
-                    value={nomeSala}
-                    onChangeText={setNomeSala}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    activeOutlineColor='#004A8D'
+                <Controller
+                    control={control}
+                    name="nome_numero"
+                    render={({field, fieldState}) => (
+                        <TextInput
+                            label="Nome da sala"
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            errorMessage={fieldState.error?.message}
+                            activeOutlineColor='#004A8D'
+                        />
+                    )}
                 />
-                
-                <TextInput
-                    label="Capacidade"
-                    value={capacidade}
-                    onChangeText={setCapacidade}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    // className=" mt-0"
-                    activeOutlineColor='#004A8D'
+                <Controller
+                    control={control}
+                    name="capacidade"
+                    render={({field, fieldState}) => (
+                        <TextInput
+                            label="Capacidade"
+                            value={String(field.value)}
+                            onChangeText={field.onChange}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            errorMessage={fieldState.error?.message}
+                            activeOutlineColor='#004A8D'
+                        />
+                        )}
                 />
 
-                <TextInput
-                    label="Localização"
-                    value={localizacao}
-                    onChangeText={setLocalizacao}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    activeOutlineColor='#004A8D'
+                <Controller
+                    control={control}
+                    name="localizacao"
+                    render={({field, fieldState}) => (
+                        <TextInput
+                            label="Localização"
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            errorMessage={fieldState.error?.message}
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
+                        />
+
+                    )}
                 />
                 
+         
                 <TouchableOpacity onPress={() => setResponsaveisMultiselectVisible(true)} 
                 className=" mt-1.5 border border-gray-700 items-center h-14 flex-row justify-center rounded-lg bg-sgray/20">
                     <Ionicons
@@ -292,66 +291,84 @@ export default function FormSalaScreen(){
                     <Text className=" text-lg text-center text-black px-2" numberOfLines={1}>Selecionar responsáveis pela limpeza</Text>
                 </TouchableOpacity>
                 
-                <TextInput
-                    label="Descrição"
-                    value={descricao}
-                    onChangeText={setDescricao}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    activeOutlineColor='#004A8D'
-                />
-                
-                <TextInput
-                    label="Instruções"
-                    // numberOfLines={2}
-                    value={instrucoes}
-                    onChangeText={setInstrucoes}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    activeOutlineColor='#004A8D'
-                />
-                
-                <TextInput
-                    label="Validade da limpeza (Horas)"
-                    value={validade_limpeza_horas}
-                    onChangeText={setValidade_limpeza_horas}
-                    autoCapitalize="none"
-                    keyboardType='default'
-                    mode="outlined"
-                    style={styles.input}
-                    activeOutlineColor='#004A8D'
-                />
-
-                <Picker
-                    selectedValue={statusSala}
-                    onValueChange={setStatusSala}
-                    itemStyle={{paddingLeft: 10}}
-                    
-                    
-                >
-                    <Picker.Item
-                        key={'Ativa'}
-                        value={'Ativa'}
-                        label="Sala ativa"
-                        color={colors.sgreen}
-                        
-                        // style={{paddingLeft: 10}}
-                        
-                        
+                <Controller
+                    control={control}
+                    name="descricao"
+                    render={({field, fieldState}) => (
+                        <TextInput
+                            label="Descrição"
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
                         />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="instrucoes"
+                    render={({field, fieldState}) => (
+                        <TextInput
+                            label="Instruções"
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            activeOutlineColor='#004A8D'
+                        />
+                    )}
+                />
 
-                    <Picker.Item
-                        key={'Inativa'}
-                        value={'Inativa'}
-                        label="Sala inativa"
-                        color={colors.syellow}
-                        // style={{marginLeft: 8}}
-                    />
-                </Picker>
+                <Controller
+                    control={control}
+                    name="validade_limpeza_horas"
+                    render={({field, fieldState}) => (
+                        <TextInput
+                            label="Validade da limpeza (Horas)"
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            autoCapitalize="none"
+                            keyboardType='default'
+                            mode="outlined"
+                            style={styles.input}
+                            errorMessage={fieldState.error?.message}
+                            activeOutlineColor='#004A8D'
+                        />
+                    )}
+                />
+                
+                <Controller
+                    control={control}
+                    name="ativa"
+                    render={({field, fieldState}) => (
+                        <Picker
+                            selectedValue={field.value}
+                            onValueChange={field.onChange}
+                            itemStyle={{paddingLeft: 10}}
+                            
+                            
+                        >
+                            <Picker.Item
+                                key={'Ativa'}
+                                value={'Ativa'}
+                                label="Sala ativa"
+                                color={colors.sgreen}                        
+                            />
+
+                            <Picker.Item
+                                key={'Inativa'}
+                                value={'Inativa'}
+                                label="Sala inativa"
+                                color={colors.syellow}
+                            />
+                        </Picker>
+                    )}
+                />
 
                 <View className=" gap-4 flex-row flex-1 h-44 items-center">
                     <View className=" border aspect-square h-full">
@@ -394,32 +411,16 @@ export default function FormSalaScreen(){
                 >
                     Cancelar
                 </Button>
-                {
-                    !sala ?
-                    <Button 
-                        mode='contained-tonal'
-                        className=" flex-1"
-                        
-                        buttonColor={colors.sblue}
-                        textColor="white"
-                        onPress={async () => await handleSubmit()}
-                    >
-                        Criar sala
-                    </Button>
-                    :
-                    <Button 
-                        mode='contained-tonal'
-                        className=" flex-1"
-                        buttonColor={colors.sblue}
-                        textColor="white"
-                        onPress={async () => await handleSubmit()}
-                    >
-                        Editar sala
-                    </Button>
-
-
-                }
-
+                <Button 
+                    mode='contained-tonal'
+                    className=" flex-1"
+                    
+                    buttonColor={colors.sblue}
+                    textColor="white"
+                    onPress={handleSubmit(onSubmit)}
+                >
+                    {!sala ? 'Criar sala' : 'Editar sala'}
+                </Button>
             </View>
 
             

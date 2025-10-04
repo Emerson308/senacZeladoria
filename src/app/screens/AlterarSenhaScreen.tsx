@@ -1,14 +1,26 @@
 import { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usuarioLogado } from "../servicos/servicoUsuarios";
-import { Usuario } from "../types/apiTypes";
 import { Alert, Text, View, StyleSheet, KeyboardAvoidingView } from "react-native";
-import { ActivityIndicator, Avatar, Button, TextInput } from "react-native-paper";
+import { ActivityIndicator, Avatar, Button, TextInput as TextInputPaper } from "react-native-paper";
+import { CustomTextInput as TextInput } from "../components/CustomTextInput";
+import * as z from 'zod'
+import {useForm, Controller} from 'react-hook-form'
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthContext } from "../AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { alterarSenha } from "../servicos/servicoUsuarios";
 
+const changePasswordSchema = z.object({
+    old_password: z.string().min(1, 'Esse campo é obrigatório'),
+    new_password: z.string().min(1, 'Esse campo é obrigatório'),
+    confirm_new_password: z.string().min(1, 'Esse campo é obrigatório')
+}).refine((data) => data.new_password === data.confirm_new_password, {
+    error: 'As senhas não coincidem',
+    path: ['confirm_new_password']
+})
+
+type changePasswordFormData = z.infer<typeof changePasswordSchema>
 
 export default function AlterarSenhaScreen(){
 
@@ -20,32 +32,22 @@ export default function AlterarSenhaScreen(){
 
     const {signOut} = authContext
     const navigation = useNavigation()
+    const { control, handleSubmit } = useForm<changePasswordFormData>({
+        resolver: zodResolver(changePasswordSchema),
+        defaultValues: {
+            old_password: '',
+            new_password: '',
+            confirm_new_password: ''
+        }
+    })
 
-    const [oldPassword, setOldPassword] = useState('')
     const [showOldPassword, setShowOldPassword] = useState(false)
-    const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
-    const [confirmPassword, setConfirmPassword] = useState('')
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-    const handleAlterarSenha = async () => {
-        if(!oldPassword || !password || !confirmPassword){
-            Alert.alert('Erro', 'Preencha todos os campos')
-            return;
-        }
+    const handleAlterarSenha = async (data: changePasswordFormData) => {
 
-        if (password !== confirmPassword){
-            Alert.alert('Erro', 'Os campos "Nova Senha" e "Confirme a Nova Senha tem que ser iguais"')
-            return;
-        }
-
-        const senhas = {
-            old_password: oldPassword,
-            new_password: password,
-            confirm_new_password: confirmPassword
-        }
-
-        const alterarSenhaResult = await alterarSenha(senhas)
+        const alterarSenhaResult = await alterarSenha(data)
         if(!alterarSenhaResult.success){
             Alert.alert('Erro', alterarSenhaResult.errMessage)
             return
@@ -70,46 +72,64 @@ export default function AlterarSenhaScreen(){
 
                     <Text className=" text-3xl text-center my-14">Alterar Senha</Text>
 
-                    <TextInput
-                        label="Senha Atual"
-                        value={oldPassword}
-                        onChangeText={setOldPassword}
-                        // className=" mb-4"
-                        style={{marginBottom: 16}}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        activeOutlineColor={colors.sblue}
-                        secureTextEntry={!showOldPassword}
-                        right={<TextInput.Icon icon="eye" onPress={() => setShowOldPassword(!showOldPassword)}/>}
+                    <Controller
+                        control={control}
+                        name="old_password"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Senha Atual"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                style={{marginBottom: 16}}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                activeOutlineColor={colors.sblue}
+                                secureTextEntry={!showOldPassword}
+                                errorMessage={fieldState.error?.message}
+                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowOldPassword(!showOldPassword)}/>}
+                            />
+                        )}
                     />
 
-                    <TextInput
-                        label=" Nova Senha"
-                        value={password}
-                        onChangeText={setPassword}
-                        // className=" mb-4"
-                        style={{marginBottom: 16}}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        activeOutlineColor={colors.sblue}
-                        secureTextEntry={!showPassword}
-                        right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                    <Controller
+                        control={control}
+                        name="new_password"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label=" Nova Senha"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                style={{marginBottom: 16}}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                activeOutlineColor={colors.sblue}
+                                secureTextEntry={!showPassword}
+                                errorMessage={fieldState.error?.message}
+                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                            />
+                        )}
                     />
 
-                    <TextInput
-                        label="Confirme a Nova Senha"
-                        value={confirmPassword}
-                        onChangeText={setConfirmPassword}
-                        // className=" mb-4"
-                        style={{marginBottom: 16}}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        activeOutlineColor={colors.sblue}
-                        secureTextEntry={!showConfirmPassword}
-                        right={<TextInput.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}
+                    <Controller
+                        control={control}
+                        name="confirm_new_password"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Confirme a Nova Senha"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                style={{marginBottom: 16}}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                activeOutlineColor={colors.sblue}
+                                secureTextEntry={!showConfirmPassword}
+                                errorMessage={fieldState.error?.message}
+                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}
+                            />
+                        )}
                     />
 
                     <View className=" items-center justify-between flex-row gap-4 mb-6 mt-4">
@@ -126,7 +146,7 @@ export default function AlterarSenhaScreen(){
                             mode='contained'
                             style={{flex: 1, borderRadius: 10}}
                             buttonColor={colors.sblue}
-                            onPress={handleAlterarSenha}
+                            onPress={handleSubmit(handleAlterarSenha)}
                         
                         >
                             Confirmar

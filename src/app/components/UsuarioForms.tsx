@@ -1,15 +1,16 @@
-import { useContext, useEffect, useState } from "react"
-import { View, Text, StyleSheet, Modal, Pressable, Alert } from "react-native"
-// import toast
-// import { Alert } from "react-native";
-import { Button, Portal, TextInput, HelperText } from "react-native-paper"
+import React, { useContext, useEffect, useState } from "react"
+import { View, Text, StyleSheet, Modal, Pressable, Alert, TouchableOpacity } from "react-native"
+import { Button, Portal, TextInput as TextInputPaper,  } from "react-native-paper"
+import { useForm, Controller} from 'react-hook-form'
+import { zodResolver } from "@hookform/resolvers/zod"
 import { colors } from "../../styles/colors";
 import * as z from 'zod'
-import { SafeAreaView } from "react-native-safe-area-context";
-import { newSala, NovoUsuario, Sala, Usuario } from "../types/apiTypes";
+import { newSala, NovoUsuario, Sala, UserGroup, Usuario } from "../types/apiTypes";
 import {Picker} from '@react-native-picker/picker'
 import { AuthContext } from "../AuthContext";
-import Toast from "react-native-toast-message";
+import { CustomTextInput as TextInput } from "./CustomTextInput";
+import GroupsSelector from "./GroupsSelector"
+
 
 interface propsCriarUsuarioForm{
     visible: boolean,
@@ -20,20 +21,20 @@ interface propsCriarUsuarioForm{
 
 type typeRole = 'User' | 'Admin'
 
-const RoleEnum = z.enum(['User', 'Admin'])
-
 const usuarioSchema = z.object({
     username: z.string().min(1, 'O nome do usuário é obrigatório'),
     password: z.string().min(1, 'O campo senha é obrigatório'),
-    confirmPassword: z.string().min(1, 'O campo confirme a senha é obrigatório'),
-    nome: z.string().optional().or(z.literal('')),
-    email: z.email('E-mail inválido').optional().or(z.literal('')),
-    role: RoleEnum.default('User'),
-    selectedGroups: z.array(z.number('Os IDs, de grupo devem ser números inteiros').min(0, 'O número de grupo deve ser no mínimo 0'))
-}).refine((data) => data.password === data.confirmPassword, {
+    confirm_password: z.string().min(1, 'O campo confirme a senha é obrigatório'),
+    nome: z.string(),
+    email: z.email('E-mail inválido').or(z.literal('')),
+    role: z.enum(['User', 'Admin']).default('User').optional(),
+    groups: z.array(z.number('Os IDs, de grupo devem ser números inteiros').min(1, 'O número de grupo deve ser no mínimo 1'))
+}).refine((data) => data.password === data.confirm_password, {
     message: 'As senhas não coincidem.',
-    path: ['confirmPassword']
+    path: ['confirm_password']
 })
+
+type UsuarioFormData = z.infer<typeof usuarioSchema>
 
 
 export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarUsuarioForm){
@@ -46,70 +47,31 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
 
     const {usersGroups} = authContext
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [email, setEmail] = useState('')
-    const [nome, setNome] = useState('')
-    const [role, setRole] = useState<typeRole>('User')
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [selectedGroups, setSelectedGroups] = useState<number[]>([])
-    // const [] = useState('User')
+
+    const {control, handleSubmit, reset} = useForm<UsuarioFormData>({
+        resolver: zodResolver(usuarioSchema),
+        defaultValues: {
+            username: '',
+            email: '',
+            role: 'User',
+            password: '',
+            confirm_password: '',
+            groups: [],
+            nome: '',
+        }
+    })
 
     useEffect(() => {
-        setUsername('')
-        setPassword('')
-        setConfirmPassword('')
-        setEmail('')
-        setRole('User')
+        reset()
     },[visible])
 
-    const handleSubmit = () => {
+    const SubmitData = async ({role, ...data}: UsuarioFormData) => {
 
-        const usuarioJSON = {
-            username,
-            password,
-            confirmPassword,
-            nome,
-            email
-        }
-
-        const validationResult = usuarioSchema.safeParse(usuarioJSON)
-
-        if(!validationResult.success){
-            const errorMessages = validationResult.error.issues.map(err => {
-                console.log(err)
-                return err.message
-            }).join('\n');
-            Toast.show({
-                type: 'error',
-                text1: 'Erro de validação',
-                text2: errorMessages,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
-            return;
-        }
-        
-
-        let isSuperuser = false;
-        if (role === 'Admin'){
-            isSuperuser = true
-        }
-
-        return
-
-        onSubmit({
-            username,
-            password,
-            confirm_password: confirmPassword,
-            email,
-            nome,
-            groups: selectedGroups,
-            is_superuser: isSuperuser
+        // console.log({...data, is_superuser: role === 'Admin'})
+        await onSubmit({...data, is_superuser: role === 'Admin'
         })
-
         onClose()
 
 
@@ -120,122 +82,138 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
             <Pressable onPress={onClose} style={styles.centeredView} className=" flex-1 justify-center items-center">
                 <Pressable className="bg-white rounded-lg p-4 py-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
                     <Text className=" text-center mb-8 text-4xl font-bold">Criar Usuário</Text>
-                    <View className=" mb-4">
-                        <TextInput
-                            label="Nome de usuário"
-                            value={username}
-                            onChangeText={setUsername}
-                            autoCapitalize="none"
-                            keyboardType='default'
-                            mode="outlined"
-                            // style={styles.input}
-                            activeOutlineColor='#004A8D'
-                            
-                        />
-                    </View>
-                    
-
-                    <TextInput
-                        label="Senha"
-                        value={password}
-                        onChangeText={setPassword}
-                        autoCapitalize="none"
-                        // keyboardType='default'
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                        secureTextEntry={!showPassword}
-                        right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}                        
-                        />
-                    
-
-                    <TextInput
-                        label="Confirme a senha"
-                        value={confirmPassword}
-                        onChangeText={setConfirmPassword}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        secureTextEntry={!showConfirmPassword}
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                        right={<TextInput.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}                        
-                        
-                    />
-                    
-
-                    <TextInput
-                        label="Nome completo"
-                        value={nome}
-                        // placeholder="Nome completo (Opcional)"
-                        onChangeText={setNome}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
-
-                    <TextInput
-                        label="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                        autoCapitalize="none"
-                        keyboardType='email-address'
-                        mode="outlined"
-                        style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
-
-                    <Text style={{ marginBottom: 5 }}>Selecione o(s) Grupo(s) (Opcional):</Text>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 }} >
-                        {
-                            usersGroups.map((group) => (
-                                <Pressable 
-                                    key={group.id}
-                                    style={[
-                                        styles.tag,
-                                        selectedGroups.includes(group.id) && styles.selectedTag,
-                                    ]}
-                                    onPress={() => {
-                                        setSelectedGroups((prevSelected) => {
-                                            if (prevSelected.includes(group.id)){
-                                                return prevSelected.filter((id) => id !== group.id)
-                                            } else{
-                                                return [...prevSelected, group.id]
-                                            }
-                                        })
-                                    }}
-                                >
-                                    <Text style={styles.tagText} >{group.name}</Text>
-                                </Pressable>
-                            ))
-                        }
-                    </View>
-
-                    <Picker
-                        selectedValue={role}
-                        onValueChange={setRole}
-                        style={styles.picker}
-                        // itemStyle={{paddingLeft: 100}}
-                        // className=" w-full border-2 border-solid border-sblue"
-                    >
-                        <Picker.Item
-                            key={'User'}
-                            label="Usuário comum"
-                            value={'User'}
-                            color={colors.syellow}
+                    <Controller
+                        control={control}
+                        name="username"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Nome de usuário"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                activeOutlineColor='#004A8D'
+                                errorMessage={fieldState.error?.message}
+                                className=" mb-2"
                             />
+                        )}
+                    
+                    />
+                    
+                    <Controller
+                        control={control}
+                        name="password"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Senha"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                activeOutlineColor='#004A8D'
+                                secureTextEntry={!showPassword}
+                                errorMessage={fieldState.error?.message}
+                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}                        
+                                className=" mb-2"
+                            />
+                        )}                    
+                    />
+                    
+                    <Controller
+                        control={control}
+                        name="confirm_password"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Confirme a senha"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                secureTextEntry={!showConfirmPassword}
+                                activeOutlineColor='#004A8D'
+                                errorMessage={fieldState.error?.message}
+                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}                        
+                                className=" mb-2"
+                            />
+                            
+                        )}                    
+                    />
+                    
+                    <Controller
+                        control={control}
+                        name="nome"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Nome completo"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                autoCapitalize="none"
+                                keyboardType='default'
+                                mode="outlined"
+                                errorMessage={fieldState.error?.message}
+                                activeOutlineColor='#004A8D'
+                                className=" mb-2"
+                            />
+                        )}                    
+                    />
+                    
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({field, fieldState}) => (
+                            <TextInput
+                                label="Email"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                autoCapitalize="none"
+                                keyboardType='email-address'
+                                mode="outlined"
+                                activeOutlineColor='#004A8D'
+                                errorMessage={fieldState.error?.message}
+                                className=" mb-2"
+                            />
+                        )}                    
+                    />
+                    
+                    <Controller
+                        control={control}
+                        name="groups"
+                        render={({field, fieldState}) => (
+                            <GroupsSelector usersGroups={usersGroups} selectedGroupsProps={field.value} setSelectedGroupsProps={field.onChange} />
+                        )}
+                    />
 
-                        <Picker.Item
-                            key={'Admin'}
-                            label="Admin"
-                            value={'Admin'}
-                            color={colors.sgreen}
-                            // style={{paddingLeft: 100}}
-                        />
-                    </Picker>
+                    <Controller
+                        control={control}
+                        name="role"
+                        render={({field}) => (
+                            <Picker
+                                selectedValue={field.value}
+                                onValueChange={field.onChange}
+                                style={styles.picker}
+                            >
+                                <Picker.Item
+                                    key={'User'}
+                                    label="Usuário comum"
+                                    value={'User'}
+                                    color={colors.syellow}
+                                    />
+
+                                <Picker.Item
+                                    key={'Admin'}
+                                    label="Admin"
+                                    value={'Admin'}
+                                    color={colors.sgreen}
+                                    // style={{paddingLeft: 100}}
+                                />
+                            </Picker>
+                        )}
+                    />
+
+                                        
                     
                     
 
@@ -244,7 +222,7 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                         className=" mt-3"
                         buttonColor={colors.sblue}
                         textColor="white"
-                        onPress={handleSubmit}
+                        onPress={handleSubmit(SubmitData)}
                     >
                         Criar usuário
                     </Button>

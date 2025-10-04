@@ -59,6 +59,7 @@ export async function criarNovaSala(newSala: FormData): Promise<ServiceResult<Sa
         console.log(erro);
         if(erro.response.status === 400){
             const erroData = erro.response.data
+            console.log(erroData)
             if(erroData.nome_numero){
                 return {success: false, errMessage: erroData.nome_numero[0]}
             }

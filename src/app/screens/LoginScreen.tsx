@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView, Text } from 'react-native';
-import { TextInput, Button, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
+import { TextInput as TextInputPaper ,Button, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as z from 'zod'
 import {useForm, Controller} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
+import {CustomTextInput as TextInput} from '../components/CustomTextInput';
 
 const LoginSchema = z.object({
   username: z.string().min(1, 'O nome de usuário é obrigatório'),
@@ -13,8 +14,6 @@ const LoginSchema = z.object({
 })
 
 type LoginFormData = z.infer<typeof LoginSchema>;
-
-
 
 const LoginScreen = () => {
   const authContext = useContext(AuthContext);
@@ -28,13 +27,11 @@ const LoginScreen = () => {
   const [carregando, setCarregando] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
 
-  const {
-    control,
-    handleSubmit, 
-    formState: {errors}
-  } = useForm<LoginFormData>({resolver: zodResolver(LoginSchema), defaultValues: {
-    username: '',
-    password: ''
+  const { control, handleSubmit } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema), 
+    defaultValues: {
+      username: '',
+      password: ''
   }})
 
   const onSubmit = async (data: LoginFormData) => {
@@ -71,21 +68,19 @@ const LoginScreen = () => {
             <Controller
               control={control}
               name="username"
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field, fieldState }) => (
                 <TextInput
                   label="Usuário"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
+                  value={field.value}
+                  onChangeText={field.onChange}
                   autoCapitalize="none"
                   keyboardType="default"
                   mode="outlined"
-                  // style={styles.input}
                   activeOutlineColor='#004A8D'
+                  errorMessage={fieldState.error?.message}
                 />
             )}
             />
-            {errors.username && <Text className=' text-red-500 text-sm'>{errors.username.message}</Text>}
 
           </View>
 
@@ -93,23 +88,21 @@ const LoginScreen = () => {
             <Controller
               control={control}
               name='password'
-              render={({ field: {onChange, onBlur, value} }) => (
+              render={({ field, fieldState }) => (
                 <TextInput
                   label="Senha"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
+                  value={field.value}
+                  onChangeText={field.onChange}
                   autoCapitalize="none"
                   keyboardType='default'
                   mode="outlined"
-                  // style={styles.input}
                   activeOutlineColor='#004A8D'
                   secureTextEntry={!showPassword}
-                  right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                  right={<TextInputPaper.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                  errorMessage={fieldState.error?.message}
                 />
             )}
             />
-            {errors.password && <Text className=' text-red-500 text-sm'>{errors.password.message}</Text>}
 
           </View>
           
