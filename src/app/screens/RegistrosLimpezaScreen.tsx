@@ -3,15 +3,16 @@ import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado } from "../servicos/servicoUsuarios";
 import { RegistroSala, Usuario } from "../types/apiTypes";
-import { Alert, Text, View, StyleSheet, ScrollView, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Button, TextInput } from "react-native-paper";
+import { Alert, Text, View, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
+import { ActivityIndicator, Avatar, Searchbar, TextInput, TouchableRipple } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { getRegistrosService } from "../servicos/servicoSalas";
 import RegistroCard from "../components/RegistroCard";
 import Toast from "react-native-toast-message";
-// import { TextInput } from "react-native-gesture-handler";
+import {Ionicons} from "@expo/vector-icons"
+import HeaderScreen from "../components/HeaderScreen";
 
 
 export default function RegistrosLimpezaScreen(){
@@ -88,26 +89,25 @@ export default function RegistrosLimpezaScreen(){
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-2 flex-col">
-
-            <TextInput
-                label={'Pesquisar registros de sala'}
-                value={filtroRegistros}
-                onChangeText={setFiltroRegistros}
-                autoCapitalize="none"
-                keyboardType="default"
-                mode="outlined"
-                activeOutlineColor='#004A8D'
-                // className=" mx-10"
+        <SafeAreaView edges={['top']} className="flex-1 bg-gray-100 pb-4 flex-col">
+            <HeaderScreen 
+                searchBar={{searchText: filtroRegistros, setSearchText: setFiltroRegistros, searchLabel: 'Pesquisar registros'}}
+                headerText="Registros"
 
             />
-
-            <ScrollView className="p-1 flex-1 mt-4" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarRegistros}/>}>
-                {registrosFiltrados.map((registro) => (
-                    <RegistroCard key={registro.id} registro={registro} />
-            ))}
-            </ScrollView>
-
+            
+            {registrosFiltrados.length === 0 ?
+                <View className=" flex-1 justify-center gap-2 items-center px-10">
+                    <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
+                    <Text className="text-gray-500">Nenhum registro encontrado</Text>
+                </View>
+                :
+                <ScrollView className="p-1 flex-1 mt-4" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarRegistros}/>}>
+                    {registrosFiltrados.map((registro) => (
+                        <RegistroCard key={registro.id} registro={registro} />
+                    ))}
+                </ScrollView>
+            }
         </SafeAreaView>
     )
 }

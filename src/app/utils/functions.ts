@@ -18,3 +18,10 @@ export const formatarDataISO = (utcDateTimeStr: string|null) => {
         return "Data Inválida"
     }
 }
+
+export const normalizarTexto = (texto: string) => {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s/g, '').toLowerCase()
+}
+
+
+

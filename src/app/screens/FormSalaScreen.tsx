@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, TextInput as TextI, FlatList, ImageURISource } from "react-native"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { Button, Portal, TextInput as TextInputPaper, Provider, ActivityIndicator } from "react-native-paper"
+import { Button, Portal, TextInput as TextInputPaper, ActivityIndicator } from "react-native-paper"
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";
@@ -22,7 +22,7 @@ import Toast from "react-native-toast-message";
 
 
 const salaSchema = z.object({
-    nome_numero: z.string().min(1, 'O nome da sala é obrigatório'),
+    nome_numero: z.string().min(1, 'Esse campo é obrigatório'),
     capacidade: z.string().min(1, 'Esse campo é obrigatório').refine(num => !isNaN(Number(num)), {
         error: 'Capacidade tem que ser um número inteiro válido'
     }).refine(num => Number(num)%1 === 0 && Number(num) > 0, {
@@ -31,7 +31,7 @@ const salaSchema = z.object({
         error: 'Capacidade tem que ser menor ou igual à 2000'
     })
     ,
-    localizacao: z.string().min(1, 'A localização é obrigatória'),
+    localizacao: z.string().min(1, 'Esse campo é obrigatório'),
     descricao: z.string().optional(),
     instrucoes: z.string().optional(),
     validade_limpeza_horas: z.string().refine(num => !!num ? !isNaN(Number(num)) : true, {
@@ -69,7 +69,7 @@ export default function FormSalaScreen(){
     const [zeladores, setZeladores] = useState<Usuario[]>([])
     const [image, setImage] = useState<ImageURISource | null>(null)
     
-    const { control, handleSubmit } = useForm<salaFormData>({
+    const { control, handleSubmit, reset } = useForm<salaFormData>({
         resolver: zodResolver(salaSchema),
         defaultValues: {
             ativa: 'Ativa',
@@ -88,7 +88,19 @@ export default function FormSalaScreen(){
         carregarZeladores()
 
         if(sala){
-
+            reset({
+                nome_numero: sala.nome_numero,
+                capacidade: String(sala.capacidade),
+                localizacao: sala.localizacao,
+                validade_limpeza_horas: String(sala.validade_limpeza_horas),
+                descricao: sala.descricao ? sala.descricao : '',
+                instrucoes: sala.instrucoes ? sala.instrucoes : '',
+                responsaveis: sala.responsaveis,
+                ativa: sala.ativa ? 'Ativa' : 'Inativa'
+            })
+            if(sala.imagem){
+                setImage({uri: apiURL + sala.imagem})
+            }
         }
     }, []))
 
@@ -131,6 +143,8 @@ export default function FormSalaScreen(){
     const onSubmit = async (data: salaFormData) => {
 
         const {ativa, responsaveis, ...salaData} = data
+
+        console.log(data)
             
         const formData = new FormData()
         
@@ -207,7 +221,6 @@ export default function FormSalaScreen(){
     }
 
     return (
-        <Provider>
         <SafeAreaView className="bg-white rounded-lg p-8 px-4 flex-1">
             <Controller
                 control={control}
@@ -425,7 +438,6 @@ export default function FormSalaScreen(){
 
             
         </SafeAreaView>     
-        </Provider>   
     )
     
 

@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert, RefreshControl } from 'react-native';
-import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon, Provider } from 'react-native-paper';
+import { View, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { Button, Text, ActivityIndicator, SegmentedButtons, Searchbar } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, Sala } from "../types/apiTypes";
 import {obterSalas } from "../servicos/servicoSalas";
@@ -11,10 +12,19 @@ import { marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaServi
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 import Toast from "react-native-toast-message";
+import { Ionicons } from '@expo/vector-icons'
+import { TouchableRipple } from "react-native-paper";
+import { CustomTextInput as TextInput} from "../components/CustomTextInput";
+import HeaderScreen from "../components/HeaderScreen";
+import { normalizarTexto } from "../utils/functions";
+import FiltersOptions from "../components/FiltersOptions";
+import FilterSelector from "../components/FilterSelector";
+import { tr } from "date-fns/locale";
 
 
 
-type segmentSalaStatus = 'Todas' | 'Limpas' | 'Limpeza pendente'
+type LimpezaStatus = 'Todas' | 'Limpas' | 'Limpeza Pendente' | 'Em Limpeza' | 'Suja'
+type SalaStatus = 'Todas' | 'Ativas' | 'Inativas'
 
 export default function SalasScreen() {
     const authContext = useContext(AuthContext);
@@ -32,10 +42,13 @@ export default function SalasScreen() {
     const {signOut, userRole, user} = authContext
     // const userRole = 'user'
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
+    const [searchSalaText, setSearchSalaText] = useState('')
     const [carregando, setCarregando] = useState(false)
     const [salas, setSalas] = useState<Sala[]>([])
-    const [filtro, setFiltro] = useState<segmentSalaStatus>('Todas')
+    const [filtroLimpezaStatus, setFiltroLimpezaStatus] = useState<LimpezaStatus>('Todas')
+    const [filtroSalaStatus, setFiltroSalaStatus] = useState<SalaStatus>('Todas')
     const [refreshingSalas, setRefreshingSalas] = useState(false)
+    const [filtroOptionsVisible, setFiltroOptionsVisible] = useState(false)
 
     const carregarSalasComLoading = async () => {
         setCarregando(true);
@@ -144,62 +157,94 @@ export default function SalasScreen() {
         )
     }
 
-    const salasFiltradas = salas.filter(sala => {
-        if (filtro === 'Limpas'){
-            return sala.status_limpeza === 'Limpa'
-        }
-        if (filtro === 'Limpeza pendente'){
-            return sala.status_limpeza === 'Limpeza Pendente'
-        }
+    const searchSalaTextFormatado = normalizarTexto(searchSalaText)
 
-        return true
+    const salasFiltradas = salas.filter(sala => {
+        const nomeSalaFormatado = normalizarTexto(sala.nome_numero)
+        const capacidadeFormatada = normalizarTexto(String(sala.capacidade))
+        const localizacaoFormatada = normalizarTexto(sala.localizacao)
+
+        if(nomeSalaFormatado.includes(searchSalaTextFormatado) || capacidadeFormatada.includes(searchSalaTextFormatado) || localizacaoFormatada.includes(searchSalaTextFormatado)){
+            return (
+                (filtroLimpezaStatus === 'Todas' ? true : filtroLimpezaStatus === sala.status_limpeza) &&
+                (filtroSalaStatus === 'Todas' ? true : filtroSalaStatus === (sala.ativa ? 'Ativas' : 'Inativas'))
+            )
+        }
     })
 
 
     const contagemSalas = salas.length
+
     const contagemSalasLimpas = salas.filter(sala => sala.status_limpeza === 'Limpa').length
     const contagemSalasPendentes = salas.filter(sala => sala.status_limpeza === 'Limpeza Pendente').length
+    const contagemSalasEmLimpeza = salas.filter(sala => sala.status_limpeza === 'Em Limpeza').length
+    const contagemSalasSuja = salas.filter(sala => sala.status_limpeza === 'Suja').length
 
+    const contagemSalasAtivas = salas.filter(sala => sala.ativa).length
+    const contagemSalasInativas = salas.filter(sala => !sala.ativa).length
 
     return (
-        <Provider>
-        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
-            <SegmentedButtons 
-                value={filtro}
-                onValueChange={setFiltro}
-                style={{marginHorizontal: 15, marginVertical: 15}}
-                theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
-                buttons={[
-                    {
-                        value: 'Todas',
-                        label: `Todas (${contagemSalas})`,
-                        checkedColor: 'black',
-                        labelStyle:{fontSize: 12},                        
-                    },
-                    {
-                        value: 'Limpas',
-                        label: `Limpas (${contagemSalasLimpas})`,
-                        checkedColor: 'black',
-                        labelStyle:{fontSize: 12},
-                    },
-                    {
-                        value:'Limpeza pendente',
-                        label: `Pendente (${contagemSalasPendentes})`,
-                        checkedColor: 'black',
-                        labelStyle:{fontSize: 12},
-                    }
-                ]}
+        <SafeAreaView edges={['top']}  className="flex-1 bg-gray-100 pb-4">
+            <HeaderScreen searchBar={{
+                searchLabel: 'Pesquisar salas',
+                searchText: searchSalaText,
+                setSearchText: setSearchSalaText
+            }} 
+                // filterOptions={true}
+                headerNavButtons={true}
+                headerText="Salas"
+                userGroups={user.groups}
+                showFilterOptions={() => setFiltroOptionsVisible(true)}
             />
 
-
-            <ScrollView className="p-3"
-                refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
+            <FiltersOptions visible={filtroOptionsVisible} onDismiss={() => setFiltroOptionsVisible(false)}
+                className=" gap-2 pb-4"
             >
-                {salasFiltradas.map((sala) => (
+
+                <FilterSelector
+                    label={'Status da limpeza'}
+                    value={filtroLimpezaStatus}
+                    type="single"
+                    onValueChange={setFiltroLimpezaStatus}
+                    defaultValue="Todas"
+                    buttons={[
+                        {label: `Limpa (${contagemSalasLimpas})`, value: 'Limpas'},
+                        {label: `Limpeza Pendente (${contagemSalasPendentes})`, value: 'Limpeza Pendente'},
+                        {label: `Em Limpeza (${contagemSalasEmLimpeza})`, value: 'Em Limpeza'},
+                        {label: `Suja (${contagemSalasSuja})`, value: 'Suja'},
+                    ]}
+                />
+                { userRole === 'admin' ?
+                    <FilterSelector
+                        label={'Status da sala'}
+                        value={filtroSalaStatus}
+                        type="single"
+                        onValueChange={setFiltroSalaStatus}
+                        defaultValue="Todas"
+                        buttons={[
+                            {label: `Ativas (${contagemSalasAtivas})`, value: 'Ativas'},
+                            {label: `Inativas (${contagemSalasInativas})`, value: 'Inativas'},
+                        ]}
+                    />
+                    : 
+                    null}
+            </FiltersOptions>
+
+
+            {salasFiltradas.length === 0 ?
+                <View className=" flex-1 justify-center gap-2 items-center px-10">
+                    <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
+                    <Text className="text-gray-500">Nenhuma sala encontrada</Text>
+                </View>
+                :
+                <ScrollView className="p-3 px-7"
+                    refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
+                >
+                    {salasFiltradas.map((sala) => (
                     <SalaCard key={sala.id} marcarSalaComoSuja={ async (id) => await marcarSalaComoSuja(id)} userGroups={user.groups} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={() => navigation.navigate('FormSala', {sala: sala})} excluirSala={handleExcluirSala} sala={sala} onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>
                 ))}
             </ScrollView>
-
+            }
             {userRole === 'admin' ?
                 <Button
                     mode='contained-tonal'
@@ -216,7 +261,6 @@ export default function SalasScreen() {
                 null
             }
         </SafeAreaView>
-        </Provider>
     );
 };
 

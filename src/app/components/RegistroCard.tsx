@@ -19,40 +19,24 @@ function RegistroCard({registro, onPress}: propsRegistroCard){
             <Card  style={styles.bgWhite}>
                 <Card.Content style={styles.contentCard}>
                     <View className=" mx-4 flex-1">
-                        <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail">{registro.sala_nome}</Text>
-                        <View className="mt-2">
-                        <Text variant="bodySmall"> Última Limpeza: 
-                            {registro.data_hora_inicio ? 
-                                ' ' + formatarDataISO(registro.data_hora_inicio) + ' Por ' + registro.funcionario_responsavel
-                                :
-                                ' Sala sem histórico de limpeza'
-                            }
+                        <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail"
+                            className=""
+                        >
+                            {registro.sala_nome}
                         </Text>
 
+                        <View className="mt-2 pl-2 ">
+                            <Text variant="bodyMedium">Última Limpeza: 
+                            </Text>
+                            <Text variant="bodySmall"> {formatarDataISO(registro.data_hora_inicio) + ' até ' + 
+                                formatarDataISO(registro.data_hora_fim)}
+                            </Text>
+                            <Text variant="bodySmall"> Por {registro.funcionario_responsavel}</Text>
+
                         </View>
-                        {/* <Text variant="bodyMedium"> Capacidade: {}</Text> */}
 
                     </View>
-                        {/* <View className=" mt-2 mr-4">
-
-                        </View> */}
                 </Card.Content>
-                {/* <Card.Actions>
-                    <Button
-                        mode="contained-tonal"
-                        buttonColor={colors.sblue}
-                        textColor={'white'}
-                        className=" mt-2"
-                        onPress={(e) => {
-                            e.stopPropagation();
-                            // props.marcarSalaComoLimpa()
-                            
-                        }
-                        }
-                    >
-                        Marcar como limpa
-                    </Button>
-                </Card.Actions> */}
             </Card>
         </View>
 

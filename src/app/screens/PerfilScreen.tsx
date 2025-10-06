@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado, alterarFotoPerfil } from "../servicos/servicoUsuarios";
 import { Usuario } from "../types/apiTypes";
 import { Alert, Text, View, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Button, Provider } from "react-native-paper";
+import { ActivityIndicator, Avatar, Button, Portal } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
@@ -134,7 +134,6 @@ export default function PerfilScreen(){
     }
     
     return (
-        <Provider>
         <SafeAreaView edges={['top']} className=" flex-1 flex-col pb-4 bg-gray-100" >
             <ImgTypeSelector visible={rodapeImgSelectorVisible} header="Foto de perfil" hideModal={() => setRodapeImgSelectorVisible(false)} handleUploadImage={handleUploadImage}/>
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
@@ -230,7 +229,6 @@ export default function PerfilScreen(){
             </ScrollView>
             {/* <View className=" h-10 border"></View> */}
         </SafeAreaView>
-        </Provider>
     )
 }
 

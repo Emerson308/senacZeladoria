@@ -2,10 +2,9 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { obterToken, removerToken, salvarToken } from './servicos/servicoArmazenamento';
 import { realizarLogin } from './servicos/servicoAutenticacao';
 import api from './api/axiosConfig';
-// import { usuarioLogado } from './servicos/servicoAutenticacao';
 import { getAllUsersGroups, usuarioLogado } from './servicos/servicoUsuarios';
 import { UserGroup, Usuario } from './types/apiTypes';
-import { View, ActivityIndicator, Text, Alert, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import eventBus from './utils/eventBus';
 import Toast from 'react-native-toast-message';
 import { listarNotificações } from './servicos/servicoSalas';
@@ -152,7 +151,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     setIsLoading(true)
     verificarAutenticacao().then(() => setIsLoading(false))
-    // setIsLoading(false)
 
     eventBus.on('LOGOUT', async () => await deslogarUsuario())
 

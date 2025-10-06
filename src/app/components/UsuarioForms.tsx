@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react"
-import { View, Text, StyleSheet, Modal, Pressable, Alert, TouchableOpacity } from "react-native"
-import { Button, Portal, TextInput as TextInputPaper,  } from "react-native-paper"
+import { View, Text, StyleSheet, Modal as ModalN, Pressable, Alert, TouchableOpacity } from "react-native"
+import { Button, Portal, TextInput as TextInputPaper, Modal } from "react-native-paper"
 import { useForm, Controller} from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { colors } from "../../styles/colors";
@@ -22,9 +22,9 @@ interface propsCriarUsuarioForm{
 type typeRole = 'User' | 'Admin'
 
 const usuarioSchema = z.object({
-    username: z.string().min(1, 'O nome do usuário é obrigatório'),
-    password: z.string().min(1, 'O campo senha é obrigatório'),
-    confirm_password: z.string().min(1, 'O campo confirme a senha é obrigatório'),
+    username: z.string().min(1, 'Esse campo é obrigatório'),
+    password: z.string().min(1, 'Esse campo é obrigatório'),
+    confirm_password: z.string().min(1, 'Esse campo é obrigatório'),
     nome: z.string(),
     email: z.email('E-mail inválido').or(z.literal('')),
     role: z.enum(['User', 'Admin']).default('User').optional(),
@@ -78,9 +78,11 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
     }
 
     return (
-        <Modal className=" m-20" visible={visible} onRequestClose={() => onClose} onDismiss={onClose} animationType="slide" transparent={true} style={styles.modal}>
-            <Pressable onPress={onClose} style={styles.centeredView} className=" flex-1 justify-center items-center">
-                <Pressable className="bg-white rounded-lg p-4 py-8 m-4 max-w-sm w-full" onPress={(e) => e.stopPropagation()}>
+        <Portal>
+        <Modal visible={visible} onDismiss={onClose} style={{
+
+        }}>
+                <View className="bg-white rounded-lg p-4 py-8 m-4 max-w-sm w-full self-center">
                     <Text className=" text-center mb-8 text-4xl font-bold">Criar Usuário</Text>
                     <Controller
                         control={control}
@@ -213,10 +215,6 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                         )}
                     />
 
-                                        
-                    
-                    
-
                     <Button 
                         mode='contained-tonal'
                         className=" mt-3"
@@ -227,9 +225,9 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                         Criar usuário
                     </Button>
                     
-                </Pressable>
-            </Pressable>
+                </View>
         </Modal>
+        </Portal>
     )
 
 }

@@ -182,5 +182,5 @@ const styles = StyleSheet.create({
     }
 })
 
-// export default React.memo(SalaCard)
-export default SalaCard
+export default React.memo(SalaCard)
+// export default SalaCard

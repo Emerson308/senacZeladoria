@@ -31,8 +31,6 @@ export default function BottomTabs(){
 
     if(userRole === 'admin'){
         return(
-            // <SafeAreaView className=" flex-1" edges={['bottom']}>
-
             <Tab.Navigator
                 safeAreaInsets={{bottom: 0}}
                 screenOptions={({ route }) => ({
@@ -53,7 +51,7 @@ export default function BottomTabs(){
                     },
                     tabBarActiveTintColor: colors.sblue,
                     tabBarInactiveTintColor: 'gray',
-                    headerShown: true,
+                    headerShown: false,
                     tabBarHideOnKeyboard: true,
                     tabBarStyle: {
                         height: 60,
@@ -66,31 +64,26 @@ export default function BottomTabs(){
                 <Tab.Screen
                     name="Home"
                     component={SalasScreen}
-                    options={{title: 'Início',}}
                 />
     
                 <Tab.Screen
                     name="RegistrosLimpeza"
                     component={RegistrosLimpezaScreen}
-                    options={{title: 'Registros'}}
-    
+                    options={{title: 'Registros'}} //Necessário para não conflitar com o nome da stack
                 />
     
                 <Tab.Screen
                     name="Usuarios"
                     component={UsuariosScreen}
-                    options={{title: 'Usuários', headerShown: true}}
                 />
     
                 <Tab.Screen
                     name="Perfil"
                     component={PerfilScreen}
-                    options={{title: 'Perfil', headerShown: false}}
                 />
     
     
             </Tab.Navigator>
-            // </SafeAreaView>
         )
     }
 
@@ -111,7 +104,7 @@ export default function BottomTabs(){
                 },
                 tabBarActiveTintColor: colors.sblue,
                 tabBarInactiveTintColor: 'gray',
-                headerShown: true,
+                headerShown: false,
                 tabBarStyle: {marginBottom: insets.bottom}
             })}
         >
@@ -124,7 +117,6 @@ export default function BottomTabs(){
             <Tab.Screen
                 name="Perfil"
                 component={PerfilScreen}
-                options={{title: 'Perfil', headerShown: false}}
             />
             
         </Tab.Navigator>

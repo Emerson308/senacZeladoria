@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView, Text } from 'react-native';
-import { TextInput as TextInputPaper ,Button, ActivityIndicator, Provider as PaperProvider } from 'react-native-paper';
+import { TextInput as TextInputPaper ,Button, ActivityIndicator } from 'react-native-paper';
 import { AuthContext } from '../AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as z from 'zod'
@@ -9,8 +9,8 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {CustomTextInput as TextInput} from '../components/CustomTextInput';
 
 const LoginSchema = z.object({
-  username: z.string().min(1, 'O nome de usuário é obrigatório'),
-  password: z.string().min(1, 'A senha é obrigatória')
+  username: z.string().min(1, 'Esse campo é obrigatório'),
+  password: z.string().min(1, 'Esse campo é obrigatório')
 })
 
 type LoginFormData = z.infer<typeof LoginSchema>;
@@ -174,10 +174,3 @@ const styles = StyleSheet.create({
 
 export default LoginScreen
 
-// export default function App() {
-//   return (
-//     <PaperProvider>
-//       <LoginScreen />
-//     </PaperProvider>
-//   );
-// }

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Alert, RefreshControl } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
@@ -9,10 +9,16 @@ import { criarUsuarioService, getAllUsersGroups, obterUsuarios } from "../servic
 import UsuarioCard from "../components/UsuarioCard";
 import UsuariosForms from "../components/UsuarioForms";
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
+import HeaderScreen from "../components/HeaderScreen";
+import { normalizarTexto } from "../utils/functions";
+import {Ionicons} from '@expo/vector-icons';
+import FiltersOptions from "../components/FiltersOptions";
+import FilterSelector from "../components/FilterSelector";
 
 
 
-type segmentUsuarioStatus = 'Todos' | 'Admins' | 'Usuários padrões'
+type UsuarioStatus = 'Todos' | 'Admin' | 'Usuário padrão'
 
 export default function UsuariosScreen(){
 
@@ -26,13 +32,18 @@ export default function UsuariosScreen(){
         return null
     }
 
-    const {signOut, usersGroups} = authContext
+    const {usersGroups} = authContext
     const [carregando, setCarregando] = useState(false)
     const [usuarios, setUsuarios] = useState<Usuario[]>([])
-    const [filtro, setFiltro] = useState<segmentUsuarioStatus>('Todos')
     const [criarUsuarioForm, setCriarUsuarioFormVisible] = useState(false)
+    const [searchUsuariosText, setSearchUsuariosText] = useState('')
     const [refreshing, setRefreshing] = useState(false)
-    
+    const [filtroOptionsVisible, setFiltroOptionsVisible] = useState(false)
+
+    const [filtroUserStatus, setFiltroUserStatus] = useState<UsuarioStatus>('Todos')
+    const [filtroUserGroup, setFiltroUserGroup] = useState<string[]>([])
+
+
     const carregarUsuarios = async () => {
         setRefreshing(true)
         const obterUsuariosResult = await obterUsuarios()
@@ -78,7 +89,6 @@ export default function UsuariosScreen(){
 
     useFocusEffect( React.useCallback(() => {
         setCarregando(true)
-        // carregarGroups()
         carregarUsuarios()
         setCarregando(false)
     },[]))
@@ -86,67 +96,104 @@ export default function UsuariosScreen(){
     if(carregando){
         return(
         <View className='flex-1 bg-gray-50 justify-center p-16'>
-
             <ActivityIndicator size={80}/>
         </View>
         )
     }
 
+    const searchUsuariosTextFormatado = normalizarTexto(searchUsuariosText)
+
     const usuariosFiltrados = usuarios.filter(usuario => {
-        if (filtro === 'Admins'){
-            return usuario.is_superuser
+        const usernameFormatado = normalizarTexto(usuario.username)
+        const emailFormatado = normalizarTexto(usuario.email)
+        const nomeFormatado = normalizarTexto(usuario.nome)
+        
+        if(usernameFormatado.includes(searchUsuariosTextFormatado) ||
+           emailFormatado.includes(searchUsuariosTextFormatado) ||
+           nomeFormatado.includes(searchUsuariosTextFormatado)
+        ){
+            return (
+                (filtroUserStatus === 'Todos' ? true : usuario.is_superuser === (filtroUserStatus === 'Admin'))
+                &&
+                (
+                    filtroUserGroup.length === 0
+                        ? true
+                        : (
+                            usuario.groups.length === filtroUserGroup.length &&
+                            filtroUserGroup.every(groupId => usuario.groups.includes(Number(groupId)))
+                        )
+                )
+            )
         }
-        if(filtro === 'Usuários padrões'){
-            return !usuario.is_superuser
-        }
-        return true
+
     })
 
     const contagemUsuarios = usuarios.length;
     const contagemUsuariosAdmins = usuarios.filter(usuario => usuario.is_superuser === true).length
     const contagemUsuariosMembros = usuarios.filter(usuario => usuario.is_superuser === false).length
-    
+
+    const contagemUsuariosGroups = usersGroups.map(group => {
+        const newGroup ={
+            groupId: group.id,
+            groupName: group.name,
+            contagem: usuarios.filter(usuario => {
+                return usuario.groups.some(userGroup => userGroup === group.id)
+            }).length
+        }
+        return newGroup
+    })
+
+
     return (
-        <SafeAreaView className="flex-1 bg-gray-100 p-4 pb-10">
+        <SafeAreaView edges={['top']} className="flex-1 bg-gray-100 pb-4">
+            <HeaderScreen
+                headerText="Usuários"
+                // filterOptions={true}
+                showFilterOptions={() => setFiltroOptionsVisible(true)}
+                searchBar={{searchLabel: 'Pesquisar usuários', searchText: searchUsuariosText, setSearchText: setSearchUsuariosText}}
+            />
+
+            <FiltersOptions visible={filtroOptionsVisible} onDismiss={() => setFiltroOptionsVisible(false)}>
+                <FilterSelector
+                    label="Status do usuário"
+                    type="single"
+                    defaultValue="Todos"
+                    buttons={[
+                        { label: `Admin (${contagemUsuariosAdmins})`, value: 'Admin' },
+                        { label: `Usuários padrões (${contagemUsuariosMembros})`, value: 'Usuário padrão' },
+                    ]}
+                    value={filtroUserStatus}
+                    onValueChange={setFiltroUserStatus}
+                />
+
+                {usersGroups.length > 0 &&
+                    <FilterSelector
+                        label="Grupo do usuário"
+                        type="multiple"
+                        defaultValue={[]}
+                        buttons={usersGroups.map(group => ({ label: `${group.name} (${contagemUsuariosGroups.find(g => g.groupId === group.id)?.contagem || 0})`, value: String(group.id) }))}
+                        value={filtroUserGroup}
+                        onValueChange={setFiltroUserGroup}
+                    />
+                }
+            </FiltersOptions>
 
             <UsuariosForms visible={criarUsuarioForm} onClose={() => setCriarUsuarioFormVisible(false)} onSubmit={criarUsuario}/>
 
-            <SegmentedButtons
-                value={filtro}
-                onValueChange={setFiltro}
-                style={{marginHorizontal:15, marginVertical: 15}}
-                density="regular"
-                theme={{colors: {secondaryContainer: colors.sblue + '30'}}}
-                buttons={[
-                    {
-                        value: 'Todos',
-                        label: `Todos (${contagemUsuarios})`,
-                        checkedColor: 'black',
-                        labelStyle:{fontSize: 12, flexWrap: 'wrap', flex: 1, height: 'auto'},
-                        
-                    },
-                    {
-                        value: 'Admins',
-                        label: `Admins (${contagemUsuariosAdmins})`,
-                        checkedColor: 'black',
-                        labelStyle:{fontSize: 12, flexWrap: 'wrap', flex: 1, height: 'auto'},
-                        
-                    },
-                    {
-                        value: 'Usuários padrões',
-                        label: `Membros (${contagemUsuariosMembros})`,
-                        checkedColor: 'black',
-                        labelStyle:{fontSize: 12, flexWrap: 'wrap', textAlign: 'center', flex: 1, height: 'auto'},
-                        
-                    },
-                ]}
-            />
+            {usuariosFiltrados.length === 0 ?
+                <View className=" flex-1 justify-center gap-2 items-center px-10">
+                    <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
+                    <Text className="text-gray-500">Nenhum usuário encontrado</Text>
+                </View>
+                :
+                <ScrollView className="p-3 flex-1" refreshControl={<RefreshControl onRefresh={carregarUsuarios} refreshing={refreshing}/>}>
+                    {usuariosFiltrados.map((usuario) => (
+                        <UsuarioCard key={usuario.id} usuario={usuario} usersGroups={usersGroups}/>
+                    ))}
+                </ScrollView>
+                
+            }
 
-            <ScrollView className="p-3 flex-1" refreshControl={<RefreshControl onRefresh={carregarUsuarios} refreshing={refreshing}/>}>
-                {usuariosFiltrados.map((usuario) => (
-                    <UsuarioCard key={usuario.id} usuario={usuario} usersGroups={usersGroups}/>
-                ))}
-            </ScrollView>
             
             <Button
                 mode='contained-tonal'

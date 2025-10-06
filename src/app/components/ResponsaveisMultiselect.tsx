@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { View, StyleSheet, TouchableOpacity, Text, ImageSourcePropType, Alert, FlatList, ListRenderItemInfo, Image } from "react-native";
-import { Modal, Portal, Provider, List, TextInput } from "react-native-paper";
+import { Modal, Portal, List, TextInput } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker'
 import { MediaType } from "expo-image-picker";
 // import { launchCamera, launchImageLibrary } from 'react-native-image-picker'

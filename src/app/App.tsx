@@ -4,6 +4,7 @@ import '../styles/global.css'
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider, AuthContext } from './AuthContext';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import { AuthNavigator } from './navigation/stacks/AuthStack';
 import { UserNavigator } from './navigation/stacks/UserStack';
@@ -37,10 +38,12 @@ const RootNavigation = () => {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <RootNavigation />
-        <CustomToast/>
-      </AuthProvider>
+      <PaperProvider>
+        <AuthProvider>
+          <RootNavigation />
+          <CustomToast/>
+        </AuthProvider>
+      </PaperProvider>
     </SafeAreaProvider>
 
   );

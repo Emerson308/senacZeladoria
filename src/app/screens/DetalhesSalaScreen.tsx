@@ -1,7 +1,7 @@
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
-import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackground } from 'react-native'
+import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackground, RefreshControl } from 'react-native'
 import { Card, Button, ActivityIndicator, Appbar, TextInput } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
 import React, { useContext, useEffect, useState } from 'react';
 import { obterDetalhesSala, marcarSalaComoLimpaService, excluirSalaService } from '../servicos/servicoSalas';
@@ -31,9 +31,10 @@ export default function DetalhesSalaScreen(){
     const {id} = route.params;
 
     const [carregando, setCarregando] = useState(false)
-    const [mensagemErro, setMensagemErro] = useState('')
+    const [refreshing, setRefreshing] = useState(false)
     const [dadosSala, setDadosSala] = useState<Sala|null>(null)
     const [observacoes, setObservacoes] = useState('')
+    const [mensagemErro, setMensagemErro] = useState('')
 
     
 
@@ -67,7 +68,7 @@ export default function DetalhesSalaScreen(){
     }
     
     const carregarSala = async () => {
-        setCarregando(true)
+        // setCarregando(true)
         const obterDetalhesSalaResult = await obterDetalhesSala(id);
         if(!obterDetalhesSalaResult.success){
             Toast.show({
@@ -81,18 +82,18 @@ export default function DetalhesSalaScreen(){
         }
         
         setDadosSala(obterDetalhesSalaResult.data)
-        setCarregando(false)
     }
-
-    useEffect(() => {
-        carregarSala()
-    }, [])
+    
+    useFocusEffect( React.useCallback(() => {
+        setCarregando(true)
+        carregarSala().then(() => setCarregando(false))
+        
+    }, []))
 
 
     if(carregando){
         return(
         <View className='flex-1 bg-gray-50 justify-center p-16'>
-
             <ActivityIndicator size={80}/>
         </View>
         )
@@ -128,7 +129,12 @@ export default function DetalhesSalaScreen(){
             </View>
 
         </View>
-        <ScrollView className=" mt-4 flex-1">
+        <ScrollView className=" mt-4 flex-1" 
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => {
+                setRefreshing(true)
+                carregarSala().then(() => setRefreshing(false))
+            }}/>}
+        >
             {
                 dadosSala.imagem
                 ? (
