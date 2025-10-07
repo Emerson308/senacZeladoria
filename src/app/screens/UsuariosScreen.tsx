@@ -119,8 +119,8 @@ export default function UsuariosScreen(){
                     filtroUserGroup.length === 0
                         ? true
                         : (
-                            usuario.groups.length === filtroUserGroup.length &&
-                            filtroUserGroup.every(groupId => usuario.groups.includes(Number(groupId)))
+                            filtroUserGroup.every(groupId => usuario.groups.includes(Number(groupId))) ||
+                            (filtroUserGroup.includes('none') && usuario.groups.length === 0)
                         )
                 )
             )
@@ -170,8 +170,10 @@ export default function UsuariosScreen(){
                     <FilterSelector
                         label="Grupo do usuário"
                         type="multiple"
-                        defaultValue={[]}
-                        buttons={usersGroups.map(group => ({ label: `${group.name} (${contagemUsuariosGroups.find(g => g.groupId === group.id)?.contagem || 0})`, value: String(group.id) }))}
+                        noneValue={{label: 'Sem grupos', value: 'none'}}
+                        buttons={[...usersGroups.map(group => ({ 
+                            label: `${group.name} (${contagemUsuariosGroups.find(g => g.groupId === group.id)?.contagem || 0})`, 
+                            value: String(group.id) }))]}
                         value={filtroUserGroup}
                         onValueChange={setFiltroUserGroup}
                     />

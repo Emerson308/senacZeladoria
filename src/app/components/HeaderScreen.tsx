@@ -41,14 +41,14 @@ export default function HeaderScreen({searchBar, headerNavButtons=false, headerT
                     <>
                         <TouchableRipple onPress={() => console.log('qr-code')} 
                             borderless={true} 
-                            className=" rounded-full p-2 aspect-square"
+                            className=" rounded-full p-3 aspect-square"
                         >
                             <Ionicons name="qr-code-outline" size={32}/>                   
                         </TouchableRipple>
                         {userGroups.includes(1) &&
                             <TouchableRipple onPress={() => console.log('Notifications')}
                                 borderless={true}
-                                className=" rounded-full p-2 aspect-square"
+                                className=" rounded-full p-3 aspect-square"
                             >
                                 <Ionicons name="notifications-outline" size={32}/>
                             </TouchableRipple>                    
@@ -63,6 +63,8 @@ export default function HeaderScreen({searchBar, headerNavButtons=false, headerT
                     placeholder={searchBar.searchLabel}
                     value={searchBar.searchText}
                     onChangeText={searchBar.setSearchText}
+                    placeholderTextColor={colors.sgray}
+                    iconColor={colors.sgray}
                     // submitBehavior="blurAndSubmit"
                     // mode="view"
                     className=" flex-1"
@@ -72,7 +74,7 @@ export default function HeaderScreen({searchBar, headerNavButtons=false, headerT
                 {showFilterOptions && 
                     <>
                         <TouchableOpacity 
-                            className="border rounded-md bg-sgray/15 p-2 aspect-square items-center justify-center"
+                            className="border rounded-md bg-sgray/15 p-3 aspect-square items-center justify-center"
                             onPress={() => showFilterOptions ? showFilterOptions(true) : null}
                         >
                             <Ionicons name="filter" size={32} color={'black'}/>

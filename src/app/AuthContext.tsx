@@ -64,6 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     if(!obterTokenResult.data){
+      setIsLoading(false)
       return
     }
 
@@ -84,6 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     await carregarGroups()
 
+    setIsLoading(false)
 
     const usuario = usuarioLogadoResult.data
     if(usuario){
@@ -150,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   useEffect(() => {
     setIsLoading(true)
-    verificarAutenticacao().then(() => setIsLoading(false))
+    verificarAutenticacao()
 
     eventBus.on('LOGOUT', async () => await deslogarUsuario())
 

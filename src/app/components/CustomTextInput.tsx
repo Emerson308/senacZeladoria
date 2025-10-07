@@ -1,6 +1,8 @@
 
 import { TextInput, TextInputProps } from "react-native-paper";
 import { Text, View } from "react-native";
+import { colors } from "../../styles/colors";
+import { tr } from "date-fns/locale";
 
 interface CustomTextInputProps extends TextInputProps{
     errorMessage? : string
@@ -14,6 +16,13 @@ export function CustomTextInput({errorMessage, error, className, style, ...restO
         <View className={className} style={style}>
             <TextInput
                 error={hasError}
+                textColor="black"
+                outlineColor={colors.sgray}
+                theme={{colors:{onSurfaceVariant: colors.sgray}}}
+                style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                }}
                 {...restOfProps}
             />
             {errorMessage && <Text className=" text-red-500 text-sm">{errorMessage}</Text>}        

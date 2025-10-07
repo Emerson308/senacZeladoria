@@ -19,11 +19,29 @@ import HeaderScreen from "../components/HeaderScreen";
 import { normalizarTexto } from "../utils/functions";
 import FiltersOptions from "../components/FiltersOptions";
 import FilterSelector from "../components/FilterSelector";
-import { tr } from "date-fns/locale";
+import HandleConfirmation from "../components/HandleConfirmation";
+import { id } from "date-fns/locale";
 
 
 
-type LimpezaStatus = 'Todas' | 'Limpas' | 'Limpeza Pendente' | 'Em Limpeza' | 'Suja'
+interface editingSalaType{
+    type: 'edit' | 'delete' | 'startCleaning' | 'markAsDirty';
+    id: string;
+}
+
+interface confirmationModalTexts{
+    headerText: string;
+    bodyText: string;
+    confirmText: string;
+    cancelText?: string;
+}
+
+interface confirmationModalProps {
+    confirmationTexts: confirmationModalTexts;
+    type: 'confirmAction' | 'destructiveAction' | 'reportAction';
+}
+
+type LimpezaStatus = 'Todas' | 'Limpa' | 'Limpeza Pendente' | 'Em Limpeza' | 'Suja'
 type SalaStatus = 'Todas' | 'Ativas' | 'Inativas'
 
 export default function SalasScreen() {
@@ -42,13 +60,27 @@ export default function SalasScreen() {
     const {signOut, userRole, user} = authContext
     // const userRole = 'user'
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
-    const [searchSalaText, setSearchSalaText] = useState('')
     const [carregando, setCarregando] = useState(false)
-    const [salas, setSalas] = useState<Sala[]>([])
-    const [filtroLimpezaStatus, setFiltroLimpezaStatus] = useState<LimpezaStatus>('Todas')
-    const [filtroSalaStatus, setFiltroSalaStatus] = useState<SalaStatus>('Todas')
     const [refreshingSalas, setRefreshingSalas] = useState(false)
+    const [salas, setSalas] = useState<Sala[]>([])
+    
+    const [searchSalaText, setSearchSalaText] = useState('')
     const [filtroOptionsVisible, setFiltroOptionsVisible] = useState(false)
+    const [filtroSalaStatus, setFiltroSalaStatus] = useState<SalaStatus>('Todas')
+    const [filtroLimpezaStatus, setFiltroLimpezaStatus] = useState<LimpezaStatus>('Todas')
+
+    const [confirmationModalProps, setConfirmationModalProps] = useState<confirmationModalProps>({
+        confirmationTexts: {
+            headerText: '',
+            bodyText: '',
+            confirmText: '',
+            cancelText: ''
+        },
+        type: 'confirmAction'
+    });
+    const [editingSala, setEditingSala] = useState<editingSalaType | null>(null)
+    const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+    const [observacao, setObservacao] = useState('')
 
     const carregarSalasComLoading = async () => {
         setCarregando(true);
@@ -84,23 +116,8 @@ export default function SalasScreen() {
         setRefreshingSalas(false)
     }
 
-    const marcarSalaComoLimpa = async (id: string) => {
-        try{
-            await marcarSalaComoLimpaService(id, '')
-            await carregarSalasComLoading()
-        } catch(erro: any){
-            // setMensagemErro(erro.message || 'Não foi possivel carregar as salas.')
-            // if(erro.message.includes('Token de autenticação expirado ou inválido.')){
-            //     signOut()
-            // }                
-            
-        } finally{
-
-        }
-    }
-
-    const marcarSalaComoSuja = async (id: string) => {
-        const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id)
+    const marcarSalaComoSuja = async (id: string, observacoes?: string) => {
+        const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id, observacoes)
         if(!marcarSalaComoSujaServiceResult.success){
             Toast.show({
                 type: 'error',
@@ -129,18 +146,51 @@ export default function SalasScreen() {
         await carregarSalas();
     }
 
-    async function handleExcluirSala(id: string){
-        Alert.alert('Excluir sala', "Tem certeza de que deseja excluir esta sala?", [
-            {
-                text: 'Cancelar',
-                style: 'cancel',
+
+    const handleMarcarSalaComoSuja = (id: string) => {
+        setEditingSala({type: 'markAsDirty', id: id})
+        setConfirmationModalProps({
+            confirmationTexts: {
+                headerText: 'Relatar sala suja',
+                bodyText: 'Tem certeza de que deseja relatar esta sala como suja?',
+                confirmText: 'Relatar como suja',
             },
-            {
-                text: 'Excluir',
-                style: 'destructive',
-                onPress: () => excluirSala(id)
-            }
-        ])
+            type: 'reportAction'
+        });
+        setConfirmationModalVisible(true);
+    }
+
+    const handleExcluirSala = (id: string) => {
+        setEditingSala({type: 'delete', id: id})
+        setConfirmationModalProps({
+            confirmationTexts: {
+                headerText: 'Excluir sala',
+                bodyText: 'Tem certeza de que deseja excluir esta sala?',
+                confirmText: 'Excluir',
+            },
+            type: 'destructiveAction'
+        });
+        setConfirmationModalVisible(true);
+    }
+
+    const onCancel = () => {
+        setConfirmationModalVisible(false);
+        setEditingSala(null);
+        setObservacao('');
+    }
+
+    const onConfirm = async () => {
+        if(editingSala?.type === 'delete'){
+            await excluirSala(editingSala.id);
+        } else if(editingSala?.type === 'startCleaning'){
+            // await marcarSalaComoLimpa(editingSala.id);
+        } else if(editingSala?.type === 'markAsDirty'){
+            await marcarSalaComoSuja(editingSala.id, observacao);
+        }
+
+        setConfirmationModalVisible(false);
+        setEditingSala(null);
+        setObservacao('');
     }
 
     useFocusEffect( React.useCallback(() => {
@@ -151,7 +201,6 @@ export default function SalasScreen() {
     if(carregando){
         return(
         <View className='flex-1 bg-gray-50 justify-center p-16'>
-
             <ActivityIndicator size={80}/>
         </View>
         )
@@ -185,6 +234,17 @@ export default function SalasScreen() {
 
     return (
         <SafeAreaView edges={['top']}  className="flex-1 bg-gray-100 pb-4">
+
+            <HandleConfirmation 
+                visible={confirmationModalVisible} 
+                onConfirm={ async () => onConfirm()}
+                onCancel={onCancel}
+                confirmationTexts={confirmationModalProps.confirmationTexts}
+                type={confirmationModalProps.type}
+                observacao={observacao}
+                setObservacao={setObservacao}
+            />
+
             <HeaderScreen searchBar={{
                 searchLabel: 'Pesquisar salas',
                 searchText: searchSalaText,
@@ -208,7 +268,7 @@ export default function SalasScreen() {
                     onValueChange={setFiltroLimpezaStatus}
                     defaultValue="Todas"
                     buttons={[
-                        {label: `Limpa (${contagemSalasLimpas})`, value: 'Limpas'},
+                        {label: `Limpa (${contagemSalasLimpas})`, value: 'Limpa'},
                         {label: `Limpeza Pendente (${contagemSalasPendentes})`, value: 'Limpeza Pendente'},
                         {label: `Em Limpeza (${contagemSalasEmLimpeza})`, value: 'Em Limpeza'},
                         {label: `Suja (${contagemSalasSuja})`, value: 'Suja'},
@@ -241,7 +301,16 @@ export default function SalasScreen() {
                     refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
                 >
                     {salasFiltradas.map((sala) => (
-                    <SalaCard key={sala.id} marcarSalaComoSuja={ async (id) => await marcarSalaComoSuja(id)} userGroups={user.groups} userRole={userRole} marcarSalaComoLimpa={marcarSalaComoLimpa} editarSala={() => navigation.navigate('FormSala', {sala: sala})} excluirSala={handleExcluirSala} sala={sala} onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>
+                    <SalaCard 
+                        key={sala.id} 
+                        sala={sala} 
+                        marcarSalaComoSuja={handleMarcarSalaComoSuja} 
+                        userGroups={user.groups} 
+                        userRole={userRole} 
+                        marcarSalaComoLimpa={(id: string) => null} 
+                        excluirSala={handleExcluirSala} 
+                        editarSala={() => navigation.navigate('FormSala', {sala: sala})} 
+                        onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>
                 ))}
             </ScrollView>
             }

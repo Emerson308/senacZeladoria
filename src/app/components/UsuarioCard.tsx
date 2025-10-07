@@ -1,5 +1,5 @@
-import { TouchableOpacity, View, StyleSheet, Text as TextS } from "react-native"
-import { Card, Text, Button, Avatar } from "react-native-paper"
+import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
+import { Card, Button, Avatar } from "react-native-paper"
 import { Sala, UserGroup, Usuario } from "../types/apiTypes";
 import { formatarDataISO } from "../utils/functions";
 import React from "react";
@@ -28,16 +28,16 @@ function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
                         </View>
                         <View className=" flex-1 flex-col">
                             <View className=" flex-row gap-2 items-center">
-                                <Text numberOfLines={1} className=" flex-1" ellipsizeMode="tail" variant="headlineSmall">{usuario.username}</Text>
+                                <Text numberOfLines={1} className=" flex-1 text-2xl" ellipsizeMode="tail">{usuario.username}</Text>
                                 {
                                     usuario.is_superuser
-                                    ? <Text style={styles.textGreen} variant="bodyMedium">Admin</Text>
-                                    : <Text style={styles.textYellow} variant="bodyMedium">Usuário padrão</Text>
+                                    ? <Text style={styles.textGreen} className=" text-sm">Admin</Text>
+                                    : <Text style={styles.textYellow} className=" text-sm">Usuário padrão</Text>
                                 }
 
                             </View>
-                            <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Email: {usuario.email ? usuario.email : 'Sem email'}</Text>
-                            <Text numberOfLines={1} ellipsizeMode="tail" variant="bodyMedium"> Nome: {usuario.nome ? usuario.nome : 'Sem nome'}</Text>
+                            <Text numberOfLines={1} ellipsizeMode="tail" className=" text-sm"> Email: {usuario.email ? usuario.email : 'Sem email'}</Text>
+                            <Text numberOfLines={1} ellipsizeMode="tail" className=" text-sm"> Nome: {usuario.nome ? usuario.nome : 'Sem nome'}</Text>
                         </View>
                     </View>
                     <View className=" flex-1 flex-row gap-2 px-4 flex-wrap">

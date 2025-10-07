@@ -154,8 +154,15 @@ export async function getRegistrosService(id?: number): Promise<ServiceResult<Re
     }
 }
 
-export async function marcarSalaComoSujaService(id: string): Promise<ServiceResult<null>>{
+export async function marcarSalaComoSujaService(id: string, observacoes?: string): Promise<ServiceResult<null>>{
     try{
+        console.log('Observações:', observacoes)
+        // const observacoesJson = {
+        //     observacoes: observacoes ? observacoes : 'Material derramado no chão.'
+        // }
+
+        // console.log(observacoesJson)
+
         const resposta = await api.post(`salas/${id}/marcar_como_suja/`)
         // console.log(resposta.data)
         return {success: true, data: null}

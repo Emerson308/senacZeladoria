@@ -16,7 +16,10 @@ type condicionalTypeFilterProps<T extends string = string> = {
 } | {
     type: 'multiple',
     value: T[],
-    defaultValue: T[],
+    noneValue?: {
+        label: string, 
+        value: T
+    },
     onValueChange: (value: T[]) => void,
     buttons: FilterButton<T>[]
 }
@@ -26,12 +29,46 @@ type FilterSelectorProps<T extends string = string> = {
 } & condicionalTypeFilterProps<T>
 
 
+const SelectorButton = ({ selected, label, onPress }: { selected: boolean, label: string, onPress: () => void }) => {
+    return (
+        <TouchableRipple
+            onPress={onPress}
+            borderless={true}
+            className={
+                selected
+                    ? "flex-row bg-sgray/30 items-center border rounded-full p-1 px-3"
+                    : "flex-row items-center border border-gray-300 rounded-full p-1 px-3"
+            }
+        >
+            <View className=" flex-row items-center gap-1">
+                <Text className=" text-sm">{label}</Text>
+                {selected ?
+                    <Ionicons name="close-outline" size={16} color="black" />
+                    :
+                    <Ionicons name="add-outline" size={16} color="black" />
+                }
+            </View>
+        </TouchableRipple>
+    );
+};
+
 export default function FilterSelector<T extends string = string>(props: FilterSelectorProps<T>) {
     const { label, buttons, type = 'single' } = props;
 
     if (type === 'multiple') {
-        const { value, onValueChange, defaultValue } = props as Extract<FilterSelectorProps<T>, { type: 'multiple' }>;
-
+        const { value, onValueChange, noneValue } = props as Extract<FilterSelectorProps<T>, { type: 'multiple' }>;
+        
+        const toggleValue = (val: T) => {
+            if (val === noneValue?.value) {
+                onValueChange([val]);
+            } else {
+                if (value.includes(val)) {
+                    onValueChange(value.filter(v => v !== val && v !== noneValue?.value));
+                } else {
+                    onValueChange([...value.filter(v => v !== noneValue?.value), val]);
+                }
+            }
+        };
         return (
             <View key={label} className=" gap-2 my-2">
                 <Text className="font-bold">{label}</Text>
@@ -39,31 +76,22 @@ export default function FilterSelector<T extends string = string>(props: FilterS
                     {buttons.map((button) => {
                         const selected = value.includes(button.value);
                         return (
-                            <TouchableRipple
+                            <SelectorButton
                                 key={button.value}
-                                onPress={() => {
-                                    if (selected) {
-                                        onValueChange(value.filter(v => v !== button.value));
-                                    } else {
-                                        onValueChange([...value, button.value]);
-                                    }
-                                }}
-                                borderless={true}
-                                className={
-                                    selected
-                                        ? "flex-row bg-sgray/30 items-center border rounded-full p-1 px-3"
-                                        : "flex-row items-center border border-gray-300 rounded-full p-1 px-3"
-                                }
-                            >
-                                <View className=" flex-row items-center gap-1">
-                                    <Text className=" text-sm">{button.label}</Text>
-                                    {selected &&
-                                        <Ionicons name="close-outline" size={16} color="black" />
-                                    }
-                                </View>
-                            </TouchableRipple>
+                                label={button.label}
+                                selected={selected}
+                                onPress={() => toggleValue(button.value)}
+                            />
                         );
                     })}
+                    {noneValue &&
+                        <SelectorButton
+                            key={noneValue.value}
+                            label={noneValue.label}
+                            selected={value.includes(noneValue.value)}
+                            onPress={() => toggleValue(noneValue.value)}
+                        />
+                    }
                 </View>
             </View>
         );
@@ -85,23 +113,12 @@ export default function FilterSelector<T extends string = string>(props: FilterS
                 <Text className="font-bold">{label}</Text>
                 <View className="flex-row gap-2 flex-wrap">
                     {buttons.map((button) => (
-                        <TouchableRipple
+                        <SelectorButton
                             key={button.value}
+                            label={button.label}
+                            selected={button.value === value}
                             onPress={() => toggleValue(button.value)}
-                            borderless={true}
-                            className={
-                                button.value === value
-                                    ? "flex-row bg-sgray/30 items-center border rounded-full p-1 px-3"
-                                    :
-                                    "flex-row items-center border border-gray-300 rounded-full p-1 px-3"}
-                        >
-                            <View className=" flex-row items-center gap-1">
-                                <Text className=" text-sm">{button.label}</Text>
-                                {button.value === value &&
-                                    <Ionicons name="close-outline" size={16} color="black" />
-                                }
-                            </View>
-                        </TouchableRipple>
+                        />
                     ))}
                 </View>
             </View>
