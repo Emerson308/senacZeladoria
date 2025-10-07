@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado } from "../servicos/servicoUsuarios";
 import { RegistroSala, Usuario } from "../types/apiTypes";
 import { Alert, Text, View, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Searchbar, TextInput, TouchableRipple } from "react-native-paper";
+import { ActivityIndicator, Avatar, Searchbar, TouchableRipple } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";

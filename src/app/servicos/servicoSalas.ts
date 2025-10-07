@@ -20,7 +20,7 @@ export async function obterSalas():Promise<ServiceResult<Sala[]>>{
 export async function obterDetalhesSala(id: string):Promise<ServiceResult<Sala>>{
     try{
         const resposta = await api.get<Sala>(`salas/${id}/`)
-        // console.log(resposta.data)
+        console.log(resposta.data)
         return {success: true, data: resposta.data}
     } catch (erro: any){
         console.log(erro);
@@ -156,12 +156,12 @@ export async function getRegistrosService(id?: number): Promise<ServiceResult<Re
 
 export async function marcarSalaComoSujaService(id: string, observacoes?: string): Promise<ServiceResult<null>>{
     try{
-        console.log('Observações:', observacoes)
-        // const observacoesJson = {
-        //     observacoes: observacoes ? observacoes : 'Material derramado no chão.'
-        // }
+        // console.log('Observações:', observacoes)
+        const observacoesJson = {
+            observacoes: observacoes ? observacoes : ''
+        }
 
-        // console.log(observacoesJson)
+        console.log(observacoesJson)
 
         const resposta = await api.post(`salas/${id}/marcar_como_suja/`)
         // console.log(resposta.data)

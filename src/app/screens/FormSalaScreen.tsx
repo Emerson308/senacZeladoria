@@ -1,9 +1,9 @@
 import { imageType, newSala, Sala, Usuario } from "../types/apiTypes";
 import React, { useContext, useEffect, useState } from "react"
-import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, TextInput as TextI, FlatList, ImageURISource } from "react-native"
+import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, FlatList, ImageURISource } from "react-native"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { Button, Portal, TextInput as TextInputPaper, ActivityIndicator } from "react-native-paper"
+import { Button, Portal, ActivityIndicator } from "react-native-paper"
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";

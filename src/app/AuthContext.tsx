@@ -3,11 +3,11 @@ import { obterToken, removerToken, salvarToken } from './servicos/servicoArmazen
 import { realizarLogin } from './servicos/servicoAutenticacao';
 import api from './api/axiosConfig';
 import { getAllUsersGroups, usuarioLogado } from './servicos/servicoUsuarios';
-import { UserGroup, Usuario } from './types/apiTypes';
+import { RegistroSala, UserGroup, Usuario } from './types/apiTypes';
 import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import eventBus from './utils/eventBus';
 import Toast from 'react-native-toast-message';
-import { listarNotificações } from './servicos/servicoSalas';
+import { getRegistrosService, listarNotificações } from './servicos/servicoSalas';
 
 type UserRole = 'user' | 'admin' | null;
 
@@ -18,6 +18,7 @@ interface AuthContextType {
   user: Usuario | null;
   usersGroups: UserGroup[];
   isLoading: boolean;
+  limpezasEmAndamento: RegistroSala[]
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -31,7 +32,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<Usuario | null>(null);
   const [usersGroups, setUsersGroups] = useState<UserGroup[]>([]);
+  const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
+
+  const carregarLimpezasAndamento = async (username: string) => {
+    const getAllRegistrosServiceResult = await getRegistrosService()
+    if(!getAllRegistrosServiceResult.success){
+      return
+    }
+
+    // console.log(getAllRegistrosServiceResult)
+
+    const registros = getAllRegistrosServiceResult.data
+    const LimpezasAndamento = registros.filter(registro => {
+      const condicaoRegistro = (registro.funcionario_responsavel === username) && (registro.data_hora_fim === null)
+      // console.log(condicaoRegistro)
+
+      return condicaoRegistro
+    })
+
+    // console.log(LimpezasAndamento)
+
+    setLimpezasEmAndamento(LimpezasAndamento)
+  }
 
   const carregarGroups = async () => {
     const getAllUsersGroupsResult = await getAllUsersGroups()
@@ -47,6 +70,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     setUsersGroups(getAllUsersGroupsResult.data)
+  }
+
+  const definirUserStates = async (usuario: Usuario) => {
+    await carregarGroups()
+
+    // console.log(usuario.groups.includes(1))
+
+    if(usuario.groups.includes(1) && usuario.is_superuser){
+      await carregarLimpezasAndamento(usuario.username)
+    }
+    
+    // console.log(limpezasEmAndamento)
+
+    
+    if(usuario){
+      setUser(usuario)
+      if(usuario.is_superuser){
+        setUserRole('admin')
+      } else{        
+        setUserRole('user')
+      }
+      // setUserRole('user')
+    }
+    
+    setIsLoading(false)
+
   }
 
   const verificarAutenticacao = async () => {
@@ -69,7 +118,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     api.defaults.headers.common['Authorization'] = `Token ${obterTokenResult.data}`;
-    // const result = await listarNotificações()
 
     const usuarioLogadoResult = await usuarioLogado();
     if(!usuarioLogadoResult.success){
@@ -83,20 +131,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return
     }
 
-    await carregarGroups()
+    await definirUserStates(usuarioLogadoResult.data)
 
-    setIsLoading(false)
-
-    const usuario = usuarioLogadoResult.data
-    if(usuario){
-      setUser(usuario)
-      if(usuario.is_superuser){
-        setUserRole('admin')
-      } else{        
-        setUserRole('user')
-      }
-      // setUserRole('user')
-    }
 }
 
   const deslogarUsuario = async () => {
@@ -108,6 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUserRole(null);
     setUser(null)
     setUsersGroups([])
+    setLimpezasEmAndamento([])
 
     delete api.defaults.headers.common['Authorization']
 
@@ -130,13 +167,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loginData = resposta.data
     
     api.defaults.headers.common['Authorization'] = `Token ${loginData.token}`
-    setUser(loginData.user_data)
-    if (loginData.user_data.is_superuser){
-      setUserRole('admin')
-    } else{
-      setUserRole('user')
-    }
-    await carregarGroups()
+
+    await definirUserStates(loginData.user_data)
     
     const resultSalvarToken = await salvarToken(resposta.data.token)
     if(!resultSalvarToken.success){
@@ -168,6 +200,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     usersGroups,
     isLoading,
+    limpezasEmAndamento
   };
 
   if (isLoading) {

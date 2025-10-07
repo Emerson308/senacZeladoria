@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
-import { Button, Text, ActivityIndicator, SegmentedButtons, Searchbar } from 'react-native-paper';
+import { View, ScrollView, TouchableOpacity, Alert, RefreshControl, Text } from 'react-native';
+import { Button, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
@@ -13,7 +13,6 @@ import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 import Toast from "react-native-toast-message";
 import { Ionicons } from '@expo/vector-icons'
-import { TouchableRipple } from "react-native-paper";
 import { CustomTextInput as TextInput} from "../components/CustomTextInput";
 import HeaderScreen from "../components/HeaderScreen";
 import { normalizarTexto } from "../utils/functions";
@@ -57,7 +56,7 @@ export default function SalasScreen() {
         return
     }
     
-    const {signOut, userRole, user} = authContext
+    const {signOut, userRole, user, limpezasEmAndamento} = authContext
     // const userRole = 'user'
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     const [carregando, setCarregando] = useState(false)
@@ -232,6 +231,8 @@ export default function SalasScreen() {
     const contagemSalasAtivas = salas.filter(sala => sala.ativa).length
     const contagemSalasInativas = salas.filter(sala => !sala.ativa).length
 
+    // console.log(limpezasEmAndamento)
+
     return (
         <SafeAreaView edges={['top']}  className="flex-1 bg-gray-100 pb-4">
 
@@ -289,6 +290,21 @@ export default function SalasScreen() {
                     : 
                     null}
             </FiltersOptions>
+
+            {limpezasEmAndamento.length === 0 ? null :
+                <TouchableRipple 
+                    className="border rounded-full h-14 mx-6 my-2" 
+                    onPress={() => null}
+                    borderless={true}
+                    // background={colors.sblue}
+                    
+                >
+                    <View className=" flex-1 flex-row items-center justify-center gap-4 bg-sblue">
+                        <Ionicons name="timer-outline" size={24} color={'white'}/>
+                        <Text className="text-lg text-white">Limpezas em andamento</Text>
+                    </View>
+                </TouchableRipple>
+            }
 
 
             {salasFiltradas.length === 0 ?

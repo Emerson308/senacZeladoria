@@ -1,10 +1,7 @@
 import React, {useState} from "react";
 import { View, StyleSheet, TouchableOpacity, Text, ImageSourcePropType, Alert, FlatList, ListRenderItemInfo, Image } from "react-native";
-import { Modal, Portal, List, TextInput } from "react-native-paper";
-import * as ImagePicker from 'expo-image-picker'
-import { MediaType } from "expo-image-picker";
-// import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
-import * as NativeImagePicker from 'react-native-image-picker'
+import { Modal, Portal, List, Searchbar } from "react-native-paper";
+import { colors } from "../../styles/colors";
 
 import { Ionicons } from '@expo/vector-icons'
 import { Usuario } from "../types/apiTypes";
@@ -109,16 +106,18 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
             </View>
             <View className=" flex-col px-4 gap-2 pb-4">
                 <View className=" gap-1">
-                    <TextInput
-                        label="Pesquisar zelador"
+                    <Searchbar
+                        placeholder={'Pesquisar zelador'}
                         value={responsaveisInputText}
                         onChangeText={setResponsaveisInputText}
-                        autoCapitalize="none"
-                        keyboardType='default'
-                        mode="outlined"
-                        // style={styles.input}
-                        activeOutlineColor='#004A8D'
-                    />
+                        placeholderTextColor={colors.sgray}
+                        iconColor={colors.sgray}
+                        // submitBehavior="blurAndSubmit"
+                        // mode="view"
+                        className=" "
+                        // style={{flex: 1}}
+                        theme={{colors: {primary: colors.sblue, elevation: {level3: colors.sgray + '20'}}}}
+                    />            
                     <Text className=" ml-1 text-gray-400">{contadorZeladores > 0 ? contadorZeladores + ' resultados.' : 'Nenhum resultado.'}</Text>
                 </View>
 
