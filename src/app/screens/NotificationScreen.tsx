@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../servicos/servicoSalas";
 import { Notification } from "../types/apiTypes";
 import Toast from "react-native-toast-message";
-import NotificationCard from "./NotificationCard";
+import NotificationCard from "../components/NotificationCard";
 
 
 
