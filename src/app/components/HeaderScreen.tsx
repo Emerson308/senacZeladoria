@@ -17,21 +17,33 @@ import {Ionicons} from "@expo/vector-icons"
 
 
 
-interface HeaderScreenProps{
+type HeaderScreenProps = {
     searchBar: {
         searchText: string,
         setSearchText: (texto: string) => void
         searchLabel: string
     },
-    headerNavButtons?: boolean,
-    // filterOptions?: boolean,
+    notifications?: {
+        notificationsCount?: number,
+        notificationsNavigate: () => void
+    }
     headerText: string,
+    headerNavButtons?: boolean,
+    onlyGoBackHeader?: boolean
     showFilterOptions?: (visibility: boolean) => void,
     userGroups?: number[]
 }
 
+export default function HeaderScreen({
+    searchBar, 
+    headerNavButtons=false, 
+    headerText, 
+    userGroups, 
+    showFilterOptions,
+    notifications
+}: HeaderScreenProps){
 
-export default function HeaderScreen({searchBar, headerNavButtons=false, headerText, userGroups, showFilterOptions}: HeaderScreenProps){
+    const navigation = useNavigation()
 
     return(
         <View className="bg-white py-2 border-b-2 border-gray-200 gap-2 px-5" >
@@ -46,7 +58,7 @@ export default function HeaderScreen({searchBar, headerNavButtons=false, headerT
                             <Ionicons name="qr-code-outline" size={32}/>                   
                         </TouchableRipple>
                         {userGroups.includes(1) &&
-                            <TouchableRipple onPress={() => console.log('Notifications')}
+                            <TouchableRipple onPress={() => navigation.navigate('Notifications')}
                                 borderless={true}
                                 className=" rounded-full p-3 aspect-square"
                             >

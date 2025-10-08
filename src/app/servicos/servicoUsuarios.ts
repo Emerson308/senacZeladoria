@@ -25,7 +25,7 @@ export async function criarUsuarioService(novoUsuario: NovoUsuario): Promise<Ser
         const resposta = await api.post<Usuario>('accounts/create_user/', novoUsuario)
         return {success: true, data: resposta.data}
     } catch(erro: any){
-        console.error(erro);
+        // console.error(erro);
 
         if(erro.response.status === 400){
             const erroData = erro.response.data

@@ -1,6 +1,6 @@
 import { fa } from "zod/v4/locales";
 import api from "../api/axiosConfig";
-import { newSala, RegistroSala, Sala, ServiceResult } from "../types/apiTypes";
+import { newSala, RegistroSala, Sala, ServiceResult, Notification } from "../types/apiTypes";
 
 export async function obterSalas():Promise<ServiceResult<Sala[]>>{
     try {
@@ -32,18 +32,6 @@ export async function obterDetalhesSala(id: string):Promise<ServiceResult<Sala>>
         }
 
         return {success: false, errMessage: 'Erro ao buscar detalhes da sala'}
-    }
-}
-
-export async function marcarSalaComoLimpaService(id: string, observacoes?: string){
-    try{
-        const resposta = await api.post(`salas/${id}/marcar_como_limpa/`, {observacoes})
-        // console.log(resposta.data)
-        // return
-    } catch(erro : any){
-        console.log(erro);
-        throw new Error(erro|| 'Erro ao marcar sala')
-        
     }
 }
 
@@ -154,6 +142,23 @@ export async function getRegistrosService(id?: number): Promise<ServiceResult<Re
     }
 }
 
+export async function iniciarLimpezaSala(id: string): Promise<ServiceResult<RegistroSala>>{
+    try{
+        const resposta = await api.post(`salas/${id}/iniciar_limpeza/`)
+
+        return {success: true, data: resposta.data}
+
+    } catch(erro: any){
+        console.log(erro)
+        if(erro.response.status === 401){
+            return {success: false, errMessage: 'As credenciais de autenticação enviadas não possuem autorização para essa ação'}
+        }
+        
+        return {success: false, errMessage: 'Erro ao marcar sala como suja'}
+        
+    }
+}
+
 export async function marcarSalaComoSujaService(id: string, observacoes?: string): Promise<ServiceResult<null>>{
     try{
         // console.log('Observações:', observacoes)
@@ -179,12 +184,12 @@ export async function marcarSalaComoSujaService(id: string, observacoes?: string
 
 
 
-export async function listarNotificações() : Promise<ServiceResult<null>>{
+export async function listarNotificacoes() : Promise<ServiceResult<Notification[]>>{
     try{
         const resposta = await api.get(`notificacoes/`)
         // console.log(resposta.data)
-        console.log(resposta.data)
-        return {success: true, data: null}
+        // console.log(resposta.data)
+        return {success: true, data: resposta.data}
     } catch(erro: any){
         console.error(erro)
         if(erro.response.status === 401){
@@ -194,3 +199,40 @@ export async function listarNotificações() : Promise<ServiceResult<null>>{
         return {success: false, errMessage: 'Erro ao marcar sala como suja'}
     }
 }
+
+export async function lerNotificacao(id: number): Promise<ServiceResult<null>>{
+    try{
+        const resposta = await api.post(`notificacoes/${id}/marcar_como_lida/`)
+        // console.log(resposta.data)
+        return {success: true, data: null}
+    } catch(erro: any){
+        console.error(erro)
+        if(erro.response.status === 401){
+            return {success: false, errMessage: 'As credenciais de autenticação enviadas não possuem autorização para essa ação'}
+        }
+        
+        return {success: false, errMessage: 'Erro ao marcar sala como suja'}
+    }
+    
+}
+
+export async function lerTodasAsNotificacoes(): Promise<ServiceResult<null>>{
+    try{
+        const resposta = await api.post(`notificacoes/marcar_todas_como_lidas/`)
+
+        return {success: true, data: null}
+    } catch(erro: any){
+        console.error(erro)
+        if(erro.response.status === 401){
+            return {success: false, errMessage: 'As credenciais de autenticação enviadas não possuem autorização para essa ação'}
+        }
+        
+        return {success: false, errMessage: 'Erro ao marcar sala como suja'}
+    }
+    
+}
+
+
+
+
+

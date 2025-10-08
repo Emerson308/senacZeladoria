@@ -82,7 +82,7 @@ export interface RegistroSala{
     data_hora_fim: string | null,
     funcionario_responsavel: string,
     observacoes: string | null,
-    // fotos: {}
+    fotos: string[]
 }
 
 export interface UserChangePassword{
@@ -96,7 +96,13 @@ export interface UserGroup{
     name: string
 }
 
-
+export interface Notification{
+    id: number,
+    mensagem: string,
+    link: string,
+    data_criacao: string,
+    lida: boolean
+}
 
 
 

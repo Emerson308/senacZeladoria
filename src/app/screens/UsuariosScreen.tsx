@@ -63,7 +63,7 @@ export default function UsuariosScreen(){
     }
 
     const criarUsuario = async (novoUsuario: NovoUsuario) => {
-        setCarregando(true)
+        // setCarregando(true)
         // console.log(novoUsuario)
         const criarUsuarioServiceResult = await criarUsuarioService(novoUsuario)
         if(!criarUsuarioServiceResult.success){
@@ -74,6 +74,7 @@ export default function UsuariosScreen(){
                 position: 'bottom',
                 visibilityTime: 3000
             })
+            return
         }
         await carregarUsuarios();
         Toast.show({

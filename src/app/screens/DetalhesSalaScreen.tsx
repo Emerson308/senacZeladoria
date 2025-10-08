@@ -4,7 +4,7 @@ import { Card, Button, ActivityIndicator, Appbar } from 'react-native-paper';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
 import React, { useContext, useEffect, useState } from 'react';
-import { obterDetalhesSala, marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaService } from '../servicos/servicoSalas';
+import { obterDetalhesSala, excluirSalaService, marcarSalaComoSujaService, iniciarLimpezaSala } from '../servicos/servicoSalas';
 import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
@@ -63,7 +63,21 @@ export default function DetalhesSalaScreen(){
     });
     const [editingSalaType, setEditingSalaType] = useState<editingSalaType| null>(null)
 
-
+    const iniciarLimpeza = async (id: string) => {
+        const iniciarLimpezaSalaResult = await iniciarLimpezaSala(id);
+        if(!iniciarLimpezaSalaResult.success){
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: iniciarLimpezaSalaResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            });
+            return;
+        }
+        await carregarSala()
+    }
+    
 
     const marcarSalaComoSuja = async (id: string, observacao: string) => {
         const marcarSalaComoLimpaServiceResult = await marcarSalaComoSujaService(id, observacao)
@@ -93,6 +107,20 @@ export default function DetalhesSalaScreen(){
         // navigation.goBack()
         setTimeout(navigation.goBack, 500)
     }
+
+    const handleIniciarLimpeza = () => {
+        setEditingSalaType('startCleaning')
+        setConfirmationModalProps({
+            confirmationTexts: {
+                headerText: 'Iniciar limpeza',
+                bodyText: 'Tem certeza de que deseja iniciar a limpeza dessa sala?',
+                confirmText: 'Iniciar limpeza'
+            },
+            type: 'confirmAction'
+        })
+        setConfirmationModalVisible(true)
+    }
+
 
     const handleMarcarSalaComoSuja = () => {
         setEditingSalaType('markAsDirty')
@@ -150,7 +178,7 @@ export default function DetalhesSalaScreen(){
         if(editingSalaType === 'delete'){
             await excluirSala(dadosSala.qr_code_id);
         } else if(editingSalaType === 'startCleaning'){
-            // await marcarSalaComoLimpa(editingSala.id);
+            await iniciarLimpeza(dadosSala.qr_code_id);
         } else if(editingSalaType === 'markAsDirty'){
             await marcarSalaComoSuja(dadosSala.qr_code_id, observacao);
         }
@@ -373,6 +401,7 @@ export default function DetalhesSalaScreen(){
                                     className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
                                     onPress={(e) => {
                                         e.stopPropagation()
+                                        handleIniciarLimpeza()
                                     }}
                                     >
                                     <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>

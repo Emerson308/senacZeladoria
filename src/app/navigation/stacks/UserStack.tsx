@@ -4,6 +4,7 @@ import { UserStackParamList } from '../types/UserStackTypes';
 import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
 import BottomTabs from './BottomTabs';
 import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
+import NotificationScreen from '../../screens/NotificationScreen';
 
 
 const Stack = createStackNavigator<UserStackParamList>();
@@ -23,6 +24,8 @@ export const UserNavigator = () => (
     
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
         
+    <Stack.Screen name='Notifications' options={{ headerShown: false }} component={NotificationScreen} />
+    
   </Stack.Navigator>
 );
 

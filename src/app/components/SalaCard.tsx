@@ -13,7 +13,7 @@ interface propsSalaCard{
     sala: Sala;
     key: number;
     onPress: () => void,
-    marcarSalaComoLimpa: (id:string) => void,
+    iniciarLimpeza: (id:string) => void,
     marcarSalaComoSuja: (id:string) => void,
     editarSala: (sala: Sala) => void,
     excluirSala: (id: string) => void,
@@ -22,7 +22,7 @@ interface propsSalaCard{
 
 }
 
-function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
+function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
 
     // const userGroups: number[] = []
 
@@ -96,6 +96,7 @@ function SalaCard({sala, onPress, marcarSalaComoLimpa, editarSala, excluirSala, 
                                             className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
                                             onPress={(e) => {
                                                 e.stopPropagation()
+                                                iniciarLimpeza(sala.qr_code_id)
                                             }}
                                             >
                                             <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>

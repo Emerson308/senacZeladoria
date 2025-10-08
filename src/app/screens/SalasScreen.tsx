@@ -7,8 +7,8 @@ import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, Sala } from "../types/apiTypes";
-import {obterSalas } from "../servicos/servicoSalas";
-import { marcarSalaComoLimpaService, excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
+import {iniciarLimpezaSala, obterSalas } from "../servicos/servicoSalas";
+import { excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
 import SalaCard from "../components/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 import Toast from "react-native-toast-message";
@@ -115,6 +115,21 @@ export default function SalasScreen() {
         setRefreshingSalas(false)
     }
 
+    const iniciarLimpeza = async (id: string) => {
+        const iniciarLimpezaSalaResult = await iniciarLimpezaSala(id);
+        if(!iniciarLimpezaSalaResult.success){
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: iniciarLimpezaSalaResult.errMessage,
+                position: 'bottom',
+                visibilityTime: 3000
+            });
+            return;
+        }
+        await carregarSalasComLoading()
+    }
+
     const marcarSalaComoSuja = async (id: string, observacoes?: string) => {
         const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id, observacoes)
         if(!marcarSalaComoSujaServiceResult.success){
@@ -145,6 +160,18 @@ export default function SalasScreen() {
         await carregarSalas();
     }
 
+    const handleIniciarLimpeza = (id: string) => {
+        setEditingSala({type: 'startCleaning', id})
+        setConfirmationModalProps({
+            confirmationTexts: {
+                headerText: 'Iniciar limpeza',
+                bodyText: 'Tem certeza de que deseja iniciar a limpeza dessa sala?',
+                confirmText: 'Iniciar limpeza'
+            },
+            type: 'confirmAction'
+        })
+        setConfirmationModalVisible(true)
+    }
 
     const handleMarcarSalaComoSuja = (id: string) => {
         setEditingSala({type: 'markAsDirty', id: id})
@@ -182,7 +209,7 @@ export default function SalasScreen() {
         if(editingSala?.type === 'delete'){
             await excluirSala(editingSala.id);
         } else if(editingSala?.type === 'startCleaning'){
-            // await marcarSalaComoLimpa(editingSala.id);
+            await iniciarLimpeza(editingSala.id);
         } else if(editingSala?.type === 'markAsDirty'){
             await marcarSalaComoSuja(editingSala.id, observacao);
         }
@@ -244,6 +271,7 @@ export default function SalasScreen() {
                 type={confirmationModalProps.type}
                 observacao={observacao}
                 setObservacao={setObservacao}
+            
             />
 
             <HeaderScreen searchBar={{
@@ -256,6 +284,7 @@ export default function SalasScreen() {
                 headerText="Salas"
                 userGroups={user.groups}
                 showFilterOptions={() => setFiltroOptionsVisible(true)}
+                notifications={{notificationsNavigate: () => navigation.navigate('Notifications')}}
             />
 
             <FiltersOptions visible={filtroOptionsVisible} onDismiss={() => setFiltroOptionsVisible(false)}
@@ -323,7 +352,7 @@ export default function SalasScreen() {
                         marcarSalaComoSuja={handleMarcarSalaComoSuja} 
                         userGroups={user.groups} 
                         userRole={userRole} 
-                        marcarSalaComoLimpa={(id: string) => null} 
+                        iniciarLimpeza={handleIniciarLimpeza} 
                         excluirSala={handleExcluirSala} 
                         editarSala={() => navigation.navigate('FormSala', {sala: sala})} 
                         onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>

@@ -5,6 +5,7 @@ import BottomTabs from './BottomTabs';
 import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
 import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 import FormSalaScreen from '../../screens/FormSalaScreen';
+import NotificationScreen from '../../screens/NotificationScreen';
 
 
 const Stack = createStackNavigator<AdminStackParamList>();
@@ -19,8 +20,9 @@ export const AdminNavigator = () => (
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
     
     <Stack.Screen name='FormSala' options={{ headerShown: false }} component={FormSalaScreen} />
-    
 
+    <Stack.Screen name='Notifications' options={{ headerShown: false }} component={NotificationScreen} />
+    
   </Stack.Navigator>
 );
 
