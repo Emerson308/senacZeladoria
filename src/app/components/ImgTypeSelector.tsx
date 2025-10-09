@@ -9,6 +9,7 @@ import { ImageURISource } from "react-native";
 import Toast from "react-native-toast-message";
 
 import { Ionicons } from '@expo/vector-icons'
+import { showErrorToast } from "../utils/functions";
 
 interface ImgTypeSelectorProps{
     visible: boolean,
@@ -26,12 +27,9 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
     const handleTakePhoto = async () => {
         const {status} = await ImagePicker.requestCameraPermissionsAsync()
         if ( status !== 'granted'){
-            Toast.show({
-                type: 'error',
-                text1: 'Permissão negada',
-                text2: 'Precisamos de permissão para acessar a câmera!',
-                position: 'bottom',
-                visibilityTime: 3000
+            showErrorToast({
+                errMessage: 'Precisamos de permissão para acessar a câmera!', 
+                errTitle: 'Permissão negada'
             })
             console.log('negada')
             return null;
@@ -54,12 +52,9 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
     const handlePickPhoto = async () => {
         const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if ( status !== 'granted'){
-            Toast.show({
-                type: 'error',
-                text1: 'Permissão negada',
-                text2: 'Precisamos de permissão para acessar a galeria!',
-                position: 'bottom',
-                visibilityTime: 3000
+            showErrorToast({
+                errMessage: 'Precisamos de permissão para acessar a galeria!',
+                errTitle: 'Permissão negada'
             })
             return null;
         }

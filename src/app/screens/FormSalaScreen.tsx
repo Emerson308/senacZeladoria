@@ -19,6 +19,7 @@ import { AuthContext } from "../AuthContext";
 import ResponsaveisMultiselect from "../components/ResponsaveisMultiselect";
 import { Ionicons } from '@expo/vector-icons'
 import Toast from "react-native-toast-message";
+import { showErrorToast } from "../utils/functions";
 
 
 const salaSchema = z.object({
@@ -107,14 +108,7 @@ export default function FormSalaScreen(){
     const carregarZeladores = async () => {
         const obterUsuariosResult = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
         if(!obterUsuariosResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: obterUsuariosResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
-
+            showErrorToast({errMessage: obterUsuariosResult.errMessage})
             return;
         }
         setZeladores(obterUsuariosResult.data)
@@ -166,13 +160,7 @@ export default function FormSalaScreen(){
         if(!sala){
             const criarNovaSalaResult = await criarNovaSala(formData)
             if(!criarNovaSalaResult.success){
-                Toast.show({
-                    type: 'error',
-                    text1: 'Erro',
-                    text2: criarNovaSalaResult.errMessage,
-                    position: 'bottom',
-                    visibilityTime: 3000
-                })
+                showErrorToast({errMessage: criarNovaSalaResult.errMessage})
                 return
             }
             
@@ -190,13 +178,7 @@ export default function FormSalaScreen(){
         if(sala){
             const editarSalaServiceResult = await editarSalaService(formData, sala.qr_code_id)
             if(!editarSalaServiceResult.success){
-                Toast.show({
-                    type: 'error',
-                    text1: 'Erro',
-                    text2: editarSalaServiceResult.errMessage,
-                    position: 'bottom',
-                    visibilityTime: 3000
-                })
+                showErrorToast({errMessage: editarSalaServiceResult.errMessage})
                 return
             }
             navigation.navigate('AdminTabs')

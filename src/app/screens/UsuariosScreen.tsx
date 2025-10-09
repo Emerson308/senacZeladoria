@@ -11,7 +11,7 @@ import UsuariosForms from "../components/UsuarioForms";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderScreen from "../components/HeaderScreen";
-import { normalizarTexto } from "../utils/functions";
+import { normalizarTexto, showErrorToast } from "../utils/functions";
 import {Ionicons} from '@expo/vector-icons';
 import FiltersOptions from "../components/FiltersOptions";
 import FilterSelector from "../components/FilterSelector";
@@ -48,13 +48,7 @@ export default function UsuariosScreen(){
         setRefreshing(true)
         const obterUsuariosResult = await obterUsuarios()
         if(!obterUsuariosResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: obterUsuariosResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            });
+            showErrorToast({errMessage: obterUsuariosResult.errMessage})
             return;
         }
         setUsuarios(obterUsuariosResult.data)
@@ -67,13 +61,7 @@ export default function UsuariosScreen(){
         // console.log(novoUsuario)
         const criarUsuarioServiceResult = await criarUsuarioService(novoUsuario)
         if(!criarUsuarioServiceResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: criarUsuarioServiceResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: criarUsuarioServiceResult.errMessage})
             return
         }
         await carregarUsuarios();

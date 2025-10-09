@@ -25,6 +25,8 @@ export const UserNavigator = () => (
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
         
     <Stack.Screen name='Notifications' options={{ headerShown: false }} component={NotificationScreen} />
+
+    {/* <Stack.Screen /> */}
     
   </Stack.Navigator>
 );

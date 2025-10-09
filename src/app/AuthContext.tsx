@@ -8,6 +8,7 @@ import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import eventBus from './utils/eventBus';
 import Toast from 'react-native-toast-message';
 import { getRegistrosService, listarNotificacoes } from './servicos/servicoSalas';
+import { showErrorToast } from './utils/functions';
 
 type UserRole = 'user' | 'admin' | null;
 
@@ -18,7 +19,8 @@ interface AuthContextType {
   user: Usuario | null;
   usersGroups: UserGroup[];
   isLoading: boolean;
-  limpezasEmAndamento: RegistroSala[]
+  limpezasEmAndamento: RegistroSala[];
+  updateLimpezasEmAndamento: () => void
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,15 +37,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
 
-  const carregarLimpezasAndamento = async (username: string) => {
-    const getAllRegistrosServiceResult = await getRegistrosService()
-    if(!getAllRegistrosServiceResult.success){
+  const carregarLimpezasAndamento = async (username?: string) => {
+    const getAllRegistrosServiceResult = await getRegistrosService({})
+    if(!getAllRegistrosServiceResult.success || !username){
       return
     }
 
-    // console.log(getAllRegistrosServiceResult)
-
     const registros = getAllRegistrosServiceResult.data
+    // console.log(getAllRegistrosServiceResult.data)
     const LimpezasAndamento = registros.filter(registro => {
       const condicaoRegistro = (registro.funcionario_responsavel === username) && (registro.data_hora_fim === null)
       // console.log(condicaoRegistro)
@@ -59,13 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const carregarGroups = async () => {
     const getAllUsersGroupsResult = await getAllUsersGroups()
     if(!getAllUsersGroupsResult.success){
-      Toast.show({
-          type: 'error',
-          text1: 'Erro',
-          text2: getAllUsersGroupsResult.errMessage,
-          position: 'bottom',
-          visibilityTime: 3000
-      })
+      showErrorToast({errMessage: getAllUsersGroupsResult.errMessage})
       return;
     }
 
@@ -77,7 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // console.log(usuario.groups.includes(1))
 
-    if(usuario.groups.includes(1) && usuario.is_superuser){
+    if(usuario.groups.includes(1)){
       await carregarLimpezasAndamento(usuario.username)
     }
     
@@ -102,13 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // console.log(verificarAutenticacao)
     const obterTokenResult = await obterToken();
     if (!obterTokenResult.success){
-      Toast.show({
-          type: 'error',
-          text1: 'Erro',
-          text2: obterTokenResult.errMessage,
-          position: 'bottom',
-          visibilityTime: 3000
-      })
+      showErrorToast({errMessage: obterTokenResult.errMessage})
       return
     }
 
@@ -121,13 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const usuarioLogadoResult = await usuarioLogado();
     if(!usuarioLogadoResult.success){
-      Toast.show({
-          type: 'error',
-          text1: 'Erro',
-          text2: usuarioLogadoResult.errMessage,
-          position: 'bottom',
-          visibilityTime: 3000
-      })
+      showErrorToast({errMessage: usuarioLogadoResult.errMessage})
       return
     }
 
@@ -154,13 +137,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const resposta = await realizarLogin({username: username, password: password})
     const {success} = resposta
     if(!success){
-      Toast.show({
-          type: 'error',
-          text1: 'Erro',
-          text2: resposta.errMessage,
-          position: 'bottom',
-          visibilityTime: 3000
-      })
+      showErrorToast({errMessage: resposta.errMessage})
       return
     }
     
@@ -172,13 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     const resultSalvarToken = await salvarToken(resposta.data.token)
     if(!resultSalvarToken.success){
-      Toast.show({
-        type: 'error',
-        text1: 'Erro',
-        text2: resultSalvarToken.errMessage,
-        position: 'bottom',
-        visibilityTime: 3000
-      })
+      showErrorToast({errMessage: resultSalvarToken.errMessage})
     }
   }
   
@@ -200,7 +171,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     usersGroups,
     isLoading,
-    limpezasEmAndamento
+    limpezasEmAndamento,
+    updateLimpezasEmAndamento: async () => await carregarLimpezasAndamento(user?.nome)
   };
 
   if (isLoading) {

@@ -8,6 +8,7 @@ import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../s
 import { Notification } from "../types/apiTypes";
 import Toast from "react-native-toast-message";
 import NotificationCard from "../components/NotificationCard";
+import { showErrorToast } from "../utils/functions";
 
 
 
@@ -26,13 +27,7 @@ export default function NotificationScreen(){
     const carregarNotificacoes = async () => {
         const listarNotificacoesResult = await listarNotificacoes()
         if(!listarNotificacoesResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: listarNotificacoesResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: listarNotificacoesResult.errMessage})
             return
         }
         
@@ -42,13 +37,7 @@ export default function NotificationScreen(){
     const readAllNotifications = async () => {
         const lerTodasAsNotificacoesResult = await lerTodasAsNotificacoes()
         if(!lerTodasAsNotificacoesResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: lerTodasAsNotificacoesResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: lerTodasAsNotificacoesResult.errMessage})
             return
         }
         
@@ -60,13 +49,7 @@ export default function NotificationScreen(){
     const readNotification = async (id: number) => {
         const lerNotificacaoResult = await lerNotificacao(id)
         if(!lerNotificacaoResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: lerNotificacaoResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: lerNotificacaoResult.errMessage})
             return
         }
 

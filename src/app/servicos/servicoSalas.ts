@@ -127,9 +127,19 @@ export async function excluirSalaService(id: string): Promise<ServiceResult<null
 
 }
 
-export async function getRegistrosService(id?: number): Promise<ServiceResult<RegistroSala[]>>{
+interface getRegistrosServiceParams{
+    id? : number,
+    username?: string,
+}
+export async function getRegistrosService({id, username}: getRegistrosServiceParams): Promise<ServiceResult<RegistroSala[]>>{
     try{
-        const resposta = await api.get<RegistroSala[]>('limpezas/')
+        let routeUrl = 'limpezas/'
+        if(username){
+            routeUrl = routeUrl + `?funcionario_username=${username}`
+        }
+
+
+        const resposta = await api.get<RegistroSala[]>(routeUrl)
         // console.log(resposta.data)
         return {success: true, data: resposta.data}
     } catch(erro: any){

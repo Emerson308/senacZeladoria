@@ -14,7 +14,8 @@ export type AdminStackParamList = {
     Perfil: undefined;
     AlterarSenha: undefined;
     FormSala: {sala?: Sala};
-    Notifications: undefined
+    Notifications: undefined;
+    LimpezasAndamento: undefined;
     // Logout: undefined
 }
 

@@ -11,7 +11,8 @@ export type UserStackParamList = {
     Perfil: undefined
     Logout: undefined;
     AlterarSenha: undefined;
-    Notifications: undefined
+    Notifications: undefined;
+    LimpezasAndamento: undefined
     // Logout: undefined
 }
 

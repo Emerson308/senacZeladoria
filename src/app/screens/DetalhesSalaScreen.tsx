@@ -8,7 +8,7 @@ import { obterDetalhesSala, excluirSalaService, marcarSalaComoSujaService, inici
 import { Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
-import { formatarDataISO } from '../utils/functions';
+import { formatarDataISO, showErrorToast } from '../utils/functions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';
@@ -66,42 +66,23 @@ export default function DetalhesSalaScreen(){
     const iniciarLimpeza = async (id: string) => {
         const iniciarLimpezaSalaResult = await iniciarLimpezaSala(id);
         if(!iniciarLimpezaSalaResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: iniciarLimpezaSalaResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            });
+            showErrorToast({errMessage: iniciarLimpezaSalaResult.errMessage})                
             return;
         }
         await carregarSala()
     }
     
-
     const marcarSalaComoSuja = async (id: string, observacao: string) => {
         const marcarSalaComoLimpaServiceResult = await marcarSalaComoSujaService(id, observacao)
         if(!marcarSalaComoLimpaServiceResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: marcarSalaComoLimpaServiceResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: marcarSalaComoLimpaServiceResult.errMessage})
         }
     }
     
     const excluirSala = async (id: string) => {
         const excluirSalaServiceResult = await excluirSalaService(id);
         if(!excluirSalaServiceResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: excluirSalaServiceResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: excluirSalaServiceResult.errMessage})
         }
         onCancel()
         // navigation.goBack()
@@ -120,7 +101,6 @@ export default function DetalhesSalaScreen(){
         })
         setConfirmationModalVisible(true)
     }
-
 
     const handleMarcarSalaComoSuja = () => {
         setEditingSalaType('markAsDirty')
@@ -153,13 +133,7 @@ export default function DetalhesSalaScreen(){
         // setCarregando(true)
         const obterDetalhesSalaResult = await obterDetalhesSala(id);
         if(!obterDetalhesSalaResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: obterDetalhesSalaResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: obterDetalhesSalaResult.errMessage})
             return;
         }
         

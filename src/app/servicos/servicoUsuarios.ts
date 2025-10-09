@@ -27,12 +27,14 @@ export async function criarUsuarioService(novoUsuario: NovoUsuario): Promise<Ser
     } catch(erro: any){
         // console.error(erro);
 
+        console.log(erro.response.data)
         if(erro.response.status === 400){
             const erroData = erro.response.data
             if(erroData.username){
                 return {success: false, errMessage: erroData.capacidade[0]}
             }
             if(erroData.password){
+                erroData.password[0]
                 return {success: false, errMessage: erroData.password[0]}
             }
             if(erroData.confirm_password){

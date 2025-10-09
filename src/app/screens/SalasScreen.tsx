@@ -15,7 +15,7 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from '@expo/vector-icons'
 import { CustomTextInput as TextInput} from "../components/CustomTextInput";
 import HeaderScreen from "../components/HeaderScreen";
-import { normalizarTexto } from "../utils/functions";
+import { normalizarTexto, showErrorToast } from "../utils/functions";
 import FiltersOptions from "../components/FiltersOptions";
 import FilterSelector from "../components/FilterSelector";
 import HandleConfirmation from "../components/HandleConfirmation";
@@ -91,13 +91,7 @@ export default function SalasScreen() {
         setRefreshingSalas(true)
         const obterSalasResult = await obterSalas()
         if (!obterSalasResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: obterSalasResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: obterSalasResult.errMessage})
             return
         }
         
@@ -118,13 +112,7 @@ export default function SalasScreen() {
     const iniciarLimpeza = async (id: string) => {
         const iniciarLimpezaSalaResult = await iniciarLimpezaSala(id);
         if(!iniciarLimpezaSalaResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: iniciarLimpezaSalaResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            });
+            showErrorToast({errMessage: iniciarLimpezaSalaResult.errMessage})
             return;
         }
         await carregarSalasComLoading()
@@ -133,13 +121,7 @@ export default function SalasScreen() {
     const marcarSalaComoSuja = async (id: string, observacoes?: string) => {
         const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id, observacoes)
         if(!marcarSalaComoSujaServiceResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: marcarSalaComoSujaServiceResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            });
+            showErrorToast({errMessage: marcarSalaComoSujaServiceResult.errMessage})
             return;
         }
         await carregarSalasComLoading()
@@ -147,15 +129,10 @@ export default function SalasScreen() {
     }
 
     async function excluirSala(id: string){
+        // const id = 'emerson'
         const excluirSalaServiceResult = await excluirSalaService(id);
         if(!excluirSalaServiceResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: excluirSalaServiceResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: excluirSalaServiceResult.errMessage})
         }
         await carregarSalas();
     }
@@ -323,7 +300,7 @@ export default function SalasScreen() {
             {limpezasEmAndamento.length === 0 ? null :
                 <TouchableRipple 
                     className="border rounded-full h-14 mx-6 my-2" 
-                    onPress={() => null}
+                    onPress={() => navigation.navigate('LimpezasAndamento')}
                     borderless={true}
                     // background={colors.sblue}
                     

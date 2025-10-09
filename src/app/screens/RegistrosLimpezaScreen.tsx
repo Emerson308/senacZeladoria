@@ -13,6 +13,7 @@ import RegistroCard from "../components/RegistroCard";
 import Toast from "react-native-toast-message";
 import {Ionicons} from "@expo/vector-icons"
 import HeaderScreen from "../components/HeaderScreen";
+import { showErrorToast } from "../utils/functions";
 
 
 export default function RegistrosLimpezaScreen(){
@@ -66,15 +67,9 @@ export default function RegistrosLimpezaScreen(){
     }, []))
 
     const carregarRegistros = async () => {
-        const getRegistrosServiceResult = await getRegistrosService()
+        const getRegistrosServiceResult = await getRegistrosService({})
         if(!getRegistrosServiceResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: getRegistrosServiceResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: getRegistrosServiceResult.errMessage})
             return
         }
         setRegistros(getRegistrosServiceResult.data)

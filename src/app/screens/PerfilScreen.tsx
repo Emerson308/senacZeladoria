@@ -12,6 +12,7 @@ import { apiURL } from "../api/axiosConfig";
 import ImgTypeSelector from "../components/ImgTypeSelector";
 import { ImageURISource } from "react-native";
 import Toast from "react-native-toast-message";
+import { showErrorToast } from "../utils/functions";
 
 
 
@@ -46,13 +47,7 @@ export default function PerfilScreen(){
     const carregarDadosDoUsuario = async () => {
         const usuarioLogadoResult = await usuarioLogado()
         if(!usuarioLogadoResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: usuarioLogadoResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: usuarioLogadoResult.errMessage})
             return
         }
         
@@ -78,13 +73,7 @@ export default function PerfilScreen(){
         console.log(photo)
         
         if(!photo.uri){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: 'Nenhuma imagem selecionada para enviar',
-                position: 'bottom',
-                visibilityTime: 3000
-            });
+            showErrorToast({errMessage: 'Nenhuma imagem selecionada para enviar'})
             return
         }
 
@@ -100,13 +89,7 @@ export default function PerfilScreen(){
 
         const alterarFotoPerfilResult = await alterarFotoPerfil(formData)
         if(!alterarFotoPerfilResult.success){
-            Toast.show({
-                type: 'error',
-                text1: 'Erro',
-                text2: alterarFotoPerfilResult.errMessage,
-                position: 'bottom',
-                visibilityTime: 3000
-            })
+            showErrorToast({errMessage: alterarFotoPerfilResult.errMessage})
         }
         
         await carregarDadosDoUsuario()
