@@ -46,12 +46,5 @@
         "projectId": "ff5237eb-3a4a-49ff-b5f8-634fbe1af5e6"
       }
     }
-  },
-  "permissions": [
-    "CAMERA",
-    "MEDIA_LIBRARY"
-  ],
-  "plugins": [
-    "expo-MEDIA_LIBRARY"
-  ]
+  }
 }
