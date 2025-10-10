@@ -1,12 +1,12 @@
 import { TouchableOpacity, View, StyleSheet, Text, Image } from "react-native"
 import { Card, Button, Text as TextP } from "react-native-paper"
-import { Sala } from "../types/apiTypes";
-import { formatarDataISO } from "../utils/functions";
-import { colors } from "../../styles/colors";
+import { Sala } from "../../types/apiTypes";
+import { formatarDataISO } from "../../utils/functions";
+import { colors } from "../../../styles/colors";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
-import { apiURL } from "../api/axiosConfig";
+import { apiURL } from "../../api/axiosConfig";
 import React, { useContext } from "react";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../../AuthContext";
 
 
 interface propsSalaCard{

@@ -27,6 +27,12 @@ export interface Usuario{
 
 }
 
+export interface imagesToUpload{
+    uri: string,
+    name: string,
+    type: string
+}
+
 export interface Sala{
     id: number,
     qr_code_id: string,

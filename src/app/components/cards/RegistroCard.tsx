@@ -1,8 +1,8 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Card, Button } from "react-native-paper"
-import { RegistroSala, Sala } from "../types/apiTypes";
-import { formatarDataISO } from "../utils/functions";
-import { colors } from "../../styles/colors";
+import { RegistroSala, Sala } from "../../types/apiTypes";
+import { formatarDataISO } from "../../utils/functions";
+import { colors } from "../../../styles/colors";
 import React from "react";
 
 interface propsRegistroCard{

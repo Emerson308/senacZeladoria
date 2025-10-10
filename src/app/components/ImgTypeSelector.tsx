@@ -82,7 +82,6 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
         }
         if(photo){
             handleUploadImage(photo)
-
         }
 
     }

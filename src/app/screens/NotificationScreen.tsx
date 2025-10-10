@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../servicos/servicoSalas";
 import { Notification } from "../types/apiTypes";
 import Toast from "react-native-toast-message";
-import NotificationCard from "../components/NotificationCard";
+import NotificationCard from "../components/cards/NotificationCard";
 import { showErrorToast } from "../utils/functions";
 
 
@@ -79,7 +79,7 @@ export default function NotificationScreen(){
             </View>
             <FlatList
                 renderItem={(item) => <NotificationCard {...item.item} onNotificationRead={
-                    async (id) => await readNotification(id)
+                    async () => await readNotification(item.item.id)
                 }/>}
                 data={notificacoes}
                 keyExtractor={(item) => String(item.id)}

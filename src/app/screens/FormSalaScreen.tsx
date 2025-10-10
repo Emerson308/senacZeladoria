@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, FlatList, ImageURISource } from "react-native"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { Button, Portal, ActivityIndicator } from "react-native-paper"
+import { Button, Portal, ActivityIndicator, TouchableRipple } from "react-native-paper"
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";
@@ -219,7 +219,7 @@ export default function FormSalaScreen(){
                 :
                 <Text className=" text-center mb-8 text-4xl font-bold">Editar sala</Text>
             }
-            <ScrollView className=" flex-1 mb-8 px-4" contentContainerClassName="gap-2 flex-col">
+            <ScrollView className=" flex-1 mb-8 px-4" contentContainerClassName="gap-2 flex-col py-2">
                 
                 <Controller
                     control={control}
@@ -396,29 +396,23 @@ export default function FormSalaScreen(){
             </ScrollView>
 
             <View className=" flex-row justify-between px-4 gap-8">
-                <Button
-                    mode="outlined"
-                    textColor="black"
-                    className=" "
-                    onPress={navigation.goBack}
-                    // buttonColor={colors.sblue}
-                    style={{}}
+                <TouchableRipple
+                    borderless={true}
+                    className=" bg-gray-200 flex-1 rounded-lg py-3 items-center"
+                    onPress={() => navigation.goBack()}
                 >
-                    Cancelar
-                </Button>
-                <Button 
-                    mode='contained-tonal'
-                    className=" flex-1"
-                    
-                    buttonColor={colors.sblue}
-                    textColor="white"
+                    <Text className=" text-black text-lg font-medium">Cancelar</Text>
+                </TouchableRipple>
+
+                <TouchableRipple
+                    borderless={true}
+                    className=" bg-sblue flex-1 rounded-lg py-3 items-center"
                     onPress={handleSubmit(onSubmit)}
                 >
-                    {!sala ? 'Criar sala' : 'Editar sala'}
-                </Button>
-            </View>
+                    <Text className=" text-white text-lg font-medium">{!sala ? 'Criar sala' : 'Editar sala'}</Text>
+                </TouchableRipple>
 
-            
+            </View>
         </SafeAreaView>     
     )
     

@@ -1,10 +1,10 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Card, Button, Avatar } from "react-native-paper"
-import { Sala, UserGroup, Usuario } from "../types/apiTypes";
-import { formatarDataISO } from "../utils/functions";
+import { Sala, UserGroup, Usuario } from "../../types/apiTypes";
+import { formatarDataISO } from "../../utils/functions";
 import React from "react";
-import { colors } from "../../styles/colors";
-import { apiURL } from "../api/axiosConfig";
+import { colors } from "../../../styles/colors";
+import { apiURL } from "../../api/axiosConfig";
 
 interface propsUsuarioCard{
     key: number

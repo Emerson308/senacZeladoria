@@ -11,7 +11,7 @@ export const formatarDataISO = (utcDateTimeStr: string|null) => {
     try{
         const dateObjectUTC = parseISO(utcDateTimeStr)
 
-        const localAdjustedUTC = addHours(dateObjectUTC, -3)
+        const localAdjustedUTC = addHours(dateObjectUTC, 0)
 
         return format(localAdjustedUTC, "dd/MM/yyyy 'às' HH:mm")
     } catch(error){
@@ -38,4 +38,43 @@ export const showErrorToast = ({errMessage, errTitle} : showErrorToastProps) => 
         visibilityTime: 3000
     })
 }
+
+export function getSecondsElapsed(startTimeUTC: string): number {
+    const startMs = new Date(startTimeUTC).getTime();
+    
+    const nowMs = Date.now();
+    
+    if (isNaN(startMs)) {
+        console.error("String de data UTC de início inválida:", startTimeUTC);
+        return 0; 
+    }
+    
+    const differenceMs = nowMs - startMs;
+    
+    if (differenceMs < 0) {
+        return 0; 
+    }
+    
+    return Math.floor(differenceMs / 1000);
+}
+
+export function formatSecondsToHHMMSS(totalSeconds: number): string {
+    if (typeof totalSeconds !== 'number' || totalSeconds < 0) {
+        return "00:00:00";
+    }
+
+    const seconds = Math.floor(totalSeconds);
+
+    const hours = Math.floor(seconds / 3600);
+
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    const remainingSeconds = seconds % 60;
+
+    const pad = (num: number): string => String(num).padStart(2, '0');
+
+    return `${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
+}
+
+
 

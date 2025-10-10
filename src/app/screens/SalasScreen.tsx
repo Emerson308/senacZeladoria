@@ -6,10 +6,10 @@ import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
-import { newSala, Sala } from "../types/apiTypes";
-import {iniciarLimpezaSala, obterSalas } from "../servicos/servicoSalas";
+import { newSala, RegistroSala, Sala } from "../types/apiTypes";
+import {getRegistrosService, iniciarLimpezaSala, obterSalas } from "../servicos/servicoSalas";
 import { excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
-import SalaCard from "../components/SalaCard";
+import SalaCard from "../components/cards/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 import Toast from "react-native-toast-message";
 import { Ionicons } from '@expo/vector-icons'
@@ -20,6 +20,7 @@ import FiltersOptions from "../components/FiltersOptions";
 import FilterSelector from "../components/FilterSelector";
 import HandleConfirmation from "../components/HandleConfirmation";
 import { id } from "date-fns/locale";
+import LoadingCard from "../components/cards/LoadingCard";
 
 
 
@@ -56,12 +57,13 @@ export default function SalasScreen() {
         return
     }
     
-    const {signOut, userRole, user, limpezasEmAndamento} = authContext
+    const {signOut, userRole, user} = authContext
     // const userRole = 'user'
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
     const [carregando, setCarregando] = useState(false)
     const [refreshingSalas, setRefreshingSalas] = useState(false)
     const [salas, setSalas] = useState<Sala[]>([])
+    const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
     
     const [searchSalaText, setSearchSalaText] = useState('')
     const [filtroOptionsVisible, setFiltroOptionsVisible] = useState(false)
@@ -87,8 +89,23 @@ export default function SalasScreen() {
         setCarregando(false)
     }
 
+    const carregarLimpezasEmAndamento = async () => {
+        const getRegistrosServiceResult = await getRegistrosService({username: user.username})
+        if (!getRegistrosServiceResult.success){
+            showErrorToast({errMessage: getRegistrosServiceResult.errMessage})
+            return
+        }
+
+        const LimpezasAndamento = getRegistrosServiceResult.data.filter(registro => registro.data_hora_fim === null)
+
+        setLimpezasEmAndamento(LimpezasAndamento)
+    }
+
     const carregarSalas = async () => {
         setRefreshingSalas(true)
+        if(user.groups.includes(1)){
+            await carregarLimpezasEmAndamento()
+        }
         const obterSalasResult = await obterSalas()
         if (!obterSalasResult.success){
             showErrorToast({errMessage: obterSalasResult.errMessage})
@@ -115,7 +132,7 @@ export default function SalasScreen() {
             showErrorToast({errMessage: iniciarLimpezaSalaResult.errMessage})
             return;
         }
-        await carregarSalasComLoading()
+        await carregarSalas()
     }
 
     const marcarSalaComoSuja = async (id: string, observacoes?: string) => {
@@ -124,7 +141,7 @@ export default function SalasScreen() {
             showErrorToast({errMessage: marcarSalaComoSujaServiceResult.errMessage})
             return;
         }
-        await carregarSalasComLoading()
+        await carregarSalas()
 
     }
 
@@ -201,13 +218,13 @@ export default function SalasScreen() {
     },[]))
     
         
-    if(carregando){
-        return(
-        <View className='flex-1 bg-gray-50 justify-center p-16'>
-            <ActivityIndicator size={80}/>
-        </View>
-        )
-    }
+    // if(carregando){
+    //     return(
+    //     <View className='flex-1 bg-gray-50 justify-center p-16'>
+    //         <ActivityIndicator size={80}/>
+    //     </View>
+    //     )
+    // }
 
     const searchSalaTextFormatado = normalizarTexto(searchSalaText)
 
@@ -297,7 +314,7 @@ export default function SalasScreen() {
                     null}
             </FiltersOptions>
 
-            {limpezasEmAndamento.length === 0 ? null :
+            {(limpezasEmAndamento.length === 0 || carregando) ? null :
                 <TouchableRipple 
                     className="border rounded-full h-14 mx-6 my-2" 
                     onPress={() => navigation.navigate('LimpezasAndamento')}
@@ -313,7 +330,15 @@ export default function SalasScreen() {
             }
 
 
-            {salasFiltradas.length === 0 ?
+            {carregando ?
+                <ScrollView className="p-3 px-7">
+                    {[...Array(5)].map((_, index) => (
+                        <LoadingCard key={index} loadingImage={true} />
+                        // <View></View>
+                    ))}
+                </ScrollView>
+                :
+                salasFiltradas.length === 0 ?
                 <View className=" flex-1 justify-center gap-2 items-center px-10">
                     <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
                     <Text className="text-gray-500">Nenhuma sala encontrada</Text>

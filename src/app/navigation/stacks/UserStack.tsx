@@ -5,6 +5,8 @@ import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
 import BottomTabs from './BottomTabs';
 import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 import NotificationScreen from '../../screens/NotificationScreen';
+import ImageCarousel from '../../screens/ConcluirLimpezaForm';
+import ConcluirLimpezaForm from '../../screens/ConcluirLimpezaForm';
 
 
 const Stack = createStackNavigator<UserStackParamList>();
@@ -25,6 +27,8 @@ export const UserNavigator = () => (
     <Stack.Screen name='AlterarSenha' options={{ headerShown: false }} component={AlterarSenhaScreen} />
         
     <Stack.Screen name='Notifications' options={{ headerShown: false }} component={NotificationScreen} />
+
+    <Stack.Screen name='ConcluirLimpeza' component={ConcluirLimpezaForm} />
 
     {/* <Stack.Screen /> */}
     

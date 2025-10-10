@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../AuthContext";
 import { useContext, useEffect, useState } from "react";
-import LimpezasAndamentoCard from "../components/LimpezasAndamentoCard";
+import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { RegistroSala } from "../types/apiTypes";
 import { getRegistrosService } from "../servicos/servicoSalas";
 import { showErrorToast } from "../utils/functions";
@@ -60,7 +60,7 @@ export default function LimpezasAndamentoScreen(){
 
 
     return (
-        <SafeAreaView className=" flex-1 ">
+        <SafeAreaView className=" flex-1 bg-white">
             <View className=" items-center flex-row py-4 px-5 rounded-lg rounded-b-none gap-4 border-b-2 border-gray-200">
                 <TouchableRipple 
                     borderless={true}
@@ -73,7 +73,7 @@ export default function LimpezasAndamentoScreen(){
             </View>
 
             <FlatList
-                renderItem={(item) => <LimpezasAndamentoCard {...item.item} />}
+                renderItem={(item) => <LimpezasAndamentoCard {...item.item} onPress={() => navigation.navigate('ConcluirLimpeza')} />}
                 data={limpezasEmAndamento}
                 keyExtractor={(item) => String(item.id)}
                 contentContainerClassName=" gap-4 px-3 my-4"

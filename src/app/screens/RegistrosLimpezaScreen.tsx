@@ -9,11 +9,12 @@ import { AuthContext } from "../AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { getRegistrosService } from "../servicos/servicoSalas";
-import RegistroCard from "../components/RegistroCard";
+import RegistroCard from "../components/cards/RegistroCard";
 import Toast from "react-native-toast-message";
 import {Ionicons} from "@expo/vector-icons"
 import HeaderScreen from "../components/HeaderScreen";
 import { showErrorToast } from "../utils/functions";
+import LoadingCard from "../components/cards/LoadingCard";
 
 
 export default function RegistrosLimpezaScreen(){
@@ -62,8 +63,7 @@ export default function RegistrosLimpezaScreen(){
 
     useFocusEffect(React.useCallback(() => {
         setCarregando(true)
-        carregarRegistros()
-        setCarregando(false)
+        carregarRegistros().then(() => setCarregando(false))
     }, []))
 
     const carregarRegistros = async () => {
@@ -75,14 +75,6 @@ export default function RegistrosLimpezaScreen(){
         setRegistros(getRegistrosServiceResult.data)
     }
 
-    if (carregando){
-        return(
-            <View className='flex-1 bg-gray-50 justify-center p-16'>
-                <ActivityIndicator size={80}/>
-            </View>
-        )    
-    }
-
     return (
         <SafeAreaView edges={['top']} className="flex-1 bg-gray-100 pb-4 flex-col">
             <HeaderScreen 
@@ -90,11 +82,16 @@ export default function RegistrosLimpezaScreen(){
                 headerText="Registros"
 
             />
-            
-            {registrosFiltrados.length === 0 ?
-                <View className=" flex-1 justify-center gap-2 items-center px-10">
-                    <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
-                    <Text className="text-gray-500">Nenhum registro encontrado</Text>
+            {carregando ? (
+                <ScrollView className="p-3 px-7">
+                    {[...Array(5)].map((_, index) => (
+                        <LoadingCard key={index} loadingImage={false} />
+                    ))}
+                </ScrollView>
+            ) : registrosFiltrados.length === 0 ?
+            <View className=" flex-1 justify-center gap-2 items-center px-10">
+                <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
+                <Text className="text-gray-500">Nenhum registro encontrado</Text>
                 </View>
                 :
                 <ScrollView className="p-1 flex-1 mt-4" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarRegistros}/>}>

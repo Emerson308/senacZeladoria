@@ -6,7 +6,7 @@ import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
 import { NovoUsuario, UserGroup, Usuario } from "../types/apiTypes";
 import { criarUsuarioService, getAllUsersGroups, obterUsuarios } from "../servicos/servicoUsuarios";
-import UsuarioCard from "../components/UsuarioCard";
+import UsuarioCard from "../components/cards/UsuarioCard";
 import UsuariosForms from "../components/UsuarioForms";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +15,7 @@ import { normalizarTexto, showErrorToast } from "../utils/functions";
 import {Ionicons} from '@expo/vector-icons';
 import FiltersOptions from "../components/FiltersOptions";
 import FilterSelector from "../components/FilterSelector";
+import LoadingCard from "../components/cards/LoadingCard";
 
 
 
@@ -78,17 +79,16 @@ export default function UsuariosScreen(){
 
     useFocusEffect( React.useCallback(() => {
         setCarregando(true)
-        carregarUsuarios()
-        setCarregando(false)
+        carregarUsuarios().then(() => setCarregando(false))
     },[]))
     
-    if(carregando){
-        return(
-        <View className='flex-1 bg-gray-50 justify-center p-16'>
-            <ActivityIndicator size={80}/>
-        </View>
-        )
-    }
+    // if(carregando){
+    //     return(
+    //     <View className='flex-1 bg-gray-50 justify-center p-16'>
+    //         <ActivityIndicator size={80}/>
+    //     </View>
+    //     )
+    // }
 
     const searchUsuariosTextFormatado = normalizarTexto(searchUsuariosText)
 
@@ -171,7 +171,13 @@ export default function UsuariosScreen(){
 
             <UsuariosForms visible={criarUsuarioForm} onClose={() => setCriarUsuarioFormVisible(false)} onSubmit={criarUsuario}/>
 
-            {usuariosFiltrados.length === 0 ?
+            {carregando ? (
+                <ScrollView className="p-3 flex-1">
+                    {[...Array(5)].map((_, i) => (
+                        <LoadingCard key={i} loadingImage={true}/>
+                    ))}
+                </ScrollView>
+            ) : usuariosFiltrados.length === 0 ?
                 <View className=" flex-1 justify-center gap-2 items-center px-10">
                     <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
                     <Text className="text-gray-500">Nenhum usuário encontrado</Text>

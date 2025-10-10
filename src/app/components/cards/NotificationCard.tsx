@@ -1,7 +1,7 @@
-import { Notification } from "../types/apiTypes";
+import { Notification } from "../../types/apiTypes";
 import { View, Text } from "react-native";
 import { Card, TouchableRipple } from "react-native-paper";
-import { formatarDataISO } from "../utils/functions";
+import { formatarDataISO } from "../../utils/functions";
 import { Ionicons } from '@expo/vector-icons'
 
 
