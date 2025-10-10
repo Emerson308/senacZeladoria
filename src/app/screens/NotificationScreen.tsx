@@ -4,7 +4,7 @@ import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../servicos/servicoSalas";
+import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../servicos/servicoNotificacoes";
 import { Notification } from "../types/apiTypes";
 import Toast from "react-native-toast-message";
 import NotificationCard from "../components/cards/NotificationCard";

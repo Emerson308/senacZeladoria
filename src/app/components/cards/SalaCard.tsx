@@ -7,7 +7,7 @@ import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from "../../api/axiosConfig";
 import React, { useContext } from "react";
 import { AuthContext } from "../../AuthContext";
-
+import { int } from "zod";
 
 interface propsSalaCard{
     sala: Sala;
@@ -21,6 +21,194 @@ interface propsSalaCard{
     userGroups: number[]
 
 }
+
+interface SalaCardButtonsProps{
+    sala: Sala;
+    iniciarLimpeza: (id:string) => void,
+    marcarSalaComoSuja: (id:string) => void,
+    editarSala: (sala: Sala) => void,
+    excluirSala: (id: string) => void,
+    userRole: 'user' | 'admin',
+    userGroups: number[]
+}
+
+interface IniciarLimpezaButtonProps {
+    sala: Sala;
+    iniciarLimpeza: (id: string) => void;
+    visible: boolean;
+}
+
+interface MarcarSalaComoSujaButtonProps {
+    sala: Sala;
+    marcarSalaComoSuja: (id: string) => void;
+    visible: boolean;
+}
+
+interface EditarSalaButtonProps {
+    sala: Sala;
+    editarSala: (sala: Sala) => void;
+    visible: boolean;
+}
+
+interface ExcluirSalaButtonProps {
+    sala: Sala;
+    excluirSala: (id: string) => void;
+    visible: boolean;
+}
+
+
+
+function IniciarLimpezaButton({ sala, iniciarLimpeza, visible }: IniciarLimpezaButtonProps) {
+    if (!visible) return null;
+
+    if(sala.status_limpeza === 'Em Limpeza' || sala.status_limpeza === 'Limpa'){
+
+        const statusButtonClass = sala.status_limpeza === 'Em Limpeza' ? 'bg-sgray/20 text-sgray' : 'bg-sgreen/20 text-sgreen'
+        const statusTextClass = sala.status_limpeza === 'Em Limpeza' ? 'text-sgray' : 'text-sgreen'
+        const statusIconColor = sala.status_limpeza === 'Em Limpeza' ? colors.sgray : colors.sgreen
+
+        return (
+            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-full items-center justify-center`}>
+                <MaterialCommunityIcons size={24} name={sala.status_limpeza === 'Em Limpeza' ? 'broom' : 'check'} color={statusIconColor}/>
+                <Text className={statusTextClass}>Sala {sala.status_limpeza}</Text>
+            </View>
+        )
+    }
+
+    return (
+        <TouchableOpacity
+            className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+            onPress={(e) => {
+                e.stopPropagation()
+                iniciarLimpeza(sala.qr_code_id)
+            }}
+        >
+            <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
+            <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
+        </TouchableOpacity>
+    )
+}
+
+function MarcarSalaComoSujaButton({ sala, marcarSalaComoSuja, visible }: MarcarSalaComoSujaButtonProps) {
+    if (!visible) return null;
+
+    if(sala.status_limpeza === 'Suja' || sala.status_limpeza === 'Em Limpeza'){
+
+        const statusButtonClass = sala.status_limpeza === 'Em Limpeza' ? 'bg-sgray/20 text-sgray' : 'bg-sred/20 text-sred'
+        const statusTextClass = sala.status_limpeza === 'Em Limpeza' ? 'text-sgray' : 'text-sred'
+        const statusIconColor = sala.status_limpeza === 'Em Limpeza' ? colors.sgray : colors.sred
+
+        return (
+            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-full items-center justify-center`}>
+                <MaterialCommunityIcons size={24} name={sala.status_limpeza === 'Em Limpeza' ? 'broom' : 'block-helper'} color={statusIconColor}/>
+                <Text className={statusTextClass}>Sala {sala.status_limpeza}</Text>
+            </View>
+        )
+    }
+
+    return (
+        <TouchableOpacity
+            className=" h-12 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
+            onPress={(e) => {
+                e.stopPropagation();
+                marcarSalaComoSuja(sala.qr_code_id);
+            }}
+        >
+            <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
+            <Text className=" text-syellow text-base">Reportar sujeira</Text>
+        </TouchableOpacity>
+    )
+}
+
+function EditarSalaButton({ sala, editarSala, visible }: EditarSalaButtonProps) {
+    if (!visible) return null;
+
+    return (
+        <TouchableOpacity
+            className=" h-12 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
+            onPress={(e) => {
+                e.stopPropagation();
+                editarSala(sala);
+            }}
+        >
+            <MaterialCommunityIcons size={24} name='pencil' color={colors.sblue}/>
+        </TouchableOpacity>
+    )
+}
+
+function ExcluirSalaButton({ sala, excluirSala, visible }: ExcluirSalaButtonProps) {
+    if (!visible) return null;
+    return (
+        <TouchableOpacity
+            className=" h-12 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+            onPress={(e) => {
+                e.stopPropagation();
+                excluirSala(sala.qr_code_id);
+            }}
+        >
+            <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
+        </TouchableOpacity>
+    )
+}
+
+function EmLimpezaButton(){
+    return (
+        <View className=" h-12 bg-sgray/20 flex-row gap-2 rounded-full items-center justify-center">
+            <MaterialCommunityIcons size={24} name='broom' color={colors.sgray}/>
+            <Text className=" text-sgray">Sala em limpeza</Text>
+        </View>
+    )
+}
+
+function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala, excluirSala, userRole, userGroups }: SalaCardButtonsProps){
+
+    if(userGroups.length === 0 && userRole === 'user'){
+        return null
+    }
+
+    if(!sala.ativa){
+        return (
+            <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
+                <View className=" flex-1 bg-gray-200 rounded-full flex-row gap-2 items-center justify-center h-12">
+                    <Ionicons name="ban" size={24} color={colors.sgray} />
+                    <Text className=" text-sgray italic">Sala inativa</Text>
+                </View>
+                <EditarSalaButton sala={sala} editarSala={editarSala} visible={userRole !== 'user'}/>
+            </View>
+        )
+    }
+
+    const visibleIniciarLimpeza = userGroups.includes(1) && sala.ativa
+    const visibleMarcarSalaComoSuja = userGroups.includes(2) && sala.ativa
+    const visibleEditarSala = userRole !== 'user'
+    const visibleExcluirSala = userRole !== 'user' && sala.ativa
+
+    const salaEmLimpeza = sala.status_limpeza === 'Em Limpeza'
+
+    const adminConditionStyle = (!!visibleIniciarLimpeza !== !!visibleMarcarSalaComoSuja) || salaEmLimpeza
+    const adminButtonsStyle = adminConditionStyle ? " flex-row-reverse gap-2" : " flex-col gap-2"
+
+    return (
+        <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
+            <View className="flex-col flex-1 gap-2">
+                {salaEmLimpeza ? <EmLimpezaButton /> :
+                    <>
+                    <IniciarLimpezaButton sala={sala} iniciarLimpeza={iniciarLimpeza} visible={visibleIniciarLimpeza}/>
+                    <MarcarSalaComoSujaButton sala={sala} marcarSalaComoSuja={marcarSalaComoSuja} visible={visibleMarcarSalaComoSuja}/>
+
+                    </>
+                }
+            </View>
+            <View className={adminButtonsStyle}>
+                <EditarSalaButton sala={sala} editarSala={editarSala} visible={visibleEditarSala}/>
+                <ExcluirSalaButton sala={sala} excluirSala={excluirSala} visible={visibleExcluirSala}/>
+            </View>
+        </View>
+
+    )
+}
+
+
 
 function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
 
@@ -83,87 +271,7 @@ function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userG
                             </View>
                         </View>
                     </View>
-
-                    {
-                        (userRole === 'user' && userGroups.length === 0) ? null : 
-                        <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
-                            <View className="flex-col flex-1 gap-2">
-                                {sala.ativa ? 
-                                <>
-                                    {
-                                        !userGroups.includes(1) ? null : 
-                                        <TouchableOpacity
-                                            className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
-                                            onPress={(e) => {
-                                                e.stopPropagation()
-                                                iniciarLimpeza(sala.qr_code_id)
-                                            }}
-                                            >
-                                            <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
-                                            <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
-                                        </TouchableOpacity>
-                                    }
-
-                                    {
-                                        !userGroups.includes(2) ? null : 
-                                        <TouchableOpacity
-                                            className=" h-12 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
-                                            onPress={(e) => {
-                                                e.stopPropagation();
-                                                marcarSalaComoSuja(sala.qr_code_id)
-                                            }}
-                                        >
-                                            <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
-                                            <Text className=" text-syellow text-base">Reportar sujeira</Text>
-                                        </TouchableOpacity>                            
-                                    }
-                                </>
-                                :
-                                <TouchableOpacity
-                                    className=" h-12 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                    }}
-                                >
-                                    <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
-                                    <Text className=" text-sgray text-base">Sala inativa</Text>
-                                </TouchableOpacity>
-                                }
-                            </View>
-                            {
-                                userRole === 'user' ? null : 
-                                <View className={
-                                    (userGroups.length < 2) ?
-                                    "flex-row-reverse gap-2"
-                                    :
-                                    "flex-col gap-2"
-
-                                }>
-                                    <TouchableOpacity
-                                        className=" h-12 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
-                                        onPress={(e) => {
-                                            e.stopPropagation();
-                                            editarSala(sala)
-                                        }}
-                                    >
-                                        <MaterialCommunityIcons size={24} name='pen' color={colors.sblue}/>
-                                    </TouchableOpacity>
-                                    {
-                                        !sala.ativa ? null :
-                                        <TouchableOpacity
-                                            className=" h-12 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
-                                            onPress={(e) => {
-                                                e.stopPropagation();
-                                                excluirSala(sala.qr_code_id)
-                                            }}
-                                        >
-                                            <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
-                                        </TouchableOpacity>
-                                    }
-                                </View>
-                            }
-                        </View>
-                    }
+                    <SalaCardButtons sala={sala} iniciarLimpeza={iniciarLimpeza} marcarSalaComoSuja={marcarSalaComoSuja} editarSala={editarSala} excluirSala={excluirSala} userRole={userRole} userGroups={userGroups}/>
                 </Card.Content>
             </Card>
         </TouchableOpacity>

@@ -2,7 +2,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ParamListBase } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import { Sala } from '../../types/apiTypes';
+import { RegistroSala, Sala } from '../../types/apiTypes';
 
 
 export type AdminStackParamList = {
@@ -16,7 +16,7 @@ export type AdminStackParamList = {
     FormSala: {sala?: Sala};
     Notifications: undefined;
     LimpezasAndamento: undefined;
-    ConcluirLimpeza: undefined
+    ConcluirLimpeza: {registroSala: RegistroSala};
     // Logout: undefined
 }
 
@@ -29,6 +29,7 @@ declare global {
 export type TelaHome = NativeStackScreenProps<AdminStackParamList, 'Home'>
 export type TelaDetalhesSala = NativeStackScreenProps<AdminStackParamList, 'DetalhesSala'>
 export type TelaEditarSala = NativeStackScreenProps<AdminStackParamList, 'FormSala'>
+export type TelaConcluirLimpeza = NativeStackScreenProps<AdminStackParamList, 'ConcluirLimpeza'>
 
 
 

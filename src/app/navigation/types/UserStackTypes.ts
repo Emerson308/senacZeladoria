@@ -2,6 +2,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ParamListBase } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
+import { RegistroSala } from '../../types/apiTypes';
 
 
 export type UserStackParamList = {
@@ -13,7 +14,7 @@ export type UserStackParamList = {
     AlterarSenha: undefined;
     Notifications: undefined;
     LimpezasAndamento: undefined;
-    ConcluirLimpeza: undefined
+    ConcluirLimpeza: {registroSala: RegistroSala};
     // Logout: undefined
 }
 
@@ -25,6 +26,7 @@ declare global {
 
 export type TelaDetalhesSala = NativeStackScreenProps<UserStackParamList, 'DetalhesSala'>
 export type TelaHome = NativeStackScreenProps<UserStackParamList, 'Home'>
+export type TelaConcluirLimpeza = NativeStackScreenProps<UserStackParamList, 'ConcluirLimpeza'>
 
 
 

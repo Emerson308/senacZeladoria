@@ -8,7 +8,7 @@ import { ActivityIndicator, Avatar, Searchbar, TextInput, TouchableRipple } from
 import { AuthContext } from "../AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
-import { getRegistrosService } from "../servicos/servicoSalas";
+import { getRegistrosService } from "../servicos/servicoLimpezas";
 import RegistroCard from "../components/cards/RegistroCard";
 import Toast from "react-native-toast-message";
 import {Ionicons} from "@expo/vector-icons"

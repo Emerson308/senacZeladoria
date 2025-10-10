@@ -2,12 +2,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, FlatList } from "react-native";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../AuthContext";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { RegistroSala } from "../types/apiTypes";
-import { getRegistrosService } from "../servicos/servicoSalas";
+import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { showErrorToast } from "../utils/functions";
 
 
@@ -34,9 +34,9 @@ export default function LimpezasAndamentoScreen(){
 
     const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
-    useEffect(() => {
+    useFocusEffect(React.useCallback(() => {
         carregarLimpezasAndamento()
-    }, [])
+    }, []))
 
     const carregarLimpezasAndamento = async () => {
         const username = user.username
@@ -53,6 +53,12 @@ export default function LimpezasAndamentoScreen(){
         })
 
         setLimpezasEmAndamento(limpezasEmAndamento)
+
+        if(limpezasEmAndamento.length === 0){
+            navigation.goBack()
+        }
+        return
+
     }
 
 
@@ -73,7 +79,7 @@ export default function LimpezasAndamentoScreen(){
             </View>
 
             <FlatList
-                renderItem={(item) => <LimpezasAndamentoCard {...item.item} onPress={() => navigation.navigate('ConcluirLimpeza')} />}
+                renderItem={(item) => <LimpezasAndamentoCard {...item.item} onPress={() => navigation.navigate('ConcluirLimpeza', {registroSala: item.item})} />}
                 data={limpezasEmAndamento}
                 keyExtractor={(item) => String(item.id)}
                 contentContainerClassName=" gap-4 px-3 my-4"

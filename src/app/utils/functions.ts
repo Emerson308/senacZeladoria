@@ -15,7 +15,7 @@ export const formatarDataISO = (utcDateTimeStr: string|null) => {
 
         return format(localAdjustedUTC, "dd/MM/yyyy 'às' HH:mm")
     } catch(error){
-        console.error("Erro ao processar data/hora")
+        console.log("Erro ao processar data/hora")
         return "Data Inválida"
     }
 }
@@ -34,6 +34,21 @@ export const showErrorToast = ({errMessage, errTitle} : showErrorToastProps) => 
         type: 'error',
         text1: errTitle ? errTitle : 'Erro',
         text2: errMessage,
+        position: 'bottom',
+        visibilityTime: 3000
+    })
+}
+
+interface showSuccessToastProps{
+    successMessage: string,
+    successTitle?: string
+}
+
+export const showSuccessToast = ({successMessage, successTitle} : showSuccessToastProps) => {
+    Toast.show({
+        type: 'success',
+        text1: successTitle ? successTitle : 'Sucesso',
+        text2: successMessage,
         position: 'bottom',
         visibilityTime: 3000
     })
@@ -74,6 +89,11 @@ export function formatSecondsToHHMMSS(totalSeconds: number): string {
     const pad = (num: number): string => String(num).padStart(2, '0');
 
     return `${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
+}
+
+export function utcToYYYYMMDD(utcDateTimeStr: string): string {
+    const dateObjectUTC = parseISO(utcDateTimeStr);
+    return format(dateObjectUTC, 'yyyy-MM-dd', { locale: ptBR });
 }
 
 

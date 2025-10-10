@@ -1,15 +1,17 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, FlatList, Dimensions, Image, ScrollView } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { colors } from "../../styles/colors";
-import ImgTypeSelector from "../components/ImgTypeSelector";
 import * as ImagePicker from 'expo-image-picker'
-import { showErrorToast } from "../utils/functions";
-import { imagesToUpload } from "../types/apiTypes";
+import { formatSecondsToHHMMSS, getSecondsElapsed, showErrorToast, showSuccessToast } from "../utils/functions";
+import { imageRegistro, imagesToUpload } from "../types/apiTypes";
+import { TelaConcluirLimpeza } from "../navigation/types/UserStackTypes";
+import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';
+import { apiURL } from "../api/axiosConfig";
 
 
 type CarouselItem = {
@@ -20,14 +22,25 @@ type CarouselItem = {
 const { width: screenWidth } = Dimensions.get('window');
 
 interface CarrosselImageProps {
-    item?: CarouselItem;
-    index?: number;
-    images: imagesToUpload[];
-    onDelete: (index: number) => void;
+    index: number;
+    images: imageRegistro[];
+    onDelete: (id: number) => void;
     addImage?: () => void;
 }
 
-function CarrosselImage({item, index, images, onDelete, addImage}: CarrosselImageProps) {
+function CarrosselImage({index, images, onDelete, addImage}: CarrosselImageProps) {
+
+    const getImageSource = (image: imageRegistro) => {
+        return { uri: apiURL + image.imagem };
+    }
+
+    const getImageId = (image: imageRegistro) => {
+        return image.id;
+    }
+
+    if(index > images.length || index === 3){
+        return null
+    }
 
     if(images[index || 0]){
         return(
@@ -36,14 +49,14 @@ function CarrosselImage({item, index, images, onDelete, addImage}: CarrosselImag
                     <TouchableRipple 
                         className=" absolute top-3 right-3 z-10 bg-white rounded-full p-1" 
                         onPress={() => {
-                            onDelete(index || 0)
+                            onDelete(getImageId(images[index || 0]))
                         }}
                         borderless={true}
                     >
                         <Ionicons name="close" size={24} color="gray" />
                     </TouchableRipple>
                     <Image
-                        source={images[index || 0]}
+                        source={getImageSource(images[index || 0])}
                         className=" w-full h-full rounded-lg"
                     />
                 </View>
@@ -98,14 +111,19 @@ function Pagination({ data, activeIndex, imagesLength }: PaginationProps) {
         return dotsStyle.emptyDot;
     };
 
+
     return (
         <View className="flex-row justify-center">
-            {data.map((_, index) => (
-                <View 
-                    key={index.toString()}
-                    className={`h-2 w-2 rounded-full mx-1 ${getDotStyle(index)}`}
-                />
-            ))}
+            {data.map((_, index) => {
+                const returnBoolean = index <= imagesLength
+                if (!returnBoolean) return null;
+                return (
+                    <View 
+                        key={index.toString()}
+                        className={`h-2 w-2 rounded-full mx-1 ${getDotStyle(index)}`}
+                    />
+                )
+            })}
         </View>
     );
 }
@@ -116,9 +134,57 @@ export default function ConcluirLimpezaForm() {
     
     
     const navigation = useNavigation()
+    const route = useRoute<TelaConcluirLimpeza['route']>()
     const [activeIndex, setActiveIndex] = useState(0);
-    const [images, setImages] = useState<imagesToUpload[]>([])
+    const [images, setImages] = useState<imageRegistro[]>([])
     const [observacao, setObservacao] = useState('')
+    const { registroSala } = route.params;
+    const [registroSalaState, setRegistroSalaState] = useState(registroSala)
+    const [cronometro, setCronometro] = useState(getSecondsElapsed(registroSala.data_hora_inicio))
+
+    const arrayPlaceholder = [1,2,3]
+    const contadorFormatado = formatSecondsToHHMMSS(cronometro)
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setCronometro(prevCronometro => prevCronometro + 1)
+        }, 1000)
+
+        return () => clearInterval(intervalId);
+    }, [])
+
+    useEffect(() => {
+        carregarRegistroSala()
+    }, [])
+
+    const carregarRegistroSala = async () => {
+        const getRegistrosServiceResult = await getRegistrosService({
+            username: registroSalaState.funcionario_responsavel,
+            sala_uuid: registroSalaState.sala,
+            data_inicio: registroSalaState.data_hora_inicio,
+            // data_fim: null
+        })
+        if(!getRegistrosServiceResult.success){
+            showErrorToast({errMessage: 'Erro ao carregar dados da limpeza'})
+            return
+        }
+
+        // console.log(getRegistrosServiceResult.data)
+
+        const registroAtualizado = getRegistrosServiceResult.data.filter((registro) => 
+            registro.data_hora_fim === null
+        )
+
+        // console.log(registroAtualizado)
+
+        if(registroAtualizado.length === 0){
+            showErrorToast({errMessage: 'Nenhum registro de limpeza encontrado'})
+            return
+        }
+
+        setRegistroSalaState(registroAtualizado[0])
+        setImages(registroAtualizado[0].fotos)
+    }
 
     const handleScroll = (event: any) => {
         const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -140,7 +206,7 @@ export default function ConcluirLimpezaForm() {
             mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [16,9],
-            quality: 1,
+            quality: 0.5,
         });
                 
         if (result.canceled) {
@@ -163,11 +229,65 @@ export default function ConcluirLimpezaForm() {
             name: imageName,
             type: 'image/jpeg'
         };
-        setImages([...images, newImage]);
-        // setImages([...images, {id: String(images.length + 1), uri: result.assets[0].uri}]);
 
-        // return {uri : result.assets[0].uri}
-        
+        await enviarImagem(newImage)        
+    }
+
+    const enviarImagem = async (image: imagesToUpload) => {
+        const formData = new FormData();
+        formData.append('registro_limpeza', String(registroSalaState.id));
+        formData.append('imagem', image as any);
+
+        const adicionarFotoLimpezaServiceResult = await adicionarFotoLimpezaService(formData);
+        if(!adicionarFotoLimpezaServiceResult.success){
+            showErrorToast({errMessage: adicionarFotoLimpezaServiceResult.errMessage || 'Erro ao enviar imagem'})
+            return
+        }
+        await carregarRegistroSala()
+    }
+
+    const deleteImage = async (id: number) => {
+        const deletarFotoLimpezaServiceResult = await deletarFotoLimpezaService(id);
+        if(!deletarFotoLimpezaServiceResult.success){
+            showErrorToast({errMessage: deletarFotoLimpezaServiceResult.errMessage || 'Erro ao deletar imagem'})
+            return
+        }
+        await carregarRegistroSala()
+    }
+
+    const concluirLimpeza = async () => {
+        if(images.length === 0){
+            showErrorToast({errMessage: 'Adicione ao menos uma foto da limpeza'})
+            return
+        }
+
+        const concluirLimpezaServiceResult = await concluirLimpezaService(registroSalaState.sala, observacao);
+        if(!concluirLimpezaServiceResult.success){
+            showErrorToast({errMessage: concluirLimpezaServiceResult.errMessage || 'Erro ao concluir limpeza'})
+            return
+        }
+        showSuccessToast({successMessage: 'Limpeza concluída com sucesso!'})
+        setTimeout(() => {
+            navigation.goBack()
+            // navigation.navigate('Home')
+        }, 4000);
+    }
+
+
+    const contadorStyle = {
+        fastTime: 'text-sgreen',
+        mediumTime: 'text-syellow',
+        slowTime: 'text-sred'
+    }
+
+    const getContadorStyle = (seconds: number): string => {
+        if (seconds < 1200) {
+            return contadorStyle.fastTime;
+        } else if (seconds < 2400) {
+            return contadorStyle.mediumTime;
+        } else {
+            return contadorStyle.slowTime;
+        }
     }
 
 
@@ -185,13 +305,13 @@ export default function ConcluirLimpezaForm() {
                 <View className=" ">
                     <Text className=" px-4 text-lg">Imagens da Limpeza</Text>
                     <FlatList
-                        data={[1,2,3]}
+                        data={arrayPlaceholder}
                         keyExtractor={(item) => String(item)}
                         horizontal
                         renderItem={({ index }) => 
                             <CarrosselImage index={index} images={images} 
-                                onDelete={() => {
-                                    setImages(images.filter((_, i) => i !== index));
+                                onDelete={async (id) => {
+                                    await deleteImage(id);
                                 }}
                                 addImage={async () => await handleTakePhoto()}
                             />
@@ -204,7 +324,7 @@ export default function ConcluirLimpezaForm() {
                         decelerationRate={"fast"}
                         contentContainerClassName=""
                     />
-                    <Pagination data={[1,2,3]} activeIndex={activeIndex} imagesLength={images.length} />
+                    <Pagination data={arrayPlaceholder} activeIndex={activeIndex} imagesLength={images.length} />
                 </View>
 
                 <View className=" bg-gray-200 rounded-lg py-2 mx-4 pb-3">
@@ -222,7 +342,7 @@ export default function ConcluirLimpezaForm() {
 
                 <View className=" items-center gap-2 bg-gray-200 p-2 rounded-lg mx-4">
                     <Text className=" px-4 text-lg">Tempo de Limpeza</Text>
-                    <Text className=" px-4 text-4xl text-center">128:32:56</Text>
+                    <Text className={` px-4 text-4xl text-center ${getContadorStyle(cronometro)}`}>{contadorFormatado}</Text>
                 </View>
 
             </ScrollView>
@@ -238,6 +358,7 @@ export default function ConcluirLimpezaForm() {
                 <TouchableRipple
                     borderless={true}
                     className=" bg-sblue flex-1 rounded-lg py-3 items-center"
+                    onPress={async () => await concluirLimpeza()}
                 >
                     <Text className=" text-white text-lg font-medium">Concluir Limpeza</Text>
                 </TouchableRipple>

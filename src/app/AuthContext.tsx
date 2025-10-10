@@ -7,7 +7,8 @@ import { RegistroSala, UserGroup, Usuario } from './types/apiTypes';
 import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import eventBus from './utils/eventBus';
 import Toast from 'react-native-toast-message';
-import { getRegistrosService, listarNotificacoes } from './servicos/servicoSalas';
+import { listarNotificacoes } from './servicos/servicoSalas';
+import { getRegistrosService } from './servicos/servicoLimpezas';
 import { showErrorToast } from './utils/functions';
 
 type UserRole = 'user' | 'admin' | null;

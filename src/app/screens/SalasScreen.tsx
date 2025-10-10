@@ -7,8 +7,8 @@ import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
 import { newSala, RegistroSala, Sala } from "../types/apiTypes";
-import {getRegistrosService, iniciarLimpezaSala, obterSalas } from "../servicos/servicoSalas";
-import { excluirSalaService, marcarSalaComoSujaService } from "../servicos/servicoSalas";
+import {getRegistrosService, iniciarLimpezaSala, marcarSalaComoSujaService  } from "../servicos/servicoLimpezas";
+import { excluirSalaService, obterSalas } from "../servicos/servicoSalas";
 import SalaCard from "../components/cards/SalaCard";
 import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
 import Toast from "react-native-toast-message";
@@ -200,6 +200,7 @@ export default function SalasScreen() {
     }
 
     const onConfirm = async () => {
+        setConfirmationModalVisible(false);
         if(editingSala?.type === 'delete'){
             await excluirSala(editingSala.id);
         } else if(editingSala?.type === 'startCleaning'){
@@ -207,8 +208,7 @@ export default function SalasScreen() {
         } else if(editingSala?.type === 'markAsDirty'){
             await marcarSalaComoSuja(editingSala.id, observacao);
         }
-
-        setConfirmationModalVisible(false);
+        
         setEditingSala(null);
         setObservacao('');
     }

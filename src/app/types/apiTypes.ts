@@ -68,6 +68,12 @@ export interface imageType{
     type: string
 }
 
+export interface imageRegistro{
+    id: number,
+    imagem: string,
+    timestamp: string
+}
+
 
 export interface NovoUsuario{
     username: string,
@@ -88,7 +94,7 @@ export interface RegistroSala{
     data_hora_fim: string | null,
     funcionario_responsavel: string,
     observacoes: string | null,
-    fotos: string[]
+    fotos: imageRegistro[]
 }
 
 export interface UserChangePassword{
