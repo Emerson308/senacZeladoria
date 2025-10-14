@@ -34,8 +34,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app acesses your photos to let you share them with your friends.",
-          "cameraPermission": "The app acesses your camera to let you share them with your friends."
+          "photosPermission": "Allow the app to access your camera",
+          "cameraPermission": "Allow the app to access your camera"
         }
       ],
       "expo-router"

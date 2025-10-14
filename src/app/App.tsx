@@ -5,6 +5,7 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider, AuthContext } from './AuthContext';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AuthNavigator } from './navigation/stacks/AuthStack';
 import { UserNavigator } from './navigation/stacks/UserStack';
@@ -37,14 +38,16 @@ const RootNavigation = () => {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <PaperProvider>
-        <AuthProvider>
-          <RootNavigation />
-          <CustomToast/>
-        </AuthProvider>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView>
+      <SafeAreaProvider>
+        <PaperProvider>
+          <AuthProvider>
+            <RootNavigation />
+            <CustomToast/>
+          </AuthProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
 
   );
 }
