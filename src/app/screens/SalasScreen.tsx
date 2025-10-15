@@ -10,7 +10,7 @@ import { newSala, RegistroSala, Sala } from "../types/apiTypes";
 import {getRegistrosService, iniciarLimpezaSala, marcarSalaComoSujaService  } from "../servicos/servicoLimpezas";
 import { excluirSalaService, obterSalas } from "../servicos/servicoSalas";
 import SalaCard from "../components/cards/SalaCard";
-import { AdminStackParamList } from "../navigation/types/AdminStackTypes";
+import { AdminStackParamList } from "../navigation/types/StackTypes";
 import Toast from "react-native-toast-message";
 import { Ionicons } from '@expo/vector-icons'
 import { CustomTextInput as TextInput} from "../components/CustomTextInput";
@@ -279,6 +279,7 @@ export default function SalasScreen() {
                 userGroups={user.groups}
                 showFilterOptions={() => setFiltroOptionsVisible(true)}
                 notifications={{notificationsNavigate: () => navigation.navigate('Notifications')}}
+                qrCodeNavigate={() => navigation.navigate('QrCodeScanner')}
             />
 
             <FiltersOptions visible={filtroOptionsVisible} onDismiss={() => setFiltroOptionsVisible(false)}

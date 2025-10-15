@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator, Header } from '@react-navigation/stack';
-import { UserStackParamList } from '../types/UserStackTypes';
+import { UserStackParamList } from '../types/StackTypes';
 import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
 import BottomTabs from './BottomTabs';
 import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
@@ -15,7 +15,7 @@ export const UserNavigator = () => (
   <Stack.Navigator screenOptions={{headerShown: false}}>
 
     <Stack.Screen
-      name='UserTabs'
+      name='Tabs'
       component={BottomTabs}
       options={{
         headerShown: false,

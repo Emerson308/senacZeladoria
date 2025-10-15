@@ -3,13 +3,13 @@ import { View, Text, FlatList, Dimensions, Image, ScrollView } from "react-nativ
 import { useEffect, useState } from "react";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { CommonActions, useNavigation, useRoute } from "@react-navigation/native";
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { colors } from "../../styles/colors";
 import * as ImagePicker from 'expo-image-picker'
 import { formatSecondsToHHMMSS, getSecondsElapsed, showErrorToast, showSuccessToast } from "../utils/functions";
 import { imageRegistro, imagesToUpload } from "../types/apiTypes";
-import { TelaConcluirLimpeza } from "../navigation/types/UserStackTypes";
+import { TelaConcluirLimpeza } from "../navigation/types/StackTypes";
 import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';
 import { apiURL } from "../api/axiosConfig";
 
@@ -268,7 +268,12 @@ export default function ConcluirLimpezaForm() {
         }
         showSuccessToast({successMessage: 'Limpeza concluída com sucesso!'})
         setTimeout(() => {
-            navigation.goBack()
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{name: 'Tabs'}]
+                })
+            )
             // navigation.navigate('Home')
         }, 4000);
     }

@@ -24,6 +24,7 @@ type HeaderScreenProps = {
         notificationsCount?: number,
         notificationsNavigate: () => void
     }
+    qrCodeNavigate: () => void
     headerText: string,
     headerNavButtons?: boolean,
     onlyGoBackHeader?: boolean
@@ -37,6 +38,7 @@ export default function HeaderScreen({
     headerText, 
     userGroups, 
     showFilterOptions,
+    qrCodeNavigate,
     notifications
 }: HeaderScreenProps){
 
@@ -48,9 +50,10 @@ export default function HeaderScreen({
                 <Text className=" text-2xl flex-1">{headerText}</Text>
                 {(headerNavButtons && userGroups) && 
                     <>
-                        <TouchableRipple onPress={() => console.log('qr-code')} 
+                        <TouchableRipple onPress={() => qrCodeNavigate()} 
                             borderless={true} 
                             className=" rounded-full p-3 aspect-square"
+
                         >
                             <Ionicons name="qr-code-outline" size={32}/>                   
                         </TouchableRipple>

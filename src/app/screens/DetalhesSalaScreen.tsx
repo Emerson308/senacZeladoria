@@ -2,7 +2,7 @@
 import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackground, RefreshControl } from 'react-native'
 import { Card, Button, ActivityIndicator, Appbar } from 'react-native-paper';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import { TelaDetalhesSala } from '../navigation/types/UserStackTypes';
+import { TelaDetalhesSala } from '../navigation/types/StackTypes';
 import React, { useContext, useEffect, useState } from 'react';
 import { obterDetalhesSala, excluirSalaService} from '../servicos/servicoSalas';
 import { iniciarLimpezaSala, marcarSalaComoSujaService } from '../servicos/servicoLimpezas';

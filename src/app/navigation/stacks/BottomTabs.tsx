@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {Ionicons} from "@expo/vector-icons"
-import { AdminStackParamList } from "../types/AdminStackTypes";
+import { AdminStackParamList } from "../types/StackTypes";
 import SalasScreen from "../../screens/SalasScreen";
 import { colors } from "../../../styles/colors";
 import UsuariosScreen from "../../screens/UsuariosScreen";

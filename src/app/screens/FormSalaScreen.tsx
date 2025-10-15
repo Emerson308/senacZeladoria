@@ -12,7 +12,7 @@ import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/nativ
 import ImgTypeSelector from "../components/ImgTypeSelector";
 import * as z from 'zod'
 import { criarNovaSala, editarSalaService } from "../servicos/servicoSalas";
-import { TelaEditarSala } from "../navigation/types/AdminStackTypes";
+import { TelaEditarSala } from "../navigation/types/StackTypes";
 import { apiURL } from "../api/axiosConfig";
 import { obterUsuarios } from "../servicos/servicoUsuarios";
 import { AuthContext } from "../AuthContext";
@@ -164,7 +164,7 @@ export default function FormSalaScreen(){
                 return
             }
             
-            navigation.navigate('AdminTabs')
+            navigation.goBack()
             setTimeout(() => {
                 Toast.show({
                     type: 'success',
@@ -181,7 +181,7 @@ export default function FormSalaScreen(){
                 showErrorToast({errMessage: editarSalaServiceResult.errMessage})
                 return
             }
-            navigation.navigate('AdminTabs')
+            navigation.goBack()
             setTimeout(() => {
                 Toast.show({
                     type: 'success',
