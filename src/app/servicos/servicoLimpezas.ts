@@ -16,15 +16,13 @@ export async function getRegistrosService({id, username, sala_uuid, data_inicio,
         if (id !== undefined) params.id = id.toString();
         if (username) params.funcionario_username = username;
         if (sala_uuid) params.sala_uuid = sala_uuid;
-        // if (data_inicio) params.data_hora_limpeza_after = utcToYYYYMMDD(data_inicio);
-        if (data_fim) params.data_hora_limpeza_before = utcToYYYYMMDD(data_fim);
-        // if (data_fim === null) params.data_hora_limpeza_before = 'null';
 
         const queryString = new URLSearchParams(params).toString();
         const routeUrl = queryString ? `limpezas/?${queryString}` : 'limpezas/';
         // console.log(queryString)
 
         const resposta = await api.get<RegistroSala[]>(routeUrl);
+        console.log(resposta.data)
         return { success: true, data: resposta.data };
     } catch(erro: any){
         console.error(erro)

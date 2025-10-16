@@ -15,6 +15,7 @@ import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';
 import Toast from 'react-native-toast-message';
 import HandleConfirmation from '../components/HandleConfirmation';
+import { da } from 'zod/v4/locales';
 
 
 type editingSalaType = 'edit' | 'delete' | 'startCleaning' | 'markAsDirty';
@@ -31,7 +32,16 @@ interface confirmationModalProps {
     type: 'confirmAction' | 'destructiveAction' | 'reportAction';
 }
 
+// type DetalhesSalaButtonsProps = {
+//     iniciarLimpeza?: boolean
+// }
 
+// function DetalhesSalaButtons({
+//     iniciarLimpeza
+// }: DetalhesSalaButtonsProps){
+//     if()
+
+// }
 
 export default function DetalhesSalaScreen(){
     const authContext = useContext(AuthContext)
@@ -165,13 +175,11 @@ export default function DetalhesSalaScreen(){
         }
     }
     
-    
     useFocusEffect( React.useCallback(() => {
         setCarregando(true)
         carregarSala().then(() => setCarregando(false))
         
     }, []))
-
 
     if(carregando){
         return(
@@ -196,6 +204,24 @@ export default function DetalhesSalaScreen(){
         info_values: " text-2xl font-semibold text-gray-800 break-words"
     }
 
+    const visibleDetalhesButtons = user.groups.length > 0 || userRole === 'admin'
+
+    const visibleIniciarLimpeza = 
+        user.groups.includes(1) && dadosSala.ativa &&
+        (dadosSala.status_limpeza !== 'Limpa' && dadosSala.status_limpeza !== 'Em Limpeza')
+
+    const visibleReportarSujeira = 
+        user.groups.includes(2) && dadosSala.ativa &&
+        (dadosSala.status_limpeza !== 'Suja' && dadosSala.status_limpeza !== 'Em Limpeza')
+
+    const visibleSalaInativa = !dadosSala.ativa
+
+    const adminButtonsConditionStyle = ((visibleIniciarLimpeza !== visibleReportarSujeira) || !visibleReportarSujeira)
+
+    const visibleEditarSala = userRole === 'admin'
+
+    const visibleExcluirSala = userRole === 'admin' && dadosSala.ativa
+
     return(
         <SafeAreaView  className="flex-1 flex-col bg-gray-100 p-1">
             <HandleConfirmation
@@ -216,7 +242,7 @@ export default function DetalhesSalaScreen(){
                             size={24}
                         />
                     </TouchableOpacity>
-                    <Text className=" text-2xl text-white" >Perfil</Text>
+                    <Text className=" text-2xl text-white" >Detalhes da Sala</Text>
                 </View>
 
             </View>
@@ -365,61 +391,54 @@ export default function DetalhesSalaScreen(){
             </ScrollView>
 
             {
-                (userRole === 'user' && user.groups.length === 0) ? null : 
+                visibleDetalhesButtons && 
                 <View className=" flex-row gap-2 p-2">
                     <View className="flex-col flex-1 gap-2">
-                        {dadosSala.ativa ? 
-                        <>
-                            {
-                                !user.groups.includes(1) ? null : 
-                                <TouchableOpacity
-                                    className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
-                                    onPress={(e) => {
-                                        e.stopPropagation()
-                                        handleIniciarLimpeza()
-                                    }}
-                                    >
-                                    <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
-                                    <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
-                                </TouchableOpacity>
-                            }
-
-                            {
-                                !user.groups.includes(2) ? null : 
-                                <TouchableOpacity
-                                    className=" h-14 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        handleMarcarSalaComoSuja()
-                                        // marcarSalaComoSuja(sala.qr_code_id)
-                                    }}
+                        {visibleIniciarLimpeza && 
+                            <TouchableOpacity
+                                className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation()
+                                    handleIniciarLimpeza()
+                                }}
                                 >
-                                    <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
-                                    <Text className=" text-syellow text-base">Reportar sujeira</Text>
-                                </TouchableOpacity>                            
-                            }
-                        </>
-                        :
-                        <TouchableOpacity
-                            className=" h-14 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
-                            onPress={(e) => {
-                                e.stopPropagation();
-                            }}
-                        >
-                            <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
-                            <Text className=" text-sgray text-base">Sala inativa</Text>
-                        </TouchableOpacity>
+                                <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
+                                <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
+                            </TouchableOpacity>
+                        }
+                        {visibleReportarSujeira && 
+                            <TouchableOpacity
+                                className=" h-14 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    handleMarcarSalaComoSuja()
+                                    // marcarSalaComoSuja(sala.qr_code_id)
+                                }}
+                            >
+                                <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
+                                <Text className=" text-syellow text-base">Reportar sujeira</Text>
+                            </TouchableOpacity>                          
+                        }
+                        {visibleSalaInativa && 
+                            <TouchableOpacity
+                                className=" h-14 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                <MaterialCommunityIcons size={24} name='information-outline' color={colors.sgray}/>
+                                <Text className=" text-sgray text-base">Sala inativa</Text>
+                            </TouchableOpacity>
                         }
                     </View>
-                    {
-                        userRole === 'user' ? null : 
-                        <View className={
-                            (usersGroups.length < 2) ?
-                            "flex-row-reverse gap-2"
-                            :
-                            "flex-col gap-2"
+                    <View className={
+                        adminButtonsConditionStyle ?
+                        "flex-row-reverse gap-2"
+                        :
+                        "flex-col gap-2"
 
-                        }>
+                    }>
+                        {visibleEditarSala && 
                             <TouchableOpacity
                                 className=" h-14 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
                                 onPress={(e) => {
@@ -429,23 +448,21 @@ export default function DetalhesSalaScreen(){
                             >
                                 <MaterialCommunityIcons size={24} name='pen' color={colors.sblue}/>
                             </TouchableOpacity>
-                            {
-                                !dadosSala.ativa ? null :
-                                <TouchableOpacity
-                                    className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        handleExcluirSala()
-                                    }}
-                                >
-                                    <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
-                                </TouchableOpacity>
-                            }
-                        </View>
-                    }
+                        }
+                        {visibleExcluirSala && 
+                            <TouchableOpacity
+                                className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    handleExcluirSala()
+                                }}
+                            >
+                                <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
+                            </TouchableOpacity>
+                        }
+                    </View>
                 </View>
-            }
-            
+            }            
         </SafeAreaView>
     )
 }

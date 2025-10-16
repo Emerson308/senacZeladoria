@@ -24,7 +24,7 @@ type HeaderScreenProps = {
         notificationsCount?: number,
         notificationsNavigate: () => void
     }
-    qrCodeNavigate: () => void
+    qrCodeNavigate?: () => void
     headerText: string,
     headerNavButtons?: boolean,
     onlyGoBackHeader?: boolean
@@ -50,7 +50,7 @@ export default function HeaderScreen({
                 <Text className=" text-2xl flex-1">{headerText}</Text>
                 {(headerNavButtons && userGroups) && 
                     <>
-                        <TouchableRipple onPress={() => qrCodeNavigate()} 
+                        <TouchableRipple onPress={() => qrCodeNavigate?.()} 
                             borderless={true} 
                             className=" rounded-full p-3 aspect-square"
 

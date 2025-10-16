@@ -11,7 +11,6 @@ import { int } from "zod";
 
 interface propsSalaCard{
     sala: Sala;
-    key: number;
     onPress: () => void,
     iniciarLimpeza: (id:string) => void,
     marcarSalaComoSuja: (id:string) => void,
@@ -178,26 +177,41 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
         )
     }
 
-    const visibleIniciarLimpeza = userGroups.includes(1) && sala.ativa
-    const visibleMarcarSalaComoSuja = userGroups.includes(2) && sala.ativa
+    const visibleIniciarLimpeza = 
+        userGroups.includes(1) && 
+        sala.ativa && 
+        (sala.status_limpeza !== 'Em Limpeza' && sala.status_limpeza !== 'Limpa')
+   
+    const visibleMarcarSalaComoSuja = 
+        userGroups.includes(2) && 
+        sala.ativa && 
+        (sala.status_limpeza !== "Suja" && sala.status_limpeza !== 'Em Limpeza')
+    
     const visibleEditarSala = userRole !== 'user'
     const visibleExcluirSala = userRole !== 'user' && sala.ativa
 
-    const salaEmLimpeza = sala.status_limpeza === 'Em Limpeza'
+    const salaEmLimpeza = sala.status_limpeza === 'Em Limpeza' && userRole === 'admin'
 
     const adminConditionStyle = (!!visibleIniciarLimpeza !== !!visibleMarcarSalaComoSuja) || salaEmLimpeza
     const adminButtonsStyle = adminConditionStyle ? " flex-row-reverse gap-2" : " flex-col gap-2"
 
+    const buttonsVisibles = [visibleEditarSala, visibleExcluirSala, visibleIniciarLimpeza, visibleMarcarSalaComoSuja]
+
+    const visibleButtons = buttonsVisibles.some(item => item)
+
+    // console.log(visibleButtons)
+    // console.log(visibleEditarSala, visibleExcluirSala, visibleIniciarLimpeza, visibleMarcarSalaComoSuja)
+
+
+    if(!visibleButtons){
+        return null
+    }
+
     return (
         <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
             <View className="flex-col flex-1 gap-2">
-                {salaEmLimpeza ? <EmLimpezaButton /> :
-                    <>
-                    <IniciarLimpezaButton sala={sala} iniciarLimpeza={iniciarLimpeza} visible={visibleIniciarLimpeza}/>
-                    <MarcarSalaComoSujaButton sala={sala} marcarSalaComoSuja={marcarSalaComoSuja} visible={visibleMarcarSalaComoSuja}/>
-
-                    </>
-                }
+                <IniciarLimpezaButton sala={sala} iniciarLimpeza={iniciarLimpeza} visible={visibleIniciarLimpeza}/>
+                <MarcarSalaComoSujaButton sala={sala} marcarSalaComoSuja={marcarSalaComoSuja} visible={visibleMarcarSalaComoSuja}/>
             </View>
             <View className={adminButtonsStyle}>
                 <EditarSalaButton sala={sala} editarSala={editarSala} visible={visibleEditarSala}/>

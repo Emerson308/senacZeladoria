@@ -3,7 +3,7 @@ import { FlatList, ListRenderItemInfo, Text, View } from "react-native";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../servicos/servicoNotificacoes";
 import { Notification } from "../types/apiTypes";
 import Toast from "react-native-toast-message";
@@ -22,6 +22,10 @@ export default function NotificationScreen(){
 
     useEffect(() => {
         carregarNotificacoes()
+    }, [])
+
+    const navegarParaDetalhesSala = useCallback((id: string) => {
+        navigation.navigate('DetalhesSala', {id})
     }, [])
 
     const carregarNotificacoes = async () => {
@@ -78,9 +82,12 @@ export default function NotificationScreen(){
                 </TouchableRipple>
             </View>
             <FlatList
-                renderItem={(item) => <NotificationCard {...item.item} onNotificationRead={
-                    async () => await readNotification(item.item.id)
-                }/>}
+                renderItem={(item) => <NotificationCard {...item.item} 
+                    onNotificationRead={
+                        async () => await readNotification(item.item.id)
+                    }
+                    navegarParaDetalhesSala={navegarParaDetalhesSala}
+                />}
                 data={notificacoes}
                 keyExtractor={(item) => String(item.id)}
                 contentContainerClassName="gap-4 px-3 pb-4"

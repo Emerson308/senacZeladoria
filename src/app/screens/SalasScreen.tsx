@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, Alert, RefreshControl, Text } from 'react-native';
+import React, { useContext, useState, useEffect, useCallback } from "react";
+import { View, ScrollView, TouchableOpacity, Alert, RefreshControl, Text, FlatList } from 'react-native';
 import { Button, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../AuthContext";
@@ -154,7 +154,7 @@ export default function SalasScreen() {
         await carregarSalas();
     }
 
-    const handleIniciarLimpeza = (id: string) => {
+    const handleIniciarLimpeza = useCallback((id: string) => {
         setEditingSala({type: 'startCleaning', id})
         setConfirmationModalProps({
             confirmationTexts: {
@@ -165,9 +165,9 @@ export default function SalasScreen() {
             type: 'confirmAction'
         })
         setConfirmationModalVisible(true)
-    }
+    }, [])
 
-    const handleMarcarSalaComoSuja = (id: string) => {
+    const handleMarcarSalaComoSuja = useCallback((id: string) => {
         setEditingSala({type: 'markAsDirty', id: id})
         setConfirmationModalProps({
             confirmationTexts: {
@@ -178,9 +178,9 @@ export default function SalasScreen() {
             type: 'reportAction'
         });
         setConfirmationModalVisible(true);
-    }
+    },[])
 
-    const handleExcluirSala = (id: string) => {
+    const handleExcluirSala = useCallback((id: string) => {
         setEditingSala({type: 'delete', id: id})
         setConfirmationModalProps({
             confirmationTexts: {
@@ -191,7 +191,15 @@ export default function SalasScreen() {
             type: 'destructiveAction'
         });
         setConfirmationModalVisible(true);
-    }
+    },[])
+
+    const navigateToFormData = useCallback((sala: Sala) => {
+        navigation.navigate('FormSala', {sala})
+    }, [navigation])
+
+    const navigateToDetalhesSala = useCallback((id: string) => {
+        navigation.navigate('DetalhesSala', {id})
+    }, [navigation])
 
     const onCancel = () => {
         setConfirmationModalVisible(false);
@@ -217,42 +225,44 @@ export default function SalasScreen() {
         carregarSalasComLoading()
     },[]))
     
-        
-    // if(carregando){
-    //     return(
-    //     <View className='flex-1 bg-gray-50 justify-center p-16'>
-    //         <ActivityIndicator size={80}/>
-    //     </View>
-    //     )
-    // }
 
-    const searchSalaTextFormatado = normalizarTexto(searchSalaText)
+    const { salasFiltradas, contagemSalasLimpas, contagemSalasPendentes, contagemSalasEmLimpeza, contagemSalasSuja, contagemSalasAtivas, contagemSalasInativas } = React.useMemo(() => {
+        const searchSalaTextFormatado = normalizarTexto(searchSalaText);
+    
+        const filtered = salas.filter(sala => {
+            const nomeSalaFormatado = normalizarTexto(sala.nome_numero);
+            const capacidadeFormatada = normalizarTexto(String(sala.capacidade));
+            const localizacaoFormatada = normalizarTexto(sala.localizacao);
+    
+            const matchesSearch = nomeSalaFormatado.includes(searchSalaTextFormatado) ||
+                                  capacidadeFormatada.includes(searchSalaTextFormatado) ||
+                                  localizacaoFormatada.includes(searchSalaTextFormatado);
+    
+            const matchesLimpeza = filtroLimpezaStatus === 'Todas' ? true : filtroLimpezaStatus === sala.status_limpeza;
+            const matchesStatus = filtroSalaStatus === 'Todas' ? true : filtroSalaStatus === (sala.ativa ? 'Ativas' : 'Inativas');
+    
+            return matchesSearch && matchesLimpeza && matchesStatus;
+        });
+    
+        // Contagens
+        const contagemLimpas = salas.filter(sala => sala.status_limpeza === 'Limpa').length;
+        const contagemPendentes = salas.filter(sala => sala.status_limpeza === 'Limpeza Pendente').length;
+        const contagemEmLimpeza = salas.filter(sala => sala.status_limpeza === 'Em Limpeza').length;
+        const contagemSuja = salas.filter(sala => sala.status_limpeza === 'Suja').length;
+        const contagemAtivas = salas.filter(sala => sala.ativa).length;
+        const contagemInativas = salas.filter(sala => !sala.ativa).length;
+    
+        return {
+            salasFiltradas: filtered,
+            contagemSalasLimpas: contagemLimpas,
+            contagemSalasPendentes: contagemPendentes,
+            contagemSalasEmLimpeza: contagemEmLimpeza,
+            contagemSalasSuja: contagemSuja,
+            contagemSalasAtivas: contagemAtivas,
+            contagemSalasInativas: contagemInativas,
+        };
+    }, [salas, searchSalaText, filtroLimpezaStatus, filtroSalaStatus]);
 
-    const salasFiltradas = salas.filter(sala => {
-        const nomeSalaFormatado = normalizarTexto(sala.nome_numero)
-        const capacidadeFormatada = normalizarTexto(String(sala.capacidade))
-        const localizacaoFormatada = normalizarTexto(sala.localizacao)
-
-        if(nomeSalaFormatado.includes(searchSalaTextFormatado) || capacidadeFormatada.includes(searchSalaTextFormatado) || localizacaoFormatada.includes(searchSalaTextFormatado)){
-            return (
-                (filtroLimpezaStatus === 'Todas' ? true : filtroLimpezaStatus === sala.status_limpeza) &&
-                (filtroSalaStatus === 'Todas' ? true : filtroSalaStatus === (sala.ativa ? 'Ativas' : 'Inativas'))
-            )
-        }
-    })
-
-
-    const contagemSalas = salas.length
-
-    const contagemSalasLimpas = salas.filter(sala => sala.status_limpeza === 'Limpa').length
-    const contagemSalasPendentes = salas.filter(sala => sala.status_limpeza === 'Limpeza Pendente').length
-    const contagemSalasEmLimpeza = salas.filter(sala => sala.status_limpeza === 'Em Limpeza').length
-    const contagemSalasSuja = salas.filter(sala => sala.status_limpeza === 'Suja').length
-
-    const contagemSalasAtivas = salas.filter(sala => sala.ativa).length
-    const contagemSalasInativas = salas.filter(sala => !sala.ativa).length
-
-    // console.log(limpezasEmAndamento)
 
     return (
         <SafeAreaView edges={['top']}  className="flex-1 bg-gray-100 pb-4">
@@ -330,6 +340,7 @@ export default function SalasScreen() {
                 </TouchableRipple>
             }
 
+            
 
             {carregando ?
                 <ScrollView className="p-3 px-7">
@@ -339,28 +350,39 @@ export default function SalasScreen() {
                     ))}
                 </ScrollView>
                 :
-                salasFiltradas.length === 0 ?
-                <View className=" flex-1 justify-center gap-2 items-center px-10">
-                    <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
-                    <Text className="text-gray-500">Nenhuma sala encontrada</Text>
-                </View>
-                :
-                <ScrollView className="p-3 px-7"
-                    refreshControl={<RefreshControl refreshing={refreshingSalas} onRefresh={carregarSalas}/>}
-                >
-                    {salasFiltradas.map((sala) => (
-                    <SalaCard 
-                        key={sala.id} 
-                        sala={sala} 
-                        marcarSalaComoSuja={handleMarcarSalaComoSuja} 
-                        userGroups={user.groups} 
-                        userRole={userRole} 
-                        iniciarLimpeza={handleIniciarLimpeza} 
-                        excluirSala={handleExcluirSala} 
-                        editarSala={() => navigation.navigate('FormSala', {sala: sala})} 
-                        onPress={() => navigation.navigate('DetalhesSala', {id: sala.qr_code_id})}/>
-                ))}
-            </ScrollView>
+                <FlatList
+                    data={salasFiltradas}
+                    keyExtractor={(item) => item.qr_code_id}
+                    className=" flex-1 p-3 px-7"
+                    contentContainerClassName=" gap-2 flex-grow"
+                    // contentContainerClassName=" gap-2 border flex-grow"
+                    renderItem={(item) => {
+                        const sala = item.item
+                        return (
+                            <SalaCard 
+                                key={sala.id} 
+                                sala={sala} 
+                                marcarSalaComoSuja={handleMarcarSalaComoSuja} 
+                                userGroups={user.groups}
+                                userRole={userRole} 
+                                iniciarLimpeza={handleIniciarLimpeza} 
+                                excluirSala={handleExcluirSala} 
+                                editarSala={navigateToFormData} 
+                                onPress={() => navigateToDetalhesSala(sala.qr_code_id)}
+                            />
+                        )
+                    }}
+                    refreshing={refreshingSalas}
+                    onRefresh={() => {
+                        carregarSalas()
+                    }}
+                    ListEmptyComponent={() => (
+                        <View className=" flex-1 justify-center gap-2 items-center px-10">
+                            <Ionicons name="close-circle-outline" size={64} color={colors.sgray}/>
+                            <Text className="text-gray-500">Nenhuma sala encontrada</Text>
+                        </View>    
+                    )}
+            />
             }
             {userRole === 'admin' ?
                 <Button

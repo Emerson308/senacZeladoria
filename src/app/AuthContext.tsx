@@ -138,7 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const resposta = await realizarLogin({username: username, password: password})
     const {success} = resposta
     if(!success){
-      showErrorToast({errMessage: resposta.errMessage})
+      showErrorToast({errMessage: resposta.errMessage, position: 'top'})
       return
     }
     

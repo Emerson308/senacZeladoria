@@ -116,7 +116,7 @@ export default function QRCodeScanner() {
         
         <View style={{width: FRAME_SIZE, height: FRAME_SIZE}} className=' border-4 border-white rounded-xl' />
         
-        <Text className=' text-white mt-80 w-4/5 text-center text-lg font-bold bg-black/60 p-3 rounded-md'>
+        <Text className=' text-white mt-64 w-4/5 text-center text-lg font-bold bg-black/60 p-3 rounded-md'>
           Posicione o QR Code da sala dentro do quadrado
         </Text>
       </View>

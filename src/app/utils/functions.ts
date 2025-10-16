@@ -26,15 +26,16 @@ export const normalizarTexto = (texto: string) => {
 
 interface showErrorToastProps{
     errMessage: string,
-    errTitle?: string
+    errTitle?: string,
+    position? : 'top' | 'bottom'
 }
 
-export const showErrorToast = ({errMessage, errTitle} : showErrorToastProps) => {
+export const showErrorToast = ({errMessage, errTitle, position} : showErrorToastProps) => {
     Toast.show({
         type: 'error',
         text1: errTitle ? errTitle : 'Erro',
         text2: errMessage,
-        position: 'bottom',
+        position: position ? position : 'bottom',
         visibilityTime: 3000
     })
 }
