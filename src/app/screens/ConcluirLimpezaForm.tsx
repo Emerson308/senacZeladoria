@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, FlatList, Dimensions, Image, ScrollView } from "react-native";
+import { View, Text, FlatList, Dimensions, Image, ScrollView, RefreshControl } from "react-native";
 import { useEffect, useState } from "react";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
@@ -137,6 +137,7 @@ export default function ConcluirLimpezaForm() {
     const route = useRoute<TelaConcluirLimpeza['route']>()
     const [activeIndex, setActiveIndex] = useState(0);
     const [images, setImages] = useState<imageRegistro[]>([])
+    const [refreshing, setRefreshing] = useState(false)
     const [observacao, setObservacao] = useState('')
     const { registroSala } = route.params;
     const [registroSalaState, setRegistroSalaState] = useState(registroSala)
@@ -305,7 +306,12 @@ export default function ConcluirLimpezaForm() {
             <ScrollView 
                 className=" my-8 flex-1"
                 contentContainerClassName=" flex-col gap-12 justify-center"
-                >
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => {
+                    setRefreshing(true)
+                    await carregarRegistroSala().then(() => setRefreshing(false))
+                }
+                } />}
+            >
 
                 <View className=" ">
                     <Text className=" px-4 text-lg">Imagens da Limpeza</Text>

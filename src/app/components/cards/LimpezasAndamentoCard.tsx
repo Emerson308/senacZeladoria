@@ -5,6 +5,7 @@ import {Ionicons} from '@expo/vector-icons'
 import { formatarDataISO } from "../../utils/functions";
 import { useEffect, useState } from "react";
 import { getSecondsElapsed, formatSecondsToHHMMSS } from "../../utils/functions";
+import { colors } from "../../../styles/colors";
 
 
 
@@ -37,6 +38,17 @@ export default function LimpezasAndamentoCard({ id, sala, sala_nome, data_hora_i
         slowTime: 'text-sred'
     }
 
+    const getContadorColor = (seconds: number): string => {
+        if(seconds < 1200){
+            return colors.sgreen
+        } else if (seconds < 2400){
+            return colors.syellow
+        } else {
+            return colors.sred
+
+        }
+    }
+
     const getContadorStyle = (seconds: number): string => {
         if (seconds < 1200) {
             return contadorStyle.fastTime;
@@ -48,14 +60,14 @@ export default function LimpezasAndamentoCard({ id, sala, sala_nome, data_hora_i
     }
 
     return (
-        <TouchableRipple borderless={true} onPress={onPress} className=" rounded-xl shadow-md flex-row bg-white items-center gap-3 px-4 h-24">
+        <TouchableRipple borderless={true} onPress={onPress} className=" rounded-xl shadow-md flex-row bg-white items-center gap-3 px-4 h-32">
             <View className=" flex-1 flex-row gap-3 items-center">
-                <Ionicons name="timer-outline" size={36}/>
-                <View className=" flex-col h-full flex-1">
-                    <Text className="text-xl">{sala_nome}</Text>
+                <View className=" flex-col h-full flex-1 px-2">
+                    <Text className="text-xl" numberOfLines={1} ellipsizeMode="tail">{sala_nome}</Text>
                     <Text className="text-base">Início: {formatarDataISO(data_hora_inicio)}</Text>
                 </View>
-                <View>
+                <View className=" flex-row gap-2 items-center">
+                    <Ionicons name="timer-outline" size={18} color={getContadorColor(contador)}/>
                     <Text className={`text-lg ${getContadorStyle(contador)}`}>{contadorFormatado}</Text>
                 </View>
 

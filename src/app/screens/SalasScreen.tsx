@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
 import { View, ScrollView, TouchableOpacity, Alert, RefreshControl, Text, FlatList } from 'react-native';
 import { Button, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -21,6 +21,7 @@ import FilterSelector from "../components/FilterSelector";
 import HandleConfirmation from "../components/HandleConfirmation";
 import { id } from "date-fns/locale";
 import LoadingCard from "../components/cards/LoadingCard";
+import { useSalas } from "../contexts/SalasContext";
 
 
 
@@ -57,18 +58,41 @@ export default function SalasScreen() {
         return
     }
     
-    const {signOut, userRole, user} = authContext
-    // const userRole = 'user'
+    const {
+        salas,
+        carregando,
+        refreshing,
+        filtroLimpezaStatus,
+        filtroSalaStatus,
+        searchSalaText,
+        setFiltroLimpezaStatus,
+        setFiltroSalaStatus,
+        setFiltroSearchSalaText,
+        carregarSalas,
+        iniciarLimpeza,
+        marcarSalaComoSuja,
+        excluirSala,
+    } = useSalas()
+    const {userRole, user} = authContext
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
-    const [carregando, setCarregando] = useState(false)
-    const [refreshingSalas, setRefreshingSalas] = useState(false)
-    const [salas, setSalas] = useState<Sala[]>([])
-    const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
-    
-    const [searchSalaText, setSearchSalaText] = useState('')
+
+    const activeFilters = 
+        filtroLimpezaStatus !== 'Todas' || 
+        filtroSalaStatus !== 'Todas' || 
+        searchSalaText !== ''
+
+    const lastSearchText = useRef(searchSalaText)
+
+    useEffect(() => {
+        if(!refreshing && !carregando){
+            lastSearchText.current = searchSalaText
+        }
+    }, [refreshing, carregando, searchSalaText])
+
+    const isSearchPending = searchSalaText !== lastSearchText.current
+
     const [filtroOptionsVisible, setFiltroOptionsVisible] = useState(false)
-    const [filtroSalaStatus, setFiltroSalaStatus] = useState<SalaStatus>('Todas')
-    const [filtroLimpezaStatus, setFiltroLimpezaStatus] = useState<LimpezaStatus>('Todas')
+    const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
     const [confirmationModalProps, setConfirmationModalProps] = useState<confirmationModalProps>({
         confirmationTexts: {
@@ -82,77 +106,6 @@ export default function SalasScreen() {
     const [editingSala, setEditingSala] = useState<editingSalaType | null>(null)
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [observacao, setObservacao] = useState('')
-
-    const carregarSalasComLoading = async () => {
-        setCarregando(true);
-        await carregarSalas();
-        setCarregando(false)
-    }
-
-    const carregarLimpezasEmAndamento = async () => {
-        const getRegistrosServiceResult = await getRegistrosService({username: user.username})
-        if (!getRegistrosServiceResult.success){
-            showErrorToast({errMessage: getRegistrosServiceResult.errMessage})
-            return
-        }
-
-        const LimpezasAndamento = getRegistrosServiceResult.data.filter(registro => registro.data_hora_fim === null)
-
-        setLimpezasEmAndamento(LimpezasAndamento)
-    }
-
-    const carregarSalas = async () => {
-        setRefreshingSalas(true)
-        if(user.groups.includes(1)){
-            await carregarLimpezasEmAndamento()
-        }
-        const obterSalasResult = await obterSalas()
-        if (!obterSalasResult.success){
-            showErrorToast({errMessage: obterSalasResult.errMessage})
-            return
-        }
-        
-        const salasAtivas = obterSalasResult.data.filter(sala => sala.ativa)
-        const salasInativas = obterSalasResult.data.filter(sala => !sala.ativa)
-
-        if(userRole === 'user'){
-            setSalas(salasAtivas)
-            setRefreshingSalas(false)
-            return
-        }
-
-        setSalas([...salasAtivas, ...salasInativas])
-        
-        setRefreshingSalas(false)
-    }
-
-    const iniciarLimpeza = async (id: string) => {
-        const iniciarLimpezaSalaResult = await iniciarLimpezaSala(id);
-        if(!iniciarLimpezaSalaResult.success){
-            showErrorToast({errMessage: iniciarLimpezaSalaResult.errMessage})
-            return;
-        }
-        await carregarSalas()
-    }
-
-    const marcarSalaComoSuja = async (id: string, observacoes?: string) => {
-        const marcarSalaComoSujaServiceResult = await marcarSalaComoSujaService(id, observacoes)
-        if(!marcarSalaComoSujaServiceResult.success){
-            showErrorToast({errMessage: marcarSalaComoSujaServiceResult.errMessage})
-            return;
-        }
-        await carregarSalas()
-
-    }
-
-    async function excluirSala(id: string){
-        // const id = 'emerson'
-        const excluirSalaServiceResult = await excluirSalaService(id);
-        if(!excluirSalaServiceResult.success){
-            showErrorToast({errMessage: excluirSalaServiceResult.errMessage})
-        }
-        await carregarSalas();
-    }
 
     const handleIniciarLimpeza = useCallback((id: string) => {
         setEditingSala({type: 'startCleaning', id})
@@ -221,47 +174,58 @@ export default function SalasScreen() {
         setObservacao('');
     }
 
+    const carregarLimpezasAndamento = async () => {
+        console.log(limpezasEmAndamento)
+        console.log(limpezasEmAndamento.length)
+        if(!user.groups.includes(1)){
+            return
+        }
+        
+        const username = user.username
+        const getAllRegistrosServiceResult = await getRegistrosService({
+            username,
+        })
+        if(!getAllRegistrosServiceResult.success){
+            showErrorToast({errMessage: getAllRegistrosServiceResult.errMessage})
+            return
+        }
+        
+        const limpezasAndamento = getAllRegistrosServiceResult.data.filter(item => {
+            return item.data_hora_fim === null
+        })
+        
+        setLimpezasEmAndamento(limpezasAndamento)
+        
+        return
+        
+    }
+
+    const carregarTudo = async () => {
+        await carregarSalas()
+        await carregarLimpezasAndamento()
+    }
+    
+
     useFocusEffect( React.useCallback(() => {
-        carregarSalasComLoading()
+        setFiltroSearchSalaText('')
+        carregarTudo()
     },[]))
     
 
-    const { salasFiltradas, contagemSalasLimpas, contagemSalasPendentes, contagemSalasEmLimpeza, contagemSalasSuja, contagemSalasAtivas, contagemSalasInativas } = React.useMemo(() => {
-        const searchSalaTextFormatado = normalizarTexto(searchSalaText);
+    const { 
+        salasFiltradas, 
+    } = React.useMemo(() => {
     
         const filtered = salas.filter(sala => {
-            const nomeSalaFormatado = normalizarTexto(sala.nome_numero);
-            const capacidadeFormatada = normalizarTexto(String(sala.capacidade));
-            const localizacaoFormatada = normalizarTexto(sala.localizacao);
-    
-            const matchesSearch = nomeSalaFormatado.includes(searchSalaTextFormatado) ||
-                                  capacidadeFormatada.includes(searchSalaTextFormatado) ||
-                                  localizacaoFormatada.includes(searchSalaTextFormatado);
-    
             const matchesLimpeza = filtroLimpezaStatus === 'Todas' ? true : filtroLimpezaStatus === sala.status_limpeza;
-            const matchesStatus = filtroSalaStatus === 'Todas' ? true : filtroSalaStatus === (sala.ativa ? 'Ativas' : 'Inativas');
-    
-            return matchesSearch && matchesLimpeza && matchesStatus;
+
+            return matchesLimpeza;
         });
-    
-        // Contagens
-        const contagemLimpas = salas.filter(sala => sala.status_limpeza === 'Limpa').length;
-        const contagemPendentes = salas.filter(sala => sala.status_limpeza === 'Limpeza Pendente').length;
-        const contagemEmLimpeza = salas.filter(sala => sala.status_limpeza === 'Em Limpeza').length;
-        const contagemSuja = salas.filter(sala => sala.status_limpeza === 'Suja').length;
-        const contagemAtivas = salas.filter(sala => sala.ativa).length;
-        const contagemInativas = salas.filter(sala => !sala.ativa).length;
     
         return {
             salasFiltradas: filtered,
-            contagemSalasLimpas: contagemLimpas,
-            contagemSalasPendentes: contagemPendentes,
-            contagemSalasEmLimpeza: contagemEmLimpeza,
-            contagemSalasSuja: contagemSuja,
-            contagemSalasAtivas: contagemAtivas,
-            contagemSalasInativas: contagemInativas,
         };
-    }, [salas, searchSalaText, filtroLimpezaStatus, filtroSalaStatus]);
+    }, [salas, filtroLimpezaStatus]);
 
 
     return (
@@ -281,7 +245,11 @@ export default function SalasScreen() {
             <HeaderScreen searchBar={{
                 searchLabel: 'Pesquisar salas',
                 searchText: searchSalaText,
-                setSearchText: setSearchSalaText
+                setSearchText: setFiltroSearchSalaText,
+                searchResults: {
+                    activeFilters: activeFilters && !refreshing && !carregando && !isSearchPending,
+                    filtersResult: salasFiltradas.length
+                }
             }} 
                 // filterOptions={true}
                 headerNavButtons={true}
@@ -303,10 +271,10 @@ export default function SalasScreen() {
                     onValueChange={setFiltroLimpezaStatus}
                     defaultValue="Todas"
                     buttons={[
-                        {label: `Limpa (${contagemSalasLimpas})`, value: 'Limpa'},
-                        {label: `Limpeza Pendente (${contagemSalasPendentes})`, value: 'Limpeza Pendente'},
-                        {label: `Em Limpeza (${contagemSalasEmLimpeza})`, value: 'Em Limpeza'},
-                        {label: `Suja (${contagemSalasSuja})`, value: 'Suja'},
+                        {label: `Limpa`, value: 'Limpa'},
+                        {label: `Limpeza Pendente`, value: 'Limpeza Pendente'},
+                        {label: `Em Limpeza`, value: 'Em Limpeza'},
+                        {label: `Suja`, value: 'Suja'},
                     ]}
                 />
                 { userRole === 'admin' ?
@@ -317,15 +285,15 @@ export default function SalasScreen() {
                         onValueChange={setFiltroSalaStatus}
                         defaultValue="Todas"
                         buttons={[
-                            {label: `Ativas (${contagemSalasAtivas})`, value: 'Ativas'},
-                            {label: `Inativas (${contagemSalasInativas})`, value: 'Inativas'},
+                            {label: `Ativas`, value: 'Ativas'},
+                            {label: `Inativas`, value: 'Inativas'},
                         ]}
                     />
                     : 
                     null}
             </FiltersOptions>
 
-            {(limpezasEmAndamento.length === 0 || carregando) ? null :
+            {(carregando || limpezasEmAndamento.length === 0) ? null :
                 <TouchableRipple 
                     className="border rounded-full h-14 mx-6 my-2" 
                     onPress={() => navigation.navigate('LimpezasAndamento')}
@@ -342,7 +310,7 @@ export default function SalasScreen() {
 
             
 
-            {carregando ?
+            {refreshing ?
                 <ScrollView className="p-3 px-7">
                     {[...Array(5)].map((_, index) => (
                         <LoadingCard key={index} loadingImage={true} />
@@ -354,6 +322,9 @@ export default function SalasScreen() {
                     data={salasFiltradas}
                     keyExtractor={(item) => item.qr_code_id}
                     className=" flex-1 p-3 px-7"
+                    initialNumToRender={7}
+                    windowSize={11}
+                    maxToRenderPerBatch={5}
                     contentContainerClassName=" gap-2 flex-grow"
                     // contentContainerClassName=" gap-2 border flex-grow"
                     renderItem={(item) => {
@@ -372,9 +343,9 @@ export default function SalasScreen() {
                             />
                         )
                     }}
-                    refreshing={refreshingSalas}
-                    onRefresh={() => {
-                        carregarSalas()
+                    refreshing={refreshing}
+                    onRefresh={async () => {
+                        await carregarTudo()
                     }}
                     ListEmptyComponent={() => (
                         <View className=" flex-1 justify-center gap-2 items-center px-10">

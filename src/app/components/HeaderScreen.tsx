@@ -18,7 +18,11 @@ type HeaderScreenProps = {
     searchBar: {
         searchText: string,
         setSearchText: (texto: string) => void
-        searchLabel: string
+        searchLabel: string,
+        searchResults?: {
+            activeFilters: boolean,
+            filtersResult: number
+        }
     },
     notifications?: {
         notificationsCount?: number,
@@ -70,28 +74,36 @@ export default function HeaderScreen({
 
             </View>
 
-            <View className=" flex-row h-20 gap-4 items-center">
-                <Searchbar
-                    placeholder={searchBar.searchLabel}
-                    value={searchBar.searchText}
-                    onChangeText={searchBar.setSearchText}
-                    placeholderTextColor={colors.sgray}
-                    iconColor={colors.sgray}
-                    // submitBehavior="blurAndSubmit"
-                    // mode="view"
-                    className=" flex-1"
-                    style={{flex: 1}}
-                    theme={{colors: {primary: colors.sblue, elevation: {level3: colors.sgray + '20'}}}}
-                />
-                {showFilterOptions && 
-                    <>
-                        <TouchableOpacity 
-                            className="border rounded-md bg-sgray/15 p-3 aspect-square items-center justify-center"
-                            onPress={() => showFilterOptions ? showFilterOptions(true) : null}
-                        >
-                            <Ionicons name="filter" size={32} color={'black'}/>
-                        </TouchableOpacity>                    
-                    </>
+            <View className="">
+                <View className=" flex-row h-20 gap-4 items-center">
+                    <View className="flex-1 flex-col">
+                        <Searchbar
+                            placeholder={searchBar.searchLabel}
+                            value={searchBar.searchText}
+                            onChangeText={searchBar.setSearchText}
+                            placeholderTextColor={colors.sgray}
+                            iconColor={colors.sgray}
+                            // submitBehavior="blurAndSubmit"
+                            // mode="view"
+                            className=" "
+                            style={{}}
+                            theme={{colors: {primary: colors.sblue, elevation: {level3: colors.sgray + '20'}}}}
+                        />
+                    </View>
+                
+                    {showFilterOptions && 
+                        <>
+                            <TouchableOpacity 
+                                className="border rounded-md bg-sgray/15 p-3 aspect-square items-center justify-center"
+                                onPress={() => showFilterOptions ? showFilterOptions(true) : null}
+                                >
+                                <Ionicons name="filter" size={32} color={'black'}/>
+                            </TouchableOpacity>                    
+                        </>
+                    }
+                </View>
+                {!searchBar.searchResults?.activeFilters ? null : 
+                    <Text className=" text-base text-sgray ml-2">{searchBar.searchResults.filtersResult} resultados.</Text>
                 }
             </View>
         </View>

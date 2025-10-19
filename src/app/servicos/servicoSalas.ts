@@ -2,13 +2,40 @@ import api from "../api/axiosConfig";
 import { Sala, ServiceResult } from "../types/apiTypes";
 import { utcToYYYYMMDD } from "../utils/functions";
 
-export async function obterSalas():Promise<ServiceResult<Sala[]>>{
+interface obterSalasParams{
+    statusLimpeza?: 'Todas' | 'Limpa' | 'Limpeza Pendente' | 'Em Limpeza' | 'Suja',
+    statusSala?: 'Todas' | 'Ativas' | 'Inativas',
+    searchSalaText? : string,
+
+}
+
+export async function obterSalas({statusSala, searchSalaText}:obterSalasParams):Promise<ServiceResult<Sala[]>>{
     try {
-        const resposta = await api.get<Sala[]>('salas/');
+        const params: Record<string, string> = {}
+        if (statusSala !== undefined && statusSala !== 'Todas') params.ativa = String(statusSala === 'Ativas')
+        if(searchSalaText !== undefined && searchSalaText !== '') params.nome_numero = searchSalaText
+
+        // params.nome_numero = 'au'
+        // params.localizacao = 'au'
+
+        const queryString = new URLSearchParams(params).toString();
+        const routeUrl = queryString ? `salas/?${queryString}` : 'salas/'
+
+        // console.log('')
+        // console.log('')
+        // console.log('Debuging obter salas')
+        // console.log(routeUrl)
+
+
+        const resposta = await api.get<Sala[]>(routeUrl);
+        // console.log(resposta.data)
+        // console.log('Salas: ' + resposta.data.length)
+        // console.log('Salas ativas: ' + resposta.data.filter((item) => item.ativa === true).length)
+        // console.log('Salas inativas: ' + resposta.data.filter(item => item.ativa === false).length)
         return {success: true, data: resposta.data}
 
     } catch (erro: any){
-        console.log(erro);
+        console.log(erro.data);
         // throw new Error(erro|| 'Erro ao buscar salas')
         if(erro.response && erro.response.status === 401){
             return {success: false, errMessage: 'As credenciais de autenticação não foram fornecidas'}

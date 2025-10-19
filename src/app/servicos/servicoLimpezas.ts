@@ -22,7 +22,7 @@ export async function getRegistrosService({id, username, sala_uuid, data_inicio,
         // console.log(queryString)
 
         const resposta = await api.get<RegistroSala[]>(routeUrl);
-        console.log(resposta.data)
+        // console.log(resposta.data)
         return { success: true, data: resposta.data };
     } catch(erro: any){
         console.error(erro)

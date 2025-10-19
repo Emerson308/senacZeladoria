@@ -1,12 +1,12 @@
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
 import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackground, RefreshControl } from 'react-native'
-import { Card, Button, ActivityIndicator, Appbar } from 'react-native-paper';
+import { Card, Button, ActivityIndicator, Appbar, TouchableRipple } from 'react-native-paper';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/StackTypes';
 import React, { useContext, useEffect, useState } from 'react';
 import { obterDetalhesSala, excluirSalaService} from '../servicos/servicoSalas';
-import { iniciarLimpezaSala, marcarSalaComoSujaService } from '../servicos/servicoLimpezas';
-import { Sala } from '../types/apiTypes';
+import { iniciarLimpezaSala, marcarSalaComoSujaService, getRegistrosService } from '../servicos/servicoLimpezas';
+import { RegistroSala, Sala } from '../types/apiTypes';
 import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
 import { formatarDataISO, showErrorToast } from '../utils/functions';
@@ -15,7 +15,7 @@ import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';
 import Toast from 'react-native-toast-message';
 import HandleConfirmation from '../components/HandleConfirmation';
-import { da } from 'zod/v4/locales';
+import { useSalas } from '../contexts/SalasContext';
 
 
 type editingSalaType = 'edit' | 'delete' | 'startCleaning' | 'markAsDirty';
@@ -32,17 +32,6 @@ interface confirmationModalProps {
     type: 'confirmAction' | 'destructiveAction' | 'reportAction';
 }
 
-// type DetalhesSalaButtonsProps = {
-//     iniciarLimpeza?: boolean
-// }
-
-// function DetalhesSalaButtons({
-//     iniciarLimpeza
-// }: DetalhesSalaButtonsProps){
-//     if()
-
-// }
-
 export default function DetalhesSalaScreen(){
     const authContext = useContext(AuthContext)
     if(!authContext){
@@ -52,7 +41,14 @@ export default function DetalhesSalaScreen(){
         return null
     }
     
-    const {signOut, user, userRole, usersGroups} = authContext
+
+    const {
+        iniciarLimpeza,
+        marcarSalaComoSuja,
+        excluirSala,
+        carregarSalas,
+    } = useSalas()
+    const {user, userRole} = authContext
     const route = useRoute<TelaDetalhesSala['route']>()
     const navigation = useNavigation()
     const {id} = route.params;
@@ -60,6 +56,7 @@ export default function DetalhesSalaScreen(){
     const [carregando, setCarregando] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [dadosSala, setDadosSala] = useState<Sala|null>(null)
+    const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
     const [observacao, setObservacao] = useState('')
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false)
@@ -74,30 +71,45 @@ export default function DetalhesSalaScreen(){
     });
     const [editingSalaType, setEditingSalaType] = useState<editingSalaType| null>(null)
 
-    const iniciarLimpeza = async (id: string) => {
-        const iniciarLimpezaSalaResult = await iniciarLimpezaSala(id);
-        if(!iniciarLimpezaSalaResult.success){
-            showErrorToast({errMessage: iniciarLimpezaSalaResult.errMessage})                
+    const carregarLimpezasAndamento = async () => {
+        console.log(limpezasEmAndamento)
+        console.log(limpezasEmAndamento.length)
+        if(!user.groups.includes(1)){
+            return
+        }
+        
+        const username = user.username
+        const getAllRegistrosServiceResult = await getRegistrosService({
+            username,
+            sala_uuid: dadosSala?.qr_code_id
+        })
+        if(!getAllRegistrosServiceResult.success){
+            showErrorToast({errMessage: getAllRegistrosServiceResult.errMessage})
+            return
+        }
+        
+        const limpezasAndamento = getAllRegistrosServiceResult.data.filter(item => {
+            return item.data_hora_fim === null
+        })
+        
+        setLimpezasEmAndamento(limpezasAndamento)
+        
+        return
+        
+    }
+    
+
+    const carregarSala = async () => {
+        // setCarregando(true)
+        setRefreshing(true)
+        const obterDetalhesSalaResult = await obterDetalhesSala(id);
+        if(!obterDetalhesSalaResult.success){
+            showErrorToast({errMessage: obterDetalhesSalaResult.errMessage})
             return;
         }
-        await carregarSala()
-    }
-    
-    const marcarSalaComoSuja = async (id: string, observacao: string) => {
-        const marcarSalaComoLimpaServiceResult = await marcarSalaComoSujaService(id, observacao)
-        if(!marcarSalaComoLimpaServiceResult.success){
-            showErrorToast({errMessage: marcarSalaComoLimpaServiceResult.errMessage})
-        }
-    }
-    
-    const excluirSala = async (id: string) => {
-        const excluirSalaServiceResult = await excluirSalaService(id);
-        if(!excluirSalaServiceResult.success){
-            showErrorToast({errMessage: excluirSalaServiceResult.errMessage})
-        }
-        onCancel()
-        // navigation.goBack()
-        setTimeout(navigation.goBack, 500)
+        
+        setDadosSala(obterDetalhesSalaResult.data)
+        setRefreshing(false)
     }
 
     const handleIniciarLimpeza = () => {
@@ -140,17 +152,6 @@ export default function DetalhesSalaScreen(){
         setConfirmationModalVisible(true);
     }
     
-    const carregarSala = async () => {
-        // setCarregando(true)
-        const obterDetalhesSalaResult = await obterDetalhesSala(id);
-        if(!obterDetalhesSalaResult.success){
-            showErrorToast({errMessage: obterDetalhesSalaResult.errMessage})
-            return;
-        }
-        
-        setDadosSala(obterDetalhesSalaResult.data)
-    }
-
     const onCancel = () => {
         setConfirmationModalVisible(false);
         setObservacao('');
@@ -167,17 +168,31 @@ export default function DetalhesSalaScreen(){
         } else if(editingSalaType === 'markAsDirty'){
             await marcarSalaComoSuja(dadosSala.qr_code_id, observacao);
         }
+        setCarregando(true)
 
         onCancel()
         
+        
         if(editingSalaType !== 'delete'){
-            await carregarSala()
+            await carregarTudo()
+            if (editingSalaType === 'startCleaning'){
+                await carregarSalas()
+            }
+            setCarregando(false)
+            return
         }
+
+        navigation.goBack()
+    }
+
+    const carregarTudo = async () => {
+        await carregarSala()
+        await carregarLimpezasAndamento()
     }
     
     useFocusEffect( React.useCallback(() => {
         setCarregando(true)
-        carregarSala().then(() => setCarregando(false))
+        carregarTudo().then(() => setCarregando(false))
         
     }, []))
 
@@ -204,7 +219,9 @@ export default function DetalhesSalaScreen(){
         info_values: " text-2xl font-semibold text-gray-800 break-words"
     }
 
-    const visibleDetalhesButtons = user.groups.length > 0 || userRole === 'admin'
+    // console.log(limpezasEmAndamentoSala)
+
+    const visibleDetalhesButtons = (user.groups.length > 0 || userRole === 'admin') && dadosSala.status_limpeza !== 'Em Limpeza'
 
     const visibleIniciarLimpeza = 
         user.groups.includes(1) && dadosSala.ativa &&
@@ -248,8 +265,7 @@ export default function DetalhesSalaScreen(){
             </View>
             <ScrollView className=" mt-4 flex-1" 
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => {
-                    setRefreshing(true)
-                    carregarSala().then(() => setRefreshing(false))
+                    carregarTudo()
                 }}/>}
             >
                 {
@@ -389,6 +405,23 @@ export default function DetalhesSalaScreen(){
                     </View>
                 </View>
             </ScrollView>
+
+            {(limpezasEmAndamento.length > 0) && 
+                <View className={visibleDetalhesButtons ? 'border-b border-gray-200' : ''}>
+                    <TouchableRipple 
+                        className="border rounded-full h-14 mx-6 my-2" 
+                        onPress={() => navigation.navigate('ConcluirLimpeza', {registroSala: limpezasEmAndamento[0]})}
+                        borderless={true}
+                        // background={colors.sblue}
+                        
+                    >
+                        <View className=" flex-1 flex-row items-center justify-center gap-4 bg-sblue">
+                            <Ionicons name="timer-outline" size={24} color={'white'}/>
+                            <Text className="text-lg text-white">Concluir Limpeza</Text>
+                        </View>
+                    </TouchableRipple>
+                </View>
+            }
 
             {
                 visibleDetalhesButtons && 

@@ -82,7 +82,8 @@ export default function LimpezasAndamentoScreen(){
                 renderItem={(item) => <LimpezasAndamentoCard {...item.item} onPress={() => navigation.navigate('ConcluirLimpeza', {registroSala: item.item})} />}
                 data={limpezasEmAndamento}
                 keyExtractor={(item) => String(item.id)}
-                contentContainerClassName=" gap-4 px-3 my-4"
+                contentContainerClassName=" gap-4 px-3 py-4"
+                className=" my-4"
                 refreshing={refreshing}
                 onRefresh={ async () => {
                     setRefreshing(true)
