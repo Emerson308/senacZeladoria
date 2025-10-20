@@ -15,6 +15,7 @@ import Toast from 'react-native-toast-message'
 import CustomToast from './components/CustomToast';
 import { SalasProvider } from './contexts/SalasContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
+import { View, Text } from 'react-native';
 
 const RootNavigation = () => {
   const authContext = useContext(AuthContext);
@@ -39,6 +40,12 @@ const RootNavigation = () => {
 };
 
 export default function App() {
+  // return (
+  //   <View>
+  //     <Text>Teste</Text>
+  //   </View>
+  // )
+
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>

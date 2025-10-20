@@ -43,7 +43,7 @@ function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
                     <View className=" flex-1 flex-row gap-2 px-4 flex-wrap">
                         {
                             usuario.groups.length === 0 ?
-                            <Text style={{
+                            <Text className=" self-center " style={{
                                 padding: 1,
                                 paddingHorizontal: 5,
                                 borderRadius: 5,

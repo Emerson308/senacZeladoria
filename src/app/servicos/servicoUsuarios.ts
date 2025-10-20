@@ -67,7 +67,7 @@ export async function usuarioLogado():Promise<ServiceResult<Usuario>>{
         // console.log(resposta.data)
         return {success: true, data: resposta.data}
     } catch(erro: any){
-        console.log(erro)
+        console.log('Service usuario logado' + erro)
         if(erro.response && erro.response.status === 401){
             return {success: false, errMessage: 'As credenciais de autenticação não foram fornecidas'}
         }

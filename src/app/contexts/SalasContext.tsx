@@ -37,6 +37,10 @@ export const SalasProvider = ({children}: SalasProviderProps) => {
         return null
     }
 
+    // if(!authContext.user){
+    //     return children
+    // }
+
     const {user, userRole} = authContext;
 
     const [salas, setSalas] = useState<Sala[]>([])
@@ -57,6 +61,9 @@ export const SalasProvider = ({children}: SalasProviderProps) => {
 
     const carregarSalas = useCallback(async (currentSearchText: string = searchRef.current) => {
         setRefreshing(true)
+        if(!user){
+            return
+        }
         
         // console.log(`Chamada API com: Filtro Limpeza=${filtroLimpezaStatus}, Filtro Sala=${filtroSalaStatus}, Busca=${currentSearchText}`)
         

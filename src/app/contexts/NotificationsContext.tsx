@@ -26,7 +26,7 @@ interface NotificationsProviderProps{
 export const NotificationsProvider = ({children}: NotificationsProviderProps) => {
     const authContext = useContext(AuthContext)
 
-    if(!authContext || !authContext.user){
+    if(!authContext){
         return null
     }
 
@@ -38,7 +38,7 @@ export const NotificationsProvider = ({children}: NotificationsProviderProps) =>
     const contagemNotificacoesNaoLidas = useMemo(() => notifications.filter(item => item.lida === false).length, [notifications])
 
     const carregarNotificacoes = useCallback(async () => {
-        if(!user.groups.includes(1)){
+        if(!user?.groups.includes(1)){
             return
         }
 
