@@ -191,6 +191,13 @@ export default function EstatisticasLimpeza() {
                         <LegendChart chartData={ statusSalas?.statusSalaData} />
                     </View>
                 </View>
+
+                {/* Estatisticas limpeza concluidas (Limpezas demoradas, rapidas e etc ) */}
+                {/* Limpezas em andamento */}
+                {/* Zeladores */}
+                {/* Salas */}
+
+
             </ScrollView>
 
         </SafeAreaView>
