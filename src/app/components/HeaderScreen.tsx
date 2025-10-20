@@ -48,26 +48,34 @@ export default function HeaderScreen({
 
     const navigation = useNavigation()
 
+    const visibleNotificationsCount = notifications && notifications.notificationsCount && notifications.notificationsCount > 0
+
     return(
         <View className="bg-white py-2 border-b-2 border-gray-200 gap-2 px-5" >
             <View className=" flex-row h-20 gap-4 items-center">
                 <Text className=" text-2xl flex-1">{headerText}</Text>
                 {(headerNavButtons && userGroups) && 
                     <>
-                        <TouchableRipple onPress={() => qrCodeNavigate?.()} 
-                            borderless={true} 
+                        <TouchableOpacity onPress={() => qrCodeNavigate?.()} 
                             className=" rounded-full p-3 aspect-square"
 
                         >
                             <Ionicons name="qr-code-outline" size={32}/>                   
-                        </TouchableRipple>
+                        </TouchableOpacity>
                         {userGroups.includes(1) &&
-                            <TouchableRipple onPress={() => navigation.navigate('Notifications')}
-                                borderless={true}
-                                className=" rounded-full p-3 aspect-square"
+                            <TouchableOpacity onPress={() => navigation.navigate('Notifications')}
+                                className=" rounded-full aspect-square"
                             >
-                                <Ionicons name="notifications-outline" size={32}/>
-                            </TouchableRipple>                    
+                                <View className="p-3">
+                                    <Ionicons name="notifications-outline" size={32}/>
+                                    {(!visibleNotificationsCount) ? null :
+                                        <View className=" rounded-full absolute bg-sred aspect-square p-0.5 right-2 top-2">
+                                            <Text className="text-xs text-white">+{notifications?.notificationsCount}</Text>
+                                        </View>                                    
+                                    }
+
+                                </View>
+                            </TouchableOpacity>                    
                         }
                     </>
                 }

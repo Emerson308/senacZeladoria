@@ -61,7 +61,7 @@ export async function marcarSalaComoSujaService(id: string, observacoes?: string
 
         console.log(observacoesJson)
 
-        const resposta = await api.post(`salas/${id}/marcar_como_suja/`)
+        const resposta = await api.post(`salas/${id}/marcar_como_suja/`, observacoesJson)
         // console.log(resposta.data)
         return {success: true, data: null}
     } catch(erro: any){

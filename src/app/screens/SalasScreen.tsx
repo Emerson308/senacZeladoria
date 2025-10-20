@@ -22,6 +22,7 @@ import HandleConfirmation from "../components/HandleConfirmation";
 import { id } from "date-fns/locale";
 import LoadingCard from "../components/cards/LoadingCard";
 import { useSalas } from "../contexts/SalasContext";
+import { useNotifications } from "../contexts/NotificationsContext";
 
 
 
@@ -73,6 +74,8 @@ export default function SalasScreen() {
         marcarSalaComoSuja,
         excluirSala,
     } = useSalas()
+
+    const {contagemNotificacoesNaoLidas, carregarNotificacoes} = useNotifications()
     const {userRole, user} = authContext
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
 
@@ -175,8 +178,8 @@ export default function SalasScreen() {
     }
 
     const carregarLimpezasAndamento = async () => {
-        console.log(limpezasEmAndamento)
-        console.log(limpezasEmAndamento.length)
+        // console.log(limpezasEmAndamento)
+        // console.log(limpezasEmAndamento.length)
         if(!user.groups.includes(1)){
             return
         }
@@ -203,6 +206,7 @@ export default function SalasScreen() {
     const carregarTudo = async () => {
         await carregarSalas()
         await carregarLimpezasAndamento()
+        await carregarNotificacoes()
     }
     
 
@@ -256,7 +260,7 @@ export default function SalasScreen() {
                 headerText="Salas"
                 userGroups={user.groups}
                 showFilterOptions={() => setFiltroOptionsVisible(true)}
-                notifications={{notificationsNavigate: () => navigation.navigate('Notifications')}}
+                notifications={{notificationsNavigate: () => navigation.navigate('Notifications'), notificationsCount: contagemNotificacoesNaoLidas}}
                 qrCodeNavigate={() => navigation.navigate('QrCodeScanner')}
             />
 

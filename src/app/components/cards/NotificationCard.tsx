@@ -2,7 +2,7 @@ import { Notification } from "../../types/apiTypes";
 import { View, Text } from "react-native";
 import { Card, TouchableRipple } from "react-native-paper";
 import { formatarDataISO } from "../../utils/functions";
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 
 
@@ -30,7 +30,7 @@ export default function NotificationCard({mensagem, lida, link, id, data_criacao
                     {lida ? 
                         <Ionicons name="checkmark-done-outline" size={28} />
                         :
-                        <Ionicons name="alert-circle-outline" size={40}/>
+                        <MaterialCommunityIcons name="bell-ring-outline" size={40}/>
                     }
                 </View>
                 <View className=" flex-col flex-1 justify-center items-end gap-2 rounded-xl p-1 h-24">

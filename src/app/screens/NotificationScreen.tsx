@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, ListRenderItemInfo, Text, View } from "react-native";
+import { FlatList, ListRenderItemInfo, RefreshControl, ScrollView, Text, View } from "react-native";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from "@react-navigation/native";
@@ -9,15 +9,24 @@ import { Notification } from "../types/apiTypes";
 import Toast from "react-native-toast-message";
 import NotificationCard from "../components/cards/NotificationCard";
 import { showErrorToast } from "../utils/functions";
+import LoadingCard from "../components/cards/LoadingCard";
+import { useNotifications } from "../contexts/NotificationsContext";
 
 
 
 
 export default function NotificationScreen(){
 
+    const {
+        notifications,
+        contagemNotificacoesNaoLidas,
+        refreshing,
+        carregarNotificacoes,
+        readAllNotifications,
+        readNotification
+    } = useNotifications()
+
     const navigation = useNavigation()
-    const [refreshing, setRefreshing] = useState(false)
-    const [notificacoes, setNotificacoes] = useState<Notification[]>([])
 
 
     useEffect(() => {
@@ -27,40 +36,6 @@ export default function NotificationScreen(){
     const navegarParaDetalhesSala = useCallback((id: string) => {
         navigation.navigate('DetalhesSala', {id})
     }, [])
-
-    const carregarNotificacoes = async () => {
-        const listarNotificacoesResult = await listarNotificacoes()
-        if(!listarNotificacoesResult.success){
-            showErrorToast({errMessage: listarNotificacoesResult.errMessage})
-            return
-        }
-        
-        setNotificacoes(listarNotificacoesResult.data)
-    }
-    
-    const readAllNotifications = async () => {
-        const lerTodasAsNotificacoesResult = await lerTodasAsNotificacoes()
-        if(!lerTodasAsNotificacoesResult.success){
-            showErrorToast({errMessage: lerTodasAsNotificacoesResult.errMessage})
-            return
-        }
-        
-        setRefreshing(true)
-        await carregarNotificacoes()
-        setRefreshing(false)
-    }
-    
-    const readNotification = async (id: number) => {
-        const lerNotificacaoResult = await lerNotificacao(id)
-        if(!lerNotificacaoResult.success){
-            showErrorToast({errMessage: lerNotificacaoResult.errMessage})
-            return
-        }
-
-        setRefreshing(true)
-        await carregarNotificacoes()
-        setRefreshing(false)
-    }
 
     return (
         <SafeAreaView className=" bg-gray-100 flex-col p-1 flex-1">
@@ -81,22 +56,30 @@ export default function NotificationScreen(){
                     </View>
                 </TouchableRipple>
             </View>
-            <FlatList
-                renderItem={(item) => <NotificationCard {...item.item} 
-                    onNotificationRead={
-                        async () => await readNotification(item.item.id)
-                    }
-                    navegarParaDetalhesSala={navegarParaDetalhesSala}
-                />}
-                data={notificacoes}
-                keyExtractor={(item) => String(item.id)}
-                contentContainerClassName="gap-4 px-3 pb-4"
-                refreshing={refreshing}
-                onRefresh={() => {
-                    setRefreshing(true)
-                    carregarNotificacoes().then(() => setRefreshing(false))
-                }}
-            />
+            {refreshing ? 
+                <ScrollView className=" gap-4 px-3 pb-4" refreshControl={<RefreshControl
+                    refreshing={refreshing}
+                />}>
+                    {[1,2,3,4,5].map(item => <LoadingCard key={item}/>)}
+                </ScrollView>
+                :
+                <FlatList
+                    renderItem={(item) => <NotificationCard {...item.item} 
+                        onNotificationRead={
+                            async () => await readNotification(item.item.id)
+                        }
+                        navegarParaDetalhesSala={navegarParaDetalhesSala}
+                    />}
+                    data={notifications}
+                    keyExtractor={(item) => String(item.id)}
+                    contentContainerClassName="gap-4 px-3 pb-4"
+                    refreshing={refreshing}
+                    onRefresh={async () => {
+                        await carregarNotificacoes()
+                    }}
+                />
+
+            }
         </SafeAreaView>
     )
 }

@@ -58,7 +58,7 @@ export const SalasProvider = ({children}: SalasProviderProps) => {
     const carregarSalas = useCallback(async (currentSearchText: string = searchRef.current) => {
         setRefreshing(true)
         
-        console.log(`Chamada API com: Filtro Limpeza=${filtroLimpezaStatus}, Filtro Sala=${filtroSalaStatus}, Busca=${currentSearchText}`)
+        // console.log(`Chamada API com: Filtro Limpeza=${filtroLimpezaStatus}, Filtro Sala=${filtroSalaStatus}, Busca=${currentSearchText}`)
         
         const salasResult = await obterSalas({
             statusLimpeza: filtroLimpezaStatus,
@@ -107,7 +107,7 @@ export const SalasProvider = ({children}: SalasProviderProps) => {
 
 
     useEffect(() => {
-        console.log('Valor disparado no useEffect de Busca: ' + searchSalaText)
+        // console.log('Valor disparado no useEffect de Busca: ' + searchSalaText)
         
         if(searchSalaText === ''){
             carregarSalas(''); 
@@ -117,7 +117,7 @@ export const SalasProvider = ({children}: SalasProviderProps) => {
         if (isInitialMount.current) return;
         
         const timeoutId = setTimeout(() => {
-            console.log('Debounce concluído. Chamando carregarSalas()')
+            // console.log('Debounce concluído. Chamando carregarSalas()')
             carregarSalas()
         }, 1000)
 

@@ -72,8 +72,8 @@ export default function DetalhesSalaScreen(){
     const [editingSalaType, setEditingSalaType] = useState<editingSalaType| null>(null)
 
     const carregarLimpezasAndamento = async () => {
-        console.log(limpezasEmAndamento)
-        console.log(limpezasEmAndamento.length)
+        // console.log(limpezasEmAndamento)
+        // console.log(limpezasEmAndamento.length)
         if(!user.groups.includes(1)){
             return
         }
@@ -109,6 +109,7 @@ export default function DetalhesSalaScreen(){
         }
         
         setDadosSala(obterDetalhesSalaResult.data)
+        console.log(dadosSala)
         setRefreshing(false)
     }
 
@@ -221,7 +222,6 @@ export default function DetalhesSalaScreen(){
 
     // console.log(limpezasEmAndamentoSala)
 
-    const visibleDetalhesButtons = (user.groups.length > 0 || userRole === 'admin') && dadosSala.status_limpeza !== 'Em Limpeza'
 
     const visibleIniciarLimpeza = 
         user.groups.includes(1) && dadosSala.ativa &&
@@ -238,6 +238,11 @@ export default function DetalhesSalaScreen(){
     const visibleEditarSala = userRole === 'admin'
 
     const visibleExcluirSala = userRole === 'admin' && dadosSala.ativa
+
+    const visibleButtons = [visibleSalaInativa, visibleEditarSala, visibleExcluirSala, visibleIniciarLimpeza, visibleReportarSujeira]
+
+    const visibleDetalhesButtons = visibleButtons.some(item => item)
+
 
     return(
         <SafeAreaView  className="flex-1 flex-col bg-gray-100 p-1">
@@ -288,6 +293,15 @@ export default function DetalhesSalaScreen(){
                 }
                 <View className=' p-5 pt-0 pb-10 md:p-8'>
 
+                    {
+                        (dadosSala.detalhes_suja && user.groups.includes(1)) && 
+                        <View className=' bg-sred/5 py-4 px-4 my-4 border border-sred rounded-lg'>
+                            <Text className=' text-xl text-sred mb-2'>Sujeira reportada</Text>
+                            <Text className=' text-sred'>Reportado por: {dadosSala.detalhes_suja.reportado_por}</Text>
+                            <Text className=' text-sred'>Horário: {formatarDataISO(dadosSala.detalhes_suja.data_hora)}</Text>
+                            <Text className=' text-sred'>Observações: {dadosSala.detalhes_suja.observacoes ? dadosSala.detalhes_suja.observacoes : 'Sem observações'}</Text>
+                        </View>
+                    }
 
                     <View className={estilosTailwind.item}>
                         <View className='flex-row gap-2 mb-3 items-center'>
@@ -422,6 +436,7 @@ export default function DetalhesSalaScreen(){
                     </TouchableRipple>
                 </View>
             }
+
 
             {
                 visibleDetalhesButtons && 

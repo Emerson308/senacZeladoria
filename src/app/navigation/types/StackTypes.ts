@@ -15,11 +15,12 @@ export type UserStackParamList = {
     LimpezasAndamento: undefined;
     ConcluirLimpeza: {registroSala: RegistroSala};
     QrCodeScanner: undefined
-
+    
 }
 
 type AdminScreens = {
     Usuarios: undefined;
+    EstatisticasLimpeza: undefined,
     RegistrosLimpeza: undefined;
     FormSala: {sala?: Sala};
     

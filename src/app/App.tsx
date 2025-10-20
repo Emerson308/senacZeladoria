@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message'
 import CustomToast from './components/CustomToast';
 import { SalasProvider } from './contexts/SalasContext';
+import { NotificationsProvider } from './contexts/NotificationsContext';
 
 const RootNavigation = () => {
   const authContext = useContext(AuthContext);
@@ -43,10 +44,12 @@ export default function App() {
       <SafeAreaProvider>
         <PaperProvider>
           <AuthProvider>
-            <SalasProvider>
-              <RootNavigation />
-              <CustomToast/>
-            </SalasProvider>
+            <NotificationsProvider>
+              <SalasProvider>
+                <RootNavigation />
+                <CustomToast/>
+              </SalasProvider>
+            </NotificationsProvider>
           </AuthProvider>
         </PaperProvider>
       </SafeAreaProvider>

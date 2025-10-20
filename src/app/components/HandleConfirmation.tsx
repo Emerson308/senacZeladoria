@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import { Modal, Portal, TouchableRipple, TextInput } from 'react-native-paper';
 import React, { useState } from 'react';
 import { colors } from '../../styles/colors';
@@ -79,18 +79,18 @@ export default function HandleConfirmation({
                         <Text className={typeStyles[type].bodyColor}>{bodyText}</Text>
                     }
                     <View className="flex-row justify-between  gap-8">
-                        <TouchableRipple
+                        <TouchableOpacity
                             onPress={onCancel}
                             className={`flex-1 py-4 rounded-xl ${typeStyles[type].cancelButtonColor}`}
                         >
                             <Text className="text-center">{cancelText}</Text>
-                        </TouchableRipple>
-                        <TouchableRipple
+                        </TouchableOpacity>
+                        <TouchableOpacity
                             onPress={() => onConfirm()}
                             className={`flex-1 py-4 rounded-xl ${typeStyles[type].confirmButtonColor}`}
                         >
                             <Text className="text-center text-white">{confirmText}</Text>
-                        </TouchableRipple>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>

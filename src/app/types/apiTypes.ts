@@ -47,7 +47,12 @@ export interface Sala{
     responsaveis: string[]
     status_limpeza: "Limpa" | "Limpeza Pendente" | "Suja" | "Em Limpeza"
     ultima_limpeza_data_hora: null | string,
-    ultima_limpeza_funcionario: null | string
+    ultima_limpeza_funcionario: null | string,
+    detalhes_suja?: {
+        data_hora: string,
+        observacoes: string,
+        reportado_por: string
+    }
 }
 
 export interface newSala{

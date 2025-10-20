@@ -9,13 +9,52 @@ import UsuariosScreen from "../../screens/UsuariosScreen";
 import PerfilScreen from "../../screens/PerfilScreen";
 import RegistrosLimpezaScreen from "../../screens/RegistrosLimpezaScreen";
 import { AuthContext } from "../../AuthContext";
-import { Platform } from "react-native";
+import { Platform, View, Text } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNotifications } from "../../contexts/NotificationsContext";
+import EstatisticasLimpeza from "../../screens/EstatisticasLimpeza";
 
 
 
 
 const Tab = createBottomTabNavigator<AdminStackParamList>()
+
+
+interface HomeTabIconProps{
+    focused: boolean,
+    color: string,
+    size: number
+}
+const HomeTabIcon = ({focused, color, size}: HomeTabIconProps) => {
+    const {contagemNotificacoesNaoLidas} = useNotifications()
+
+    const count = contagemNotificacoesNaoLidas
+
+    const iconName = focused ? 'home' : 'home-outline'
+
+    return (
+        <View
+            className=" relative"
+            style={{
+                width: size,
+                height: size
+            }}
+        >
+            {/* <View className="flex-1"> */}
+                <Ionicons name={iconName} size={size} color={color}/>
+                {(count === 0) ? null :
+                    (
+                    <View className=" rounded-full absolute bg-sred aspect-square h-3 -right-0 -top-0">
+                        {/* <Text className="text-xs text-white" ></Text> */}
+                    </View>    
+                    )                                
+                }
+
+            {/* </View> */}
+        </View>                    
+    )
+}
+
 
 export default function BottomTabs(){
 
@@ -25,19 +64,36 @@ export default function BottomTabs(){
         return null
     }
 
+
     const insets = useSafeAreaInsets()
 
     const {userRole} = authContext
+
+    const commonScreenOptions = {
+        tabBarActiveTintColor: colors.sblue,
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarStyle:{
+            height: 60,
+            marginBottom: insets.bottom
+        }
+
+    }
 
     if(userRole === 'admin'){
         return(
             <Tab.Navigator
                 safeAreaInsets={{bottom: 0}}
                 screenOptions={({ route }) => ({
+                    ...commonScreenOptions,
                     tabBarIcon: ({focused, color, size}) => {
                         let iconName: keyof typeof Ionicons.glyphMap = 'home';
                         if( route.name === 'Home' ){
                             iconName = focused ? 'home' : 'home-outline'
+                            return <HomeTabIcon focused={focused} size={size} color={color}  />
+                        } else if(route.name === 'EstatisticasLimpeza'){
+                            iconName = focused ? 'pie-chart' : 'pie-chart-outline'
                         } else if(route.name === 'RegistrosLimpeza'){
                             iconName = focused ? 'reader' : 'reader-outline'
                         } else if (route.name === 'Usuarios'){
@@ -49,14 +105,6 @@ export default function BottomTabs(){
     
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: colors.sblue,
-                    tabBarInactiveTintColor: 'gray',
-                    headerShown: false,
-                    tabBarHideOnKeyboard: true,
-                    tabBarStyle: {
-                        height: 60,
-                        marginBottom: insets.bottom,
-                    }
                 })
                 }
                 
@@ -64,6 +112,12 @@ export default function BottomTabs(){
                 <Tab.Screen
                     name="Home"
                     component={SalasScreen}
+                />
+
+                <Tab.Screen
+                    name="EstatisticasLimpeza"
+                    component={EstatisticasLimpeza}
+                    options={{title: 'Estatísticas'}}
                 />
     
                 <Tab.Screen
