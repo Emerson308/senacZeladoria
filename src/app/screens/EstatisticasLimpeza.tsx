@@ -3,8 +3,12 @@ import { View, Text, ScrollView, RefreshControl } from "react-native";
 import { useCallback, useState } from "react";
 import { colors } from "../../styles/colors";
 import { obterSalas } from "../servicos/servicoSalas";
-import { showErrorToast } from "../utils/functions";
+import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
 import { useFocusEffect } from "@react-navigation/native";
+import { getRegistrosService } from "../servicos/servicoLimpezas";
+import { RegistroSala } from "../types/apiTypes";
+import { FlatList } from "react-native-gesture-handler";
+import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 
 
 interface chartData{
@@ -14,11 +18,15 @@ interface chartData{
     percentage: number
 }
 
-interface statusSala{
+interface statusSalas{
     salasCount: number,
     statusLimpezaData: chartData[]
     statusSalaData: chartData[]
+}
 
+interface statusLimpezasConcluidas{
+    limpezasConcluidasCount: number,
+    statusVelocidadeData: chartData[],
 }
 
 interface LineChartProps{
@@ -62,10 +70,10 @@ const LegendChart = ({chartData}: LegendChartProps) => {
     }
 
     return (
-        <View className=" flex-row justify-between flex-wrap">
+        <View className=" flex-col gap-1 justify-between flex-wrap">
             {
                 chartData.map((item, index) => (
-                    <View key={index} className=" justify-center items-center flex-row gap-1 mt-1">
+                    <View key={index} className="  items-center flex-row gap-1 mt-1">
                         <View className=" rounded-full aspect-square h-3" style={{backgroundColor: item.color}}/>
                         <Text className=" text-base font-bold" style={{color: item.color}}>{item.label + ': ' + item.value + ` (${item.percentage.toFixed(1)}%)`}</Text>
                     </View>
@@ -76,14 +84,61 @@ const LegendChart = ({chartData}: LegendChartProps) => {
     )
 }
 
+interface FullLineChartProps{
+    title: string,
+    chartData?: chartData[]
+}
+
+const FullLineChart = ({title, chartData}: FullLineChartProps) => {
+
+
+    return(
+        <View className="gap-3 bg-gray-100 rounded-lg p-3">
+            <Text className=" text-lg font-bold mt-2">{title}</Text>
+            <LineChart chartData={chartData } />
+            <LegendChart chartData={ chartData } />
+        </View>
+
+    )
+}
+
+const statsCardStyle =  "p-4 shadow-md gap-4 bg-white rounded-lg flex-col"
+
+interface velocidadeLimpezaConditionalParams{
+    item: RegistroSala,
+    type: 'Rapida' | 'Media' | 'Lenta'
+}
+
+const velocidadeLimpezaConditional = ({item, type} : velocidadeLimpezaConditionalParams): Boolean => {
+    if (!item.data_hora_fim){
+        return false
+    }
+
+    const timeDiference = getSecondsUtcDiference(item.data_hora_inicio, item.data_hora_fim)
+
+    if (type === 'Rapida'){
+        return (timeDiference < 1200)
+    }
+    if (type === 'Media'){
+        return (timeDiference < 2400 && timeDiference >= 1200)
+    }
+    if (type === 'Lenta'){
+        return (timeDiference > 2400)
+    }
+
+    return false
+}
 
 export default function EstatisticasLimpeza() {
 
     const [refreshing, setRefreshing] = useState(false)
-    const [statusSalas, setStatusSalas] = useState<null| statusSala>(null)
+    const [statusSalas, setStatusSalas] = useState<null| statusSalas>(null)
+    const [statusLimpezasConcluidas, setStatusLimpezasConcluidas] = useState<null | statusLimpezasConcluidas>(null)
+    const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
     useFocusEffect(useCallback(() => {
         carregarSalas()
+        carregarRegistros()
     }, []))
 
     const carregarSalas = async () => {
@@ -163,37 +218,129 @@ export default function EstatisticasLimpeza() {
     
         
     }
+
+    const carregarRegistros = async () => {
+        const getRegistrosServiceResult = await getRegistrosService({})
+        if(!getRegistrosServiceResult.success){
+            showErrorToast({errMessage: getRegistrosServiceResult.errMessage})
+            return;
+        }
+
+        const limpezas = getRegistrosServiceResult.data
+        const limpezasCount = limpezas.length
+
+        const limpezasEmAndamento = limpezas.filter(item => item.data_hora_fim === null)
+        setLimpezasEmAndamento(limpezasEmAndamento)
+        // const limpezasEmAndamentoCount = limpezasEmAndamento.length
+
+        const limpezasConcluidas = limpezas.filter(item => item.data_hora_fim !== null)
+        const limpezasConcluidasCount = limpezasConcluidas.length
+        
+        const limpezaRapidaCount = limpezasConcluidas.filter(item => velocidadeLimpezaConditional({item, type: 'Rapida'})).length
+        const limpezaMediaCount = limpezasConcluidas.filter(item => velocidadeLimpezaConditional({item, type: 'Media'})).length
+        const limpezaLentaCount = limpezasConcluidas.filter(item => velocidadeLimpezaConditional({item, type: 'Lenta'})).length
+
+        const limpezaRapidaPercentage = limpezaRapidaCount === 0? 0 : (limpezaRapidaCount/limpezasConcluidasCount) * 100
+        const limpezaMediaPercentage = limpezaMediaCount === 0? 0 : (limpezaMediaCount/limpezasConcluidasCount) * 100
+        const limpezaLentaPercentage = limpezaLentaCount === 0? 0 : (limpezaLentaCount/limpezasConcluidasCount) * 100
+
+        const statusVelocidadeData: chartData[] = [
+            {
+                label: 'Rápida',
+                value: limpezaRapidaCount,
+                percentage: limpezaRapidaPercentage,
+                color: colors.sgreen
+            },
+            {
+                label: 'Média',
+                value: limpezaMediaCount,
+                percentage: limpezaMediaPercentage,
+                color: colors.syellow
+            },
+            {
+                label: 'Lenta',
+                value: limpezaLentaCount,
+                percentage: limpezaLentaPercentage,
+                color: colors.sred
+            },
+        ]
+
+        setStatusLimpezasConcluidas({
+            limpezasConcluidasCount,
+            statusVelocidadeData,
+        })
+
+        // console.log(limpezaRapidaCount)
+    }
     
 
     return (
-        <SafeAreaView edges={['top']} className=" flex-1 bg-gray-100 pb-4 flex-col">
+        <SafeAreaView edges={['top']} className=" flex-1 bg-gray-100 pb-0 flex-col">
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <Text className=" text-2xl" >Estatísticas</Text>
             </View>
             <ScrollView 
-                className=" my-4 py-4"
-                contentContainerClassName=" gap-4 px-4"
+                className=" mt-4 mb-4"
+                contentContainerClassName=" gap-12 px-4 py-4"
                 refreshControl={<RefreshControl refreshing={refreshing}/>}
             >
-                <View className=" p-4 shadow-md gap-4 bg-white rounded-lg flex-col">
-                    <View className=" flex-row justify-between items-center mb-2">
-                        <Text className=" text-2xl font-bold">Estatísticas salas</Text>
-                        <Text className=" text-lg font-bold">Total de salas: {statusSalas?.salasCount}</Text>
+                <View className={statsCardStyle}>
+                    <View className=" flex-col gap-2 justify-between items-center mb-2">
+                        <Text className=" text-2xl font-bold text-center">Estatísticas salas</Text>
+                        <Text className=" text-lg font-bold text-center">Total de salas: {statusSalas?.salasCount}</Text>
                     </View>
-                    <View className="gap-2 bg-gray-100 rounded-lg p-3">
-                        <Text className=" text-lg font-bold mt-2">Status de limpeza:</Text>
-                        <LineChart chartData={statusSalas?.statusLimpezaData} />
-                        <LegendChart chartData={ statusSalas?.statusLimpezaData} />
+                    <FullLineChart title="Status de limpeza:" chartData={statusSalas?.statusLimpezaData}/>
+                    <FullLineChart title="Status de salas:" chartData={statusSalas?.statusSalaData}/>
+                </View>
+
+                <View className={statsCardStyle}>
+                    <View className=" flex-col gap-2 justify-between items-center mb-2">
+                        <Text className=" text-2xl font-bold text-center">Estatísticas de limpezas concluídas</Text>
+                        <Text className=" text-lg font-bold text-center">Total de limpezas concluídas: {statusLimpezasConcluidas?.limpezasConcluidasCount}</Text>
                     </View>
-                    <View className="gap-2 bg-gray-100 rounded-lg p-3">
-                        <Text className=" text-lg font-bold mt-2">Status de salas:</Text>
-                        <LineChart chartData={statusSalas?.statusSalaData}/>
-                        <LegendChart chartData={ statusSalas?.statusSalaData} />
+                    <FullLineChart title="Velocidades de limpezas:" chartData={statusLimpezasConcluidas?.statusVelocidadeData}/>
+                </View>
+
+                <View className={statsCardStyle}>
+                    <View className=" flex-col gap-2 justify-between items-center mb-2">
+                        <Text className=" text-2xl font-bold text-center">Limpezas em andamento</Text>
+                        <Text className=" text-lg font-bold text-center">Total de limpezas em andamento: {limpezasEmAndamento.length}</Text>
+                    </View>
+                    <View className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
+                        <Text className=" text-bold text-lg">Ver limpezas em andamento</Text>
+                        <Text className=" text-bold text-2xl">{'>'}</Text>
+                    </View>
+                    {/* <FlatList
+                        data={limpezasEmAndamento}
+                        keyExtractor={item => String(item.id)}
+                        className=" flex-1 w-full max-h-64 border"
+                        contentContainerClassName=" gap-2 flex-grow border"
+                        nestedScrollEnabled={true}
+                        renderItem={(item) => <LimpezasAndamentoCard {...item.item} />}
+                    /> */}
+                    <ScrollView 
+                        className=" flex-1 w-full h-64 overflow-hidden max-h-64 border border-white bg-gray-100 rounded-lg"
+                        contentContainerClassName=" gap-3 flex-grow overflow-hidden py-4 px-3"
+                        nestedScrollEnabled={true}
+                    >
+                        {limpezasEmAndamento.map(item => (<LimpezasAndamentoCard key={item.id} {...item} />))}
+                    </ScrollView>
+                </View>
+
+                <View className={statsCardStyle}>
+                    <View className=" flex-col gap-2 justify-between items-center mb-2">
+                        <Text className=" text-2xl font-bold text-center">Limpezas de zeladores</Text>
+                        <Text className=" text-lg font-bold text-center">Total de zeladores: {limpezasEmAndamento.length}</Text>
                     </View>
                 </View>
 
-                {/* Estatisticas limpeza concluidas (Limpezas demoradas, rapidas e etc ) */}
-                {/* Limpezas em andamento */}
+                <View className={statsCardStyle}>
+                    <View className=" flex-col gap-2 justify-between items-center mb-2">
+                        <Text className=" text-2xl font-bold text-center">Limpezas de salas</Text>
+                        <Text className=" text-lg font-bold text-center">Total de salas: {limpezasEmAndamento.length}</Text>
+                    </View>
+                </View>
+
                 {/* Zeladores */}
                 {/* Salas */}
 

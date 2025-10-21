@@ -74,6 +74,30 @@ export function getSecondsElapsed(startTimeUTC: string): number {
     return Math.floor(differenceMs / 1000);
 }
 
+export function getSecondsUtcDiference(startTimeUTC: string, endTimeUTC: string): number {
+    const startMs = new Date(startTimeUTC).getTime();
+
+    const endMs = new Date(endTimeUTC).getTime();
+        
+    if (isNaN(startMs)) {
+        console.error("String de data UTC de início inválida:", startTimeUTC);
+        return 0; 
+    }
+    if (isNaN(endMs)) {
+        console.error("String de data UTC de início inválida:", startTimeUTC);
+        return 0; 
+    }
+    
+    const differenceMs = endMs - startMs;
+    
+    if (differenceMs < 0) {
+        return 0; 
+    }
+    
+    return Math.floor(differenceMs / 1000);
+}
+
+
 export function formatSecondsToHHMMSS(totalSeconds: number): string {
     if (typeof totalSeconds !== 'number' || totalSeconds < 0) {
         return "00:00:00";

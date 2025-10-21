@@ -44,7 +44,7 @@ const HomeTabIcon = ({focused, color, size}: HomeTabIconProps) => {
                 <Ionicons name={iconName} size={size} color={color}/>
                 {(count === 0) ? null :
                     (
-                    <View className=" rounded-full absolute bg-sred aspect-square h-3 -right-0 -top-0">
+                    <View className=" rounded-full absolute bg-sred aspect-square h-4 -right-2 -top-1">
                         {/* <Text className="text-xs text-white" ></Text> */}
                     </View>    
                     )                                
@@ -149,6 +149,7 @@ export default function BottomTabs(){
                     let iconName: keyof typeof Ionicons.glyphMap = 'home';
                     if( route.name === 'Home' ){
                         iconName = focused ? 'home' : 'home-outline'
+                        return <HomeTabIcon focused={focused} size={size} color={color}  />
                     } else if(route.name === 'Perfil'){
                         iconName = focused ? 'person' : 'person-outline'
                         

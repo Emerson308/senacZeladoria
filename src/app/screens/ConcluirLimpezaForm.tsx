@@ -305,16 +305,17 @@ export default function ConcluirLimpezaForm() {
             </View>
             <ScrollView 
                 className=" my-8 flex-1"
-                contentContainerClassName=" flex-col gap-12 justify-center"
+                contentContainerClassName=" flex-col gap-8 justify-center"
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => {
                     setRefreshing(true)
                     await carregarRegistroSala().then(() => setRefreshing(false))
                 }
                 } />}
             >
+                <Text className=" text-center font-bold text-2xl">{registroSalaState.sala_nome}</Text>
 
                 <View className=" ">
-                    <Text className=" px-4 text-lg">Imagens da Limpeza</Text>
+                    <Text className=" px-4 text-lg text-center">Imagens da Limpeza</Text>
                     <FlatList
                         data={arrayPlaceholder}
                         keyExtractor={(item) => String(item)}

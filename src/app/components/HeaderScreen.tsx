@@ -69,8 +69,13 @@ export default function HeaderScreen({
                                 <View className="p-3">
                                     <Ionicons name="notifications-outline" size={32}/>
                                     {(!visibleNotificationsCount) ? null :
-                                        <View className=" rounded-full absolute bg-sred aspect-square p-0.5 right-2 top-2">
-                                            <Text className="text-xs text-white">+{notifications?.notificationsCount}</Text>
+                                        (notifications.notificationsCount && (notifications.notificationsCount > 99)) ? 
+                                        <View className=" rounded-full absolute bg-sred aspect-square h-7 justify-center items-center right-1 top-1">
+                                            <Text className="text-xs text-white">+99</Text>
+                                        </View>                                    
+                                        :
+                                        <View className=" rounded-full absolute bg-sred aspect-square h-7 justify-center items-center right-1 top-1">
+                                            <Text className="text-xs text-white text-center">+{notifications?.notificationsCount}</Text>
                                         </View>                                    
                                     }
 
