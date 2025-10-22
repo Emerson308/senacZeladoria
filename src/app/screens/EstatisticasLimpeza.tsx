@@ -1,14 +1,18 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, ScrollView, RefreshControl } from "react-native";
+import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import { useCallback, useState } from "react";
 import { colors } from "../../styles/colors";
 import { obterSalas } from "../servicos/servicoSalas";
 import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
-import { useFocusEffect } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { RegistroSala } from "../types/apiTypes";
 import { FlatList } from "react-native-gesture-handler";
 import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
+import { AdminStackParamList } from "../navigation/types/StackTypes";
+import EstatisticasCardList from "../components/EstatisticasCardList";
+import {Ionicons} from '@expo/vector-icons'
+
 
 
 interface chartData{
@@ -102,6 +106,36 @@ const FullLineChart = ({title, chartData}: FullLineChartProps) => {
     )
 }
 
+interface RenderEstatisticasCardLists{
+    renderList: 'LimpezasEmAndamento' | 'LimpezasZeladores' | 'LimpezasSalas',
+    limpezasAndamento? : RegistroSala[],
+    limpezasZeladores?: [],
+    limpezasSalas?: []
+}
+
+const RenderEstatisticasCardLists = ({
+    renderList,
+    limpezasAndamento,
+    limpezasZeladores,
+    limpezasSalas,
+}: RenderEstatisticasCardLists) => {
+
+    if(renderList === 'LimpezasEmAndamento'){
+        return (
+            <FlatList
+                data={limpezasAndamento}
+                keyExtractor={item => String(item.id)}
+                className=" "
+                contentContainerClassName=" gap-2 px-4 py-4"
+                nestedScrollEnabled={true}
+                renderItem={(item) => <LimpezasAndamentoCard type="AdminData" {...item.item} />}
+            />
+
+        )
+    }
+
+}
+
 const statsCardStyle =  "p-4 shadow-md gap-4 bg-white rounded-lg flex-col"
 
 interface velocidadeLimpezaConditionalParams{
@@ -131,15 +165,23 @@ const velocidadeLimpezaConditional = ({item, type} : velocidadeLimpezaConditiona
 
 export default function EstatisticasLimpeza() {
 
+    const navigation = useNavigation<NavigationProp<AdminStackParamList>>()
+
     const [refreshing, setRefreshing] = useState(false)
     const [statusSalas, setStatusSalas] = useState<null| statusSalas>(null)
     const [statusLimpezasConcluidas, setStatusLimpezasConcluidas] = useState<null | statusLimpezasConcluidas>(null)
     const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
 
+    const [estatisticasCardListVisible, setEstatisticasCardListVisible] = useState(false)
+
     useFocusEffect(useCallback(() => {
         carregarSalas()
         carregarRegistros()
     }, []))
+
+    const showEstatisticasCardListModal = () => {
+        setEstatisticasCardListVisible(true)
+    }
 
     const carregarSalas = async () => {
         const obterSalasResult = await obterSalas({})
@@ -276,6 +318,16 @@ export default function EstatisticasLimpeza() {
 
     return (
         <SafeAreaView edges={['top']} className=" flex-1 bg-gray-100 pb-0 flex-col">
+            <EstatisticasCardList 
+                visible={estatisticasCardListVisible} 
+                onDismiss={() => setEstatisticasCardListVisible(false)}
+            >
+                <RenderEstatisticasCardLists 
+                    renderList="LimpezasEmAndamento" 
+                    limpezasAndamento={limpezasEmAndamento} 
+                />
+            </EstatisticasCardList>
+
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <Text className=" text-2xl" >Estatísticas</Text>
             </View>
@@ -306,25 +358,10 @@ export default function EstatisticasLimpeza() {
                         <Text className=" text-2xl font-bold text-center">Limpezas em andamento</Text>
                         <Text className=" text-lg font-bold text-center">Total de limpezas em andamento: {limpezasEmAndamento.length}</Text>
                     </View>
-                    <View className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
+                    <TouchableOpacity onPress={() => showEstatisticasCardListModal()} className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
                         <Text className=" text-bold text-lg">Ver limpezas em andamento</Text>
-                        <Text className=" text-bold text-2xl">{'>'}</Text>
-                    </View>
-                    {/* <FlatList
-                        data={limpezasEmAndamento}
-                        keyExtractor={item => String(item.id)}
-                        className=" flex-1 w-full max-h-64 border"
-                        contentContainerClassName=" gap-2 flex-grow border"
-                        nestedScrollEnabled={true}
-                        renderItem={(item) => <LimpezasAndamentoCard {...item.item} />}
-                    /> */}
-                    <ScrollView 
-                        className=" flex-1 w-full h-64 overflow-hidden max-h-64 border border-white bg-gray-100 rounded-lg"
-                        contentContainerClassName=" gap-3 flex-grow overflow-hidden py-4 px-3"
-                        nestedScrollEnabled={true}
-                    >
-                        {limpezasEmAndamento.map(item => (<LimpezasAndamentoCard key={item.id} {...item} />))}
-                    </ScrollView>
+                        <Ionicons name="chevron-forward-outline" color={colors.sgray} size={20} />
+                    </TouchableOpacity>
                 </View>
 
                 <View className={statsCardStyle}>

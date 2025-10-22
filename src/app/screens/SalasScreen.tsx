@@ -212,6 +212,8 @@ export default function SalasScreen() {
 
     useFocusEffect( React.useCallback(() => {
         setFiltroSearchSalaText('')
+        setFiltroLimpezaStatus('Todas')
+        setFiltroSalaStatus('Todas')
         carregarTudo()
     },[]))
     
@@ -220,11 +222,7 @@ export default function SalasScreen() {
         salasFiltradas, 
     } = React.useMemo(() => {
     
-        const filtered = salas.filter(sala => {
-            const matchesLimpeza = filtroLimpezaStatus === 'Todas' ? true : filtroLimpezaStatus === sala.status_limpeza;
-
-            return matchesLimpeza;
-        });
+        const filtered = salas;
     
         return {
             salasFiltradas: filtered,

@@ -9,29 +9,18 @@ interface obterSalasParams{
 
 }
 
-export async function obterSalas({statusSala, searchSalaText}:obterSalasParams):Promise<ServiceResult<Sala[]>>{
+export async function obterSalas({statusSala, searchSalaText, statusLimpeza}:obterSalasParams):Promise<ServiceResult<Sala[]>>{
     try {
         const params: Record<string, string> = {}
         if (statusSala !== undefined && statusSala !== 'Todas') params.ativa = String(statusSala === 'Ativas')
         if(searchSalaText !== undefined && searchSalaText !== '') params.nome_numero = searchSalaText
-
-        // params.nome_numero = 'au'
-        // params.localizacao = 'au'
+        if(statusLimpeza !== undefined && statusLimpeza !== 'Todas') params.status_limpeza = statusLimpeza
 
         const queryString = new URLSearchParams(params).toString();
         const routeUrl = queryString ? `salas/?${queryString}` : 'salas/'
 
-        // console.log('')
-        // console.log('')
-        // console.log('Debuging obter salas')
-        // console.log(routeUrl)
-
 
         const resposta = await api.get<Sala[]>(routeUrl);
-        // console.log(resposta.data)
-        // console.log('Salas: ' + resposta.data.length)
-        // console.log('Salas ativas: ' + resposta.data.filter((item) => item.ativa === true).length)
-        // console.log('Salas inativas: ' + resposta.data.filter(item => item.ativa === false).length)
         return {success: true, data: resposta.data}
 
     } catch (erro: any){

@@ -123,6 +123,10 @@ export interface Notification{
 
 
 
+
+
+
+
 interface ServiceFailure{
     success: false,
     errMessage: string

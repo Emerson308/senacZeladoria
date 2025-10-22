@@ -82,7 +82,7 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
         <Modal visible={visible} onDismiss={onClose} style={{
 
         }}>
-                <View className="bg-white rounded-lg p-4 py-8 m-4 max-w-sm w-full self-center">
+                <View className="bg-white rounded-lg p-8 py-8 m-4 max-w-sm w-full self-center">
                     <Text className=" text-center mb-8 text-4xl font-bold">Criar Usuário</Text>
                     <Controller
                         control={control}

@@ -14,7 +14,7 @@ export type UserStackParamList = {
     Notifications: undefined;
     LimpezasAndamento: undefined;
     ConcluirLimpeza: {registroSala: RegistroSala};
-    QrCodeScanner: undefined
+    QrCodeScanner: undefined;
     
 }
 
