@@ -13,7 +13,7 @@ export type UserStackParamList = {
     AlterarSenha: undefined;
     Notifications: undefined;
     LimpezasAndamento: undefined;
-    ConcluirLimpeza: {registroSala: RegistroSala};
+    Limpeza: {type: 'Concluir' | 'Observar', registroSala: RegistroSala};
     QrCodeScanner: undefined;
     
 }
@@ -21,6 +21,7 @@ export type UserStackParamList = {
 type AdminScreens = {
     Usuarios: undefined;
     EstatisticasLimpeza: undefined,
+    EstatisticaCardList: {type: 'LimpezasEmAndamento' | 'LimpezasZeladores' | 'LimpezasSalas'}
     RegistrosLimpeza: undefined;
     FormSala: {sala?: Sala};
     
@@ -43,7 +44,8 @@ declare global {
 
 export type TelaDetalhesSala = NativeStackScreenProps<AdminStackParamList, 'DetalhesSala'>
 export type TelaEditarSala = NativeStackScreenProps<AdminStackParamList, 'FormSala'>
-export type TelaConcluirLimpeza = NativeStackScreenProps<AdminStackParamList, 'ConcluirLimpeza'>
+export type TelaLimpeza = NativeStackScreenProps<AdminStackParamList, 'Limpeza'>
+export type TelaEstatisticaCardList = NativeStackScreenProps<AdminStackParamList, 'EstatisticaCardList'>
 
 
 

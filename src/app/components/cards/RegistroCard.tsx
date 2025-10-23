@@ -8,14 +8,14 @@ import React from "react";
 interface propsRegistroCard{
     registro: RegistroSala;
     key: number;
-    onPress?: () => void,
+    onPress?: (registro: RegistroSala) => void,
 }
 
 function RegistroCard({registro, onPress}: propsRegistroCard){
 
 
     return (
-        <View className="mb-4 mx-3 rounded-xl shadow-md bg-white">
+        <TouchableOpacity onPress={() => onPress?.(registro)} className="mb-4 mx-3 rounded-xl shadow-md bg-white">
             <Card  style={{backgroundColor: 'white'}}>
                 <Card.Content style={styles.contentCard}>
                     <View className=" mx-4 flex-1">
@@ -38,7 +38,7 @@ function RegistroCard({registro, onPress}: propsRegistroCard){
                     </View>
                 </Card.Content>
             </Card>
-        </View>
+        </TouchableOpacity>
 
     )
 }

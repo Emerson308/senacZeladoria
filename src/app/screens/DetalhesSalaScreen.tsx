@@ -424,7 +424,7 @@ export default function DetalhesSalaScreen(){
                 <View className={visibleDetalhesButtons ? 'border-b border-gray-200' : ''}>
                     <TouchableRipple 
                         className="border rounded-full h-14 mx-6 my-2" 
-                        onPress={() => navigation.navigate('ConcluirLimpeza', {registroSala: limpezasEmAndamento[0]})}
+                        onPress={() => navigation.navigate('Limpeza', {type: 'Concluir', registroSala: limpezasEmAndamento[0]})}
                         borderless={true}
                         // background={colors.sblue}
                         

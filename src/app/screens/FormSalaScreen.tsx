@@ -164,16 +164,13 @@ export default function FormSalaScreen(){
                 return
             }
             
-            navigation.goBack()
-            setTimeout(() => {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Aviso',
-                    text2: 'Sala criada com sucesso!',
-                    position: 'bottom',
-                    visibilityTime: 3000
-                })
-            }, 3000)
+            Toast.show({
+                type: 'success',
+                text1: 'Aviso',
+                text2: 'Sala criada com sucesso!',
+                position: 'bottom',
+                visibilityTime: 3000
+            })
         }
         if(sala){
             const editarSalaServiceResult = await editarSalaService(formData, sala.qr_code_id)
@@ -181,16 +178,13 @@ export default function FormSalaScreen(){
                 showErrorToast({errMessage: editarSalaServiceResult.errMessage})
                 return
             }
-            navigation.goBack()
-            setTimeout(() => {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Aviso',
-                    text2: 'Sala editada com sucesso!',
-                    position: 'bottom',
-                    visibilityTime: 3000
-                })
-            }, 3000)
+            Toast.show({
+                type: 'success',
+                text1: 'Aviso',
+                text2: 'Sala editada com sucesso!',
+                position: 'bottom',
+                visibilityTime: 3000
+            })
         }
     }
 
@@ -368,10 +362,32 @@ export default function FormSalaScreen(){
                 <View className=" gap-4 flex-row flex-1 h-44 items-center">
                     <View className=" border aspect-square h-full">
                     {image ? 
-                        <Image
-                            source={{uri: image.uri}}
-                            className=" flex-1"
-                        />
+                        <View className=" flex-1">
+                            <Image
+                                source={{uri: image.uri}}
+                                className=" flex-1"
+                            />
+                            <TouchableOpacity
+                                onPress={() => {
+                                    Alert.alert('Remover foto', 'Tem certeza que deseja remover essa foto?',
+                                        [
+                                            {
+                                                text: 'Cancelar',
+                                                style: 'cancel'
+                                            },
+                                            {
+                                                text: 'Confirmar',
+                                                style: 'default',
+                                                onPress: () => setImage(null)
+                                            }
+                                        ]
+                                    )
+                                }}
+                                className=" absolute right-1 top-1 bg-gray-100 rounded-full p-1"
+                            >
+                                <Ionicons name="close-outline" size={22}/>
+                            </TouchableOpacity>
+                        </View>
 
                         : 
                         <View className=" flex-1 bg-gray-200 items-center justify-center">
@@ -383,11 +399,11 @@ export default function FormSalaScreen(){
 
                     <View className=" flex-1 flex-col gap-2">
                         <TouchableOpacity onPress={() => setImgSelectorVisible(true)} className=" items-center h-14 justify-center rounded-lg bg-sblue/20">
-                            <Text className=" text-lg text-center text-sblue px-2" numberOfLines={1}>Inserir imagem</Text>
+                            <Text className=" text-lg text-center text-sblue px-2" numberOfLines={1}>{sala ? 'Editar imagem': 'Inserir imagem'}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setImage(null)} className=" items-center h-14 justify-center rounded-lg px-6 bg-sred/20">
+                        {/* <TouchableOpacity onPress={() => setImage(null)} className=" items-center h-14 justify-center rounded-lg px-6 bg-sred/20">
                             <Ionicons name="trash-bin-outline" size={28} color={colors.sred}/>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                     </View>
 

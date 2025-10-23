@@ -6,7 +6,7 @@ import { RegistroSala, Usuario } from "../types/apiTypes";
 import { Alert, Text, View, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
 import { ActivityIndicator, Avatar, Searchbar, TextInput, TouchableRipple } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import RegistroCard from "../components/cards/RegistroCard";
@@ -15,6 +15,7 @@ import {Ionicons} from "@expo/vector-icons"
 import HeaderScreen from "../components/HeaderScreen";
 import { showErrorToast } from "../utils/functions";
 import LoadingCard from "../components/cards/LoadingCard";
+import { AdminStackParamList } from "../navigation/types/StackTypes";
 
 
 export default function RegistrosLimpezaScreen(){
@@ -24,6 +25,8 @@ export default function RegistrosLimpezaScreen(){
     if (!authContext){
         return null
     }
+
+    const navigation = useNavigation<NavigationProp<AdminStackParamList>>()
 
     const {signOut} = authContext
     const [carregando, setCarregando] = useState(false)
@@ -96,7 +99,7 @@ export default function RegistrosLimpezaScreen(){
                 :
                 <ScrollView className="p-1 flex-1 mt-4" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarRegistros}/>}>
                     {registrosFiltrados.map((registro) => (
-                        <RegistroCard key={registro.id} registro={registro} />
+                        <RegistroCard key={registro.id} registro={registro} onPress={(registro) => navigation.navigate('Limpeza', {type: 'Observar', registroSala: registro})}/>
                     ))}
                 </ScrollView>
             }

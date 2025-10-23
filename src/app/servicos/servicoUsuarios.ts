@@ -64,7 +64,7 @@ export async function criarUsuarioService(novoUsuario: NovoUsuario): Promise<Ser
 export async function usuarioLogado():Promise<ServiceResult<Usuario>>{
     try {
         const resposta = await api.get<Usuario>('accounts/current_user/');
-        console.log(resposta.data)
+        // console.log(resposta.data)
         return {success: true, data: resposta.data}
     } catch(erro: any){
         console.log('Service usuario logado' + erro)

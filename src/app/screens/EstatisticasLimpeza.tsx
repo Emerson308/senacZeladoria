@@ -1,21 +1,23 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { colors } from "../../styles/colors";
 import { obterSalas } from "../servicos/servicoSalas";
 import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
 import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
-import { RegistroSala } from "../types/apiTypes";
+import { RegistroSala, Sala, Usuario } from "../types/apiTypes";
 import { FlatList } from "react-native-gesture-handler";
 import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { AdminStackParamList } from "../navigation/types/StackTypes";
 import EstatisticasCardList from "../components/EstatisticasCardList";
 import {Ionicons} from '@expo/vector-icons'
+import { obterUsuarios } from "../servicos/servicoUsuarios";
+import { AuthContext } from "../AuthContext";
 
 
 
-interface chartData{
+export interface chartData{
     label: string,
     value: number,
     color: string,
@@ -39,6 +41,12 @@ interface LineChartProps{
 
 interface LegendChartProps{
     chartData?: chartData[]
+}
+
+interface estatisticasCardListProps{
+    title: string,
+    listCount: number,
+    renderList: 'LimpezasEmAndamento' | 'LimpezasZeladores' | 'LimpezasSalas',
 }
 
 const LineChart = ({chartData}: LineChartProps) => {
@@ -106,36 +114,6 @@ const FullLineChart = ({title, chartData}: FullLineChartProps) => {
     )
 }
 
-interface RenderEstatisticasCardLists{
-    renderList: 'LimpezasEmAndamento' | 'LimpezasZeladores' | 'LimpezasSalas',
-    limpezasAndamento? : RegistroSala[],
-    limpezasZeladores?: [],
-    limpezasSalas?: []
-}
-
-const RenderEstatisticasCardLists = ({
-    renderList,
-    limpezasAndamento,
-    limpezasZeladores,
-    limpezasSalas,
-}: RenderEstatisticasCardLists) => {
-
-    if(renderList === 'LimpezasEmAndamento'){
-        return (
-            <FlatList
-                data={limpezasAndamento}
-                keyExtractor={item => String(item.id)}
-                className=" "
-                contentContainerClassName=" gap-2 px-4 py-4"
-                nestedScrollEnabled={true}
-                renderItem={(item) => <LimpezasAndamentoCard type="AdminData" {...item.item} />}
-            />
-
-        )
-    }
-
-}
-
 const statsCardStyle =  "p-4 shadow-md gap-4 bg-white rounded-lg flex-col"
 
 interface velocidadeLimpezaConditionalParams{
@@ -165,22 +143,38 @@ const velocidadeLimpezaConditional = ({item, type} : velocidadeLimpezaConditiona
 
 export default function EstatisticasLimpeza() {
 
+    const authContext = useContext(AuthContext)
+
+    if(!authContext){
+        return
+    }
+
+    const {usersGroups} = authContext
+
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>()
 
     const [refreshing, setRefreshing] = useState(false)
+
     const [statusSalas, setStatusSalas] = useState<null| statusSalas>(null)
     const [statusLimpezasConcluidas, setStatusLimpezasConcluidas] = useState<null | statusLimpezasConcluidas>(null)
     const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
+    const [zeladores, setZeladores] = useState<Usuario[]>([])
 
-    const [estatisticasCardListVisible, setEstatisticasCardListVisible] = useState(false)
+    const carregarEstatisticas = async () => {
+        setRefreshing(true)
+        await carregarSalas()
+        await carregarRegistros()
+        await carregarZeladores()
+        setRefreshing(false)
+    }
 
     useFocusEffect(useCallback(() => {
-        carregarSalas()
-        carregarRegistros()
+        carregarEstatisticas()
     }, []))
 
-    const showEstatisticasCardListModal = () => {
-        setEstatisticasCardListVisible(true)
+    const navigateToEstatisticaCardList = (type:  'LimpezasEmAndamento' | 'LimpezasZeladores' | 'LimpezasSalas') => {
+
+        navigation.navigate('EstatisticaCardList', {type: type})
     }
 
     const carregarSalas = async () => {
@@ -314,19 +308,25 @@ export default function EstatisticasLimpeza() {
 
         // console.log(limpezaRapidaCount)
     }
+
+    const carregarZeladores = async () => {
+        const obterUsuariosResult = await obterUsuarios(usersGroups.filter(item => item.id === 1)[0].name)
+        if(!obterUsuariosResult.success){
+            showErrorToast({errMessage: obterUsuariosResult.errMessage})
+            return
+        }
+
+        const zeladores = obterUsuariosResult.data
+
+        setZeladores(zeladores)
+
+
+
+    }
     
 
     return (
         <SafeAreaView edges={['top']} className=" flex-1 bg-gray-100 pb-0 flex-col">
-            <EstatisticasCardList 
-                visible={estatisticasCardListVisible} 
-                onDismiss={() => setEstatisticasCardListVisible(false)}
-            >
-                <RenderEstatisticasCardLists 
-                    renderList="LimpezasEmAndamento" 
-                    limpezasAndamento={limpezasEmAndamento} 
-                />
-            </EstatisticasCardList>
 
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <Text className=" text-2xl" >Estatísticas</Text>
@@ -358,7 +358,7 @@ export default function EstatisticasLimpeza() {
                         <Text className=" text-2xl font-bold text-center">Limpezas em andamento</Text>
                         <Text className=" text-lg font-bold text-center">Total de limpezas em andamento: {limpezasEmAndamento.length}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => showEstatisticasCardListModal()} className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
+                    <TouchableOpacity onPress={() => navigateToEstatisticaCardList('LimpezasEmAndamento')} className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
                         <Text className=" text-bold text-lg">Ver limpezas em andamento</Text>
                         <Ionicons name="chevron-forward-outline" color={colors.sgray} size={20} />
                     </TouchableOpacity>
@@ -367,8 +367,13 @@ export default function EstatisticasLimpeza() {
                 <View className={statsCardStyle}>
                     <View className=" flex-col gap-2 justify-between items-center mb-2">
                         <Text className=" text-2xl font-bold text-center">Limpezas de zeladores</Text>
-                        <Text className=" text-lg font-bold text-center">Total de zeladores: {limpezasEmAndamento.length}</Text>
+                        <Text className=" text-lg font-bold text-center">Total de zeladores: {zeladores.length}</Text>
                     </View>
+                    <TouchableOpacity onPress={() => navigateToEstatisticaCardList('LimpezasZeladores')} className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
+                        <Text className=" text-bold text-lg">Ver limpezas de zeladores</Text>
+                        <Ionicons name="chevron-forward-outline" color={colors.sgray} size={20} />
+                    </TouchableOpacity>
+
                 </View>
 
                 <View className={statsCardStyle}>

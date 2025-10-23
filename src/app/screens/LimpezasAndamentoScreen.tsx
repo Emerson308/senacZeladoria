@@ -79,7 +79,7 @@ export default function LimpezasAndamentoScreen(){
             </View>
 
             <FlatList
-                renderItem={(item) => <LimpezasAndamentoCard {...item.item} onPress={() => navigation.navigate('ConcluirLimpeza', {registroSala: item.item})} />}
+                renderItem={(item) => <LimpezasAndamentoCard {...item.item} onPress={() => navigation.navigate('Limpeza', {type: 'Concluir' ,registroSala: item.item})} />}
                 data={limpezasEmAndamento}
                 keyExtractor={(item) => String(item.id)}
                 contentContainerClassName=" gap-4 px-3 py-4"

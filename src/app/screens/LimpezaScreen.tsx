@@ -1,17 +1,18 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, FlatList, Dimensions, Image, ScrollView, RefreshControl } from "react-native";
-import { useEffect, useState } from "react";
-import { TouchableRipple } from "react-native-paper";
+import { View, Text, FlatList, Dimensions, Image, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { TouchableRipple, ActivityIndicator } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { CommonActions, useNavigation, useRoute } from "@react-navigation/native";
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { colors } from "../../styles/colors";
 import * as ImagePicker from 'expo-image-picker'
-import { formatSecondsToHHMMSS, getSecondsElapsed, showErrorToast, showSuccessToast } from "../utils/functions";
+import { formatarDataISO, formatSecondsToHHMMSS, getSecondsElapsed, getSecondsUtcDiference, showErrorToast, showSuccessToast } from "../utils/functions";
 import { imageRegistro, imagesToUpload } from "../types/apiTypes";
-import { TelaConcluirLimpeza } from "../navigation/types/StackTypes";
+import { TelaLimpeza } from "../navigation/types/StackTypes";
 import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';
 import { apiURL } from "../api/axiosConfig";
+import { AuthContext } from "../AuthContext";
 
 
 type CarouselItem = {
@@ -25,10 +26,21 @@ interface CarrosselImageProps {
     index: number;
     images: imageRegistro[];
     onDelete: (id: number) => void;
-    addImage?: () => void;
+    addImage: () => void;
+    type: 'Observar' | 'Concluir'
 }
 
-function CarrosselImage({index, images, onDelete, addImage}: CarrosselImageProps) {
+function CarrosselImage({index, images, onDelete, addImage, type}: CarrosselImageProps) {
+
+    const handleAddImage = () => {
+        if(type === 'Observar'){
+            return
+        }
+
+        addImage()
+
+
+    }
 
     const getImageSource = (image: imageRegistro) => {
         return { uri: apiURL + image.imagem };
@@ -36,6 +48,10 @@ function CarrosselImage({index, images, onDelete, addImage}: CarrosselImageProps
 
     const getImageId = (image: imageRegistro) => {
         return image.id;
+    }
+
+    if(index > images.length - 1 && type === 'Observar' && index > 0){
+        return null
     }
 
     if(index > images.length || index === 3){
@@ -46,17 +62,21 @@ function CarrosselImage({index, images, onDelete, addImage}: CarrosselImageProps
         return(
             <View className="  p-4 w-screen">
                 <View className="bg-gray-200 aspect-video rounded-lg items-center justify-center">
-                    <TouchableRipple 
-                        className=" absolute top-3 right-3 z-10 bg-white rounded-full p-1" 
-                        onPress={() => {
-                            onDelete(getImageId(images[index || 0]))
-                        }}
-                        borderless={true}
-                    >
-                        <Ionicons name="close" size={24} color="gray" />
-                    </TouchableRipple>
+                    {
+                        type === 'Observar' ? null : 
+                        <TouchableRipple 
+                            className=" absolute top-3 right-3 z-10 bg-white rounded-full p-1" 
+                            onPress={() => {
+                                onDelete(getImageId(images[index || 0]))
+                            }}
+                            borderless={true}
+                        >
+                            <Ionicons name="close" size={24} color="gray" />
+                        </TouchableRipple>
+                    }
                     <Image
                         source={getImageSource(images[index || 0])}
+                        resizeMode="cover"
                         className=" w-full h-full rounded-lg"
                     />
                 </View>
@@ -67,7 +87,7 @@ function CarrosselImage({index, images, onDelete, addImage}: CarrosselImageProps
         <View className="  p-4 w-screen">
             <TouchableRipple 
                 className="bg-gray-200 aspect-video rounded-lg items-center justify-center"
-                onPress={addImage}
+                onPress={handleAddImage}
                 borderless={true}
             
             >
@@ -75,7 +95,7 @@ function CarrosselImage({index, images, onDelete, addImage}: CarrosselImageProps
                     <View className=" bg-gray-300 p-4 rounded-full mb-2">
                         <Ionicons name="camera" size={32} color="gray" />
                     </View>
-                    <Text className=" text-gray-500">Adicionar foto</Text>
+                    <Text className=" text-gray-500">{type === 'Observar' ? 'Sem imagens' : 'Adicionar foto'}</Text>
                 </View>
             </TouchableRipple>
         </View>
@@ -87,9 +107,11 @@ interface PaginationProps {
     data: number[];
     activeIndex: number;
     imagesLength: number;
+    type: 'Observar' | 'Concluir'
+
 }
 
-function Pagination({ data, activeIndex, imagesLength }: PaginationProps) {
+function Pagination({ data, activeIndex, imagesLength, type }: PaginationProps) {
 
     const dotsStyle = {
         activeDot: 'bg-sblue',
@@ -115,8 +137,8 @@ function Pagination({ data, activeIndex, imagesLength }: PaginationProps) {
     return (
         <View className="flex-row justify-center">
             {data.map((_, index) => {
-                const returnBoolean = index <= imagesLength
-                if (!returnBoolean) return null;
+                const returnBoolean = (index > imagesLength) || (type === 'Observar' && index > imagesLength - 1 && index > 0)
+                if (returnBoolean) return null;
                 return (
                     <View 
                         key={index.toString()}
@@ -130,32 +152,63 @@ function Pagination({ data, activeIndex, imagesLength }: PaginationProps) {
 
 
 
-export default function ConcluirLimpezaForm() {
+export default function LimpezaScreen() {
+
+    const authContext = useContext(AuthContext)
+
+    if(!authContext || !authContext.user){
+        return
+    }
+
+    // const type = 'Observar'
+    // let type: 'Concluir' | 'Observar' = 'Concluir'
     
-    
+    const {user} = authContext
     const navigation = useNavigation()
-    const route = useRoute<TelaConcluirLimpeza['route']>()
+    const route = useRoute<TelaLimpeza['route']>()
+
     const [activeIndex, setActiveIndex] = useState(0);
     const [images, setImages] = useState<imageRegistro[]>([])
+    
+    const [carregando, setCarregando] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [observacao, setObservacao] = useState('')
-    const { registroSala } = route.params;
+    const { registroSala, type } = route.params;
     const [registroSalaState, setRegistroSalaState] = useState(registroSala)
-    const [cronometro, setCronometro] = useState(getSecondsElapsed(registroSala.data_hora_inicio))
+
+
+    const getTempoDeLimpeza = () => {
+        if (registroSala.data_hora_fim){
+            const seconds = getSecondsUtcDiference(registroSalaState.data_hora_inicio, registroSala.data_hora_fim)
+            return seconds
+
+        }
+
+        return getSecondsElapsed(registroSala.data_hora_inicio)
+
+
+    }
+    const [tempoDeLimpeza, setTempoDeLimpeza] = useState(getTempoDeLimpeza())
+
 
     const arrayPlaceholder = [1,2,3]
-    const contadorFormatado = formatSecondsToHHMMSS(cronometro)
+    const contadorFormatado = formatSecondsToHHMMSS(tempoDeLimpeza)
 
     useEffect(() => {
+
+        if (registroSalaState.data_hora_fim){
+            return
+        }
         const intervalId = setInterval(() => {
-            setCronometro(prevCronometro => prevCronometro + 1)
+            setTempoDeLimpeza(prevCronometro => prevCronometro + 1)
         }, 1000)
 
         return () => clearInterval(intervalId);
     }, [])
 
     useEffect(() => {
-        carregarRegistroSala()
+        setCarregando(true)
+        carregarRegistroSala().then(() => setCarregando(false))
     }, [])
 
     const carregarRegistroSala = async () => {
@@ -172,10 +225,7 @@ export default function ConcluirLimpezaForm() {
 
         // console.log(getRegistrosServiceResult.data)
 
-        const registroAtualizado = getRegistrosServiceResult.data.filter((registro) => 
-            registro.data_hora_fim === null
-        )
-
+        const registroAtualizado = getRegistrosServiceResult.data.filter(registro => registroSalaState.id === registro.id)
         // console.log(registroAtualizado)
 
         if(registroAtualizado.length === 0){
@@ -296,32 +346,64 @@ export default function ConcluirLimpezaForm() {
         }
     }
 
+    const getLimpezaScreenData = () => {
+        if(type === 'Observar'){
+            return {
+                title: 'Limpeza'
+            }
+        }
+
+        return {
+            title: 'Concluir Limpeza'
+        }
+    }
+
+    const limpezaScreenData = getLimpezaScreenData()
+
+    if(carregando){
+        return( 
+            <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
+                <TouchableOpacity onPress={async () => await carregarRegistroSala()}>
+                    <ActivityIndicator size={80}/>
+                </TouchableOpacity>
+                <Text className=' mt-2 text-center'>Carregando limpeza...</Text>
+            </SafeAreaView>
+            
+        )        
+    }
+
 
     return (
         <SafeAreaView className="flex-1 bg-white">
 
-            <View className=" items-center flex-row py-4 px-5 rounded-lg rounded-b-none gap-4 border-b-2 border-gray-200">
-                <Text className=" text-2xl flex-1 text-black">Concluir Limpeza</Text>
+            <View className=" items-center flex-row py-4 px-5 rounded-lg rounded-b-none gap-4 border-b-2 border-gray-100">
+                {type !== 'Observar' ? null : 
+                    <TouchableRipple className=" p-3 rounded-full" borderless={true} onPress={navigation.goBack}>
+                        <Ionicons size={20} name="arrow-back"/> 
+                    </TouchableRipple>
+                
+                }
+                <Text className=" text-2xl flex-1 text-black">{limpezaScreenData.title}</Text>
             </View>
             <ScrollView 
-                className=" my-8 flex-1"
-                contentContainerClassName=" flex-col gap-8 justify-center"
+                className="my-4 mb-8 flex-1 "
+                contentContainerClassName=" flex-col gap-6 py-2 justify-center"
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => {
                     setRefreshing(true)
                     await carregarRegistroSala().then(() => setRefreshing(false))
                 }
                 } />}
             >
-                <Text className=" text-center font-bold text-2xl">{registroSalaState.sala_nome}</Text>
+                <Text className=" text-center font-bold text-3xl px-4" numberOfLines={2}>{registroSalaState.sala_nome}</Text>
 
                 <View className=" ">
-                    <Text className=" px-4 text-lg text-center">Imagens da Limpeza</Text>
+                    <Text className=" px-4 text-lg font-bold">Imagens:</Text>
                     <FlatList
                         data={arrayPlaceholder}
                         keyExtractor={(item) => String(item)}
                         horizontal
                         renderItem={({ index }) => 
-                            <CarrosselImage index={index} images={images} 
+                            <CarrosselImage type={type} index={index} images={images} 
                                 onDelete={async (id) => {
                                     await deleteImage(id);
                                 }}
@@ -336,45 +418,88 @@ export default function ConcluirLimpezaForm() {
                         decelerationRate={"fast"}
                         contentContainerClassName=""
                     />
-                    <Pagination data={arrayPlaceholder} activeIndex={activeIndex} imagesLength={images.length} />
+                    <Pagination type={type} data={arrayPlaceholder} activeIndex={activeIndex} imagesLength={images.length} />
                 </View>
 
                 <View className=" bg-gray-200 rounded-lg py-2 mx-4 pb-3">
-                    <TextInput
-                        label="Observações (opcional)"
-                        multiline
-                        value={observacao}
-                        onChangeText={setObservacao}
-                        mode="outlined"
-                        numberOfLines={4}
-                        className=" mx-4"
-                        activeOutlineColor={colors.sblue}
-                    />
+                    {type === 'Observar' ?
+                        <View className=" gap-2">
+                            {/* <View className=" bg-gray-200 rounded-lg py-2 pb-3 flex-1">
+                            </View> */}
+                            <View className=" flex-col px-4 gap-2">
+                                <Text className=" font-bold text-lg">Responsável:</Text>
+                                <Text className=" text-base">{registroSalaState.funcionario_responsavel}</Text>
+                            </View>
+
+                            {
+                                !registroSalaState.data_hora_fim ? null :
+                                <View className="h-2 bg-white "/>
+
+                            }
+
+
+                            {
+                                !registroSalaState.data_hora_fim ? null :
+                                <View className=" flex-col px-4 gap-2">
+                                    <Text className=" font-bold text-lg">Observações:</Text>
+                                    <Text className=" text-base">{registroSalaState.observacoes ? registroSalaState.observacoes : 'Sem observações'}</Text>
+                                </View>
+
+                            }
+                        </View>
+                        :
+                        <TextInput
+                            label="Observações (opcional)"
+                            multiline
+                            value={observacao}
+                            onChangeText={setObservacao}
+                            mode="outlined"
+                            numberOfLines={4}
+                            className=" mx-4"
+                            activeOutlineColor={colors.sblue}
+                        />
+                    }
                 </View>
 
-                <View className=" items-center gap-2 bg-gray-200 p-2 rounded-lg mx-4">
-                    <Text className=" px-4 text-lg">Tempo de Limpeza</Text>
-                    <Text className={` px-4 text-4xl text-center ${getContadorStyle(cronometro)}`}>{contadorFormatado}</Text>
+                <View className=" items-center gap-2 bg-gray-200 py-2 rounded-lg mx-4">
+                    <View className=" flex-row gap-1 items-center">
+                        <Text className=" font-bold text-base">Inicio:</Text>
+                        <Text className=" text-base">{formatarDataISO(registroSalaState.data_hora_inicio)}</Text>
+                    </View>
+                    {
+                        !registroSalaState.data_hora_fim ? null :
+                        <View className=" flex-row gap-1 items-center">
+                            <Text className=" font-bold text-base">Fim:</Text>
+                            <Text className=" text-base">{formatarDataISO(registroSalaState.data_hora_fim)}</Text>
+                        </View>
+
+                    }
+                    <View className=" h-1 bg-white w-full"/>
+                    <Text className=" px-4 text-lg font-bold">Tempo de Limpeza</Text>
+                    <Text className={` px-4 text-4xl text-center ${getContadorStyle(tempoDeLimpeza)}`}>{contadorFormatado}</Text>
                 </View>
 
             </ScrollView>
-            <View className=" flex-row gap-4 px-4 pb-4">
-                <TouchableRipple
-                    borderless={true}
-                    className=" bg-gray-200 flex-1 rounded-lg py-3 items-center"
-                    onPress={() => navigation.goBack()}
-                >
-                    <Text className=" text-black text-lg font-medium">Cancelar</Text>
-                </TouchableRipple>
+            {
+                type === 'Observar' ? null :
+                <View className=" flex-row gap-4 px-4 pb-4">
+                    <TouchableRipple
+                        borderless={true}
+                        className=" bg-gray-200 flex-1 rounded-lg py-3 items-center"
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Text className=" text-black text-lg font-medium">Cancelar</Text>
+                    </TouchableRipple>
 
-                <TouchableRipple
-                    borderless={true}
-                    className=" bg-sblue flex-1 rounded-lg py-3 items-center"
-                    onPress={async () => await concluirLimpeza()}
-                >
-                    <Text className=" text-white text-lg font-medium">Concluir Limpeza</Text>
-                </TouchableRipple>
-            </View>
+                    <TouchableRipple
+                        borderless={true}
+                        className=" bg-sblue flex-1 rounded-lg py-3 items-center"
+                        onPress={async () => await concluirLimpeza()}
+                    >
+                        <Text className=" text-white text-lg font-medium">Concluir Limpeza</Text>
+                    </TouchableRipple>
+                </View>
+            }
         </SafeAreaView>
     )
 }

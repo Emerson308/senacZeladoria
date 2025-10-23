@@ -60,6 +60,10 @@ export default function FilterSelector<T extends string = string>(props: FilterS
         
         const toggleValue = (val: T) => {
             if (val === noneValue?.value) {
+                if(value.includes(val)){
+                    onValueChange([])
+                    return
+                }
                 onValueChange([val]);
             } else {
                 if (value.includes(val)) {

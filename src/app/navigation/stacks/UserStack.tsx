@@ -5,7 +5,7 @@ import DetalhesSalaScreen from '../../screens/DetalhesSalaScreen';
 import BottomTabs from './BottomTabs';
 import AlterarSenhaScreen from '../../screens/AlterarSenhaScreen';
 import NotificationScreen from '../../screens/NotificationScreen';
-import ConcluirLimpezaForm from '../../screens/ConcluirLimpezaForm';
+import LimpezaScreen from '../../screens/LimpezaScreen';
 import LimpezasAndamentoScreen from '../../screens/LimpezasAndamentoScreen';
 import QRCodeScanner from '../../screens/QrCodeScanner';
 
@@ -31,7 +31,7 @@ export const UserNavigator = () => (
 
     <Stack.Screen name='LimpezasAndamento' component={LimpezasAndamentoScreen} />
 
-    <Stack.Screen name='ConcluirLimpeza' component={ConcluirLimpezaForm} />
+    <Stack.Screen name='Limpeza' component={LimpezaScreen} />
 
     <Stack.Screen name='QrCodeScanner' component={QRCodeScanner} />
 
