@@ -10,7 +10,7 @@ import { RegistroSala, Sala, Usuario } from "../types/apiTypes";
 import { FlatList } from "react-native-gesture-handler";
 import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { AdminStackParamList } from "../navigation/types/StackTypes";
-import EstatisticasCardList from "../components/EstatisticasCardList";
+import EstatisticasCardList from "./EstatisticasCardList";
 import {Ionicons} from '@expo/vector-icons'
 import { obterUsuarios } from "../servicos/servicoUsuarios";
 import { AuthContext } from "../AuthContext";

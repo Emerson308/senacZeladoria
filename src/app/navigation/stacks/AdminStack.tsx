@@ -9,7 +9,7 @@ import NotificationScreen from '../../screens/NotificationScreen';
 import LimpezasAndamentoScreen from '../../screens/LimpezasAndamentoScreen';
 import LimpezaScreen from '../../screens/LimpezaScreen';
 import QRCodeScanner from '../../screens/QrCodeScanner';
-import EstatisticasCardList from '../../components/EstatisticasCardList';
+import EstatisticasCardList from '../../screens/EstatisticasCardList';
 
 
 const Stack = createStackNavigator<AdminStackParamList>();

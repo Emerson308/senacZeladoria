@@ -6,13 +6,13 @@ import {Ionicons} from '@expo/vector-icons'
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AdminStackParamList, TelaEstatisticaCardList } from "../navigation/types/StackTypes";
 import { RegistroSala, Sala, Usuario } from "../types/apiTypes";
-import LimpezasAndamentoCard from "./cards/LimpezasAndamentoCard";
+import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { obterSalas } from "../servicos/servicoSalas";
 import { AuthContext } from "../AuthContext";
 import { obterUsuarios } from "../servicos/servicoUsuarios";
-import { chartData } from "../screens/EstatisticasLimpeza";
+import { chartData } from "./EstatisticasLimpeza";
 import { colors } from "../../styles/colors";
 import { apiURL } from "../api/axiosConfig";
 
