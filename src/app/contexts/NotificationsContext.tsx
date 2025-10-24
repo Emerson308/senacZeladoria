@@ -39,6 +39,7 @@ export const NotificationsProvider = ({children}: NotificationsProviderProps) =>
 
     const carregarNotificacoes = useCallback(async () => {
         if(!user?.groups.includes(1)){
+            setNotifications([])
             return
         }
 

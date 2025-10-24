@@ -8,6 +8,7 @@ import NotificationScreen from '../../screens/NotificationScreen';
 import LimpezaScreen from '../../screens/LimpezaScreen';
 import LimpezasAndamentoScreen from '../../screens/LimpezasAndamentoScreen';
 import QRCodeScanner from '../../screens/QrCodeScanner';
+import RegistrosScreen from '../../screens/RegistrosScreen';
 
 
 const Stack = createStackNavigator<UserStackParamList>();
@@ -34,6 +35,8 @@ export const UserNavigator = () => (
     <Stack.Screen name='Limpeza' component={LimpezaScreen} />
 
     <Stack.Screen name='QrCodeScanner' component={QRCodeScanner} />
+
+    <Stack.Screen name='Registros' component={RegistrosScreen}/>
 
     {/* <Stack.Screen /> */}
     

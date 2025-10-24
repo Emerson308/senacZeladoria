@@ -77,11 +77,15 @@ export default function DetalhesSalaScreen(){
         if(!user.groups.includes(1)){
             return
         }
+
+        if(!dadosSala?.qr_code_id){
+            return
+        }
         
         const username = user.username
         const getAllRegistrosServiceResult = await getRegistrosService({
             username,
-            sala_uuid: dadosSala?.qr_code_id
+            sala_uuid: dadosSala.qr_code_id
         })
         if(!getAllRegistrosServiceResult.success){
             showErrorToast({errMessage: getAllRegistrosServiceResult.errMessage})
@@ -93,6 +97,8 @@ export default function DetalhesSalaScreen(){
         })
         
         setLimpezasEmAndamento(limpezasAndamento)
+
+        console.log(limpezasAndamento)
         
         return
         
@@ -188,7 +194,6 @@ export default function DetalhesSalaScreen(){
 
     const carregarTudo = async () => {
         await carregarSala()
-        await carregarLimpezasAndamento()
     }
     
     useFocusEffect( React.useCallback(() => {
@@ -196,6 +201,10 @@ export default function DetalhesSalaScreen(){
         carregarTudo().then(() => setCarregando(false))
         
     }, []))
+
+    useEffect(() => {
+        carregarLimpezasAndamento()
+    }, [dadosSala])
 
     if(carregando){
         return(
@@ -264,7 +273,19 @@ export default function DetalhesSalaScreen(){
                             size={24}
                         />
                     </TouchableOpacity>
-                    <Text className=" text-2xl text-white" >Detalhes da Sala</Text>
+                    <Text className=" text-2xl text-white flex-1" >Detalhes da Sala</Text>
+                    {
+                        user.groups.includes(1) || userRole === 'admin' ?
+                        <TouchableOpacity onPress={() => navigation.navigate('Registros', {sala: dadosSala})}>
+                            <Ionicons
+                                name='stats-chart'
+                                color={'white'}
+                                size={24}
+                            />
+                        </TouchableOpacity>
+                        : null
+                    }
+
                 </View>
 
             </View>

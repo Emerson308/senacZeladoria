@@ -10,6 +10,7 @@ import LimpezasAndamentoScreen from '../../screens/LimpezasAndamentoScreen';
 import LimpezaScreen from '../../screens/LimpezaScreen';
 import QRCodeScanner from '../../screens/QrCodeScanner';
 import EstatisticasCardList from '../../screens/EstatisticasCardList';
+import RegistrosScreen from '../../screens/RegistrosScreen';
 
 
 const Stack = createStackNavigator<AdminStackParamList>();
@@ -35,6 +36,7 @@ export const AdminNavigator = () => (
 
     <Stack.Screen name='EstatisticaCardList' component={EstatisticasCardList} />
 
+    <Stack.Screen name='Registros' component={RegistrosScreen}/>
 
     
   </Stack.Navigator>

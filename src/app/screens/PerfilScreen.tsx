@@ -120,7 +120,15 @@ export default function PerfilScreen(){
         <SafeAreaView edges={['top']} className=" flex-1 flex-col pb-4 bg-gray-100" >
             <ImgTypeSelector visible={rodapeImgSelectorVisible} header="Foto de perfil" hideModal={() => setRodapeImgSelectorVisible(false)} handleUploadImage={handleUploadImage}/>
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
-                <Text className=" text-2xl" >Perfil</Text>
+                <Text className=" text-2xl flex-1" >Perfil</Text>
+                {
+                    !userData.groups.includes(1) ? null : 
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Registros', {zelador: userData})}
+                    >
+                        <Ionicons name="stats-chart" size={24} color={'black'}/>
+                    </TouchableOpacity>
+                }
             </View>
             <ScrollView style={{}} className=" flex-1 " contentContainerClassName=" flex-1" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarDadosDoUsuario}/>}>
                 <View className=" items-center py-10 bg-white border-b border-gray-200">
@@ -158,7 +166,7 @@ export default function PerfilScreen(){
 
                         {
                             userData.groups.length === 0 ?
-                            <Text style={{
+                            <Text className=" self-center" style={{
                                 padding: 1,
                                 paddingHorizontal: 5,
                                 borderRadius: 5,

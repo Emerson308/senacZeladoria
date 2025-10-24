@@ -7,7 +7,6 @@ import SalasScreen from "../../screens/SalasScreen";
 import { colors } from "../../../styles/colors";
 import UsuariosScreen from "../../screens/UsuariosScreen";
 import PerfilScreen from "../../screens/PerfilScreen";
-import RegistrosLimpezaScreen from "../../screens/RegistrosLimpezaScreen";
 import { AuthContext } from "../../AuthContext";
 import { Platform, View, Text } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -94,8 +93,6 @@ export default function BottomTabs(){
                             return <HomeTabIcon focused={focused} size={size} color={color}  />
                         } else if(route.name === 'EstatisticasLimpeza'){
                             iconName = focused ? 'pie-chart' : 'pie-chart-outline'
-                        } else if(route.name === 'RegistrosLimpeza'){
-                            iconName = focused ? 'reader' : 'reader-outline'
                         } else if (route.name === 'Usuarios'){
                             iconName = focused ? 'people' : 'people-outline'
                         } else if(route.name === 'Perfil'){
@@ -119,13 +116,7 @@ export default function BottomTabs(){
                     component={EstatisticasLimpeza}
                     options={{title: 'Estatísticas'}}
                 />
-    
-                <Tab.Screen
-                    name="RegistrosLimpeza"
-                    component={RegistrosLimpezaScreen}
-                    options={{title: 'Registros'}} //Necessário para não conflitar com o nome da stack
-                />
-    
+        
                 <Tab.Screen
                     name="Usuarios"
                     component={UsuariosScreen}

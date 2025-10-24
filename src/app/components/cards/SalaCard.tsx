@@ -192,8 +192,10 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
 
     const salaEmLimpeza = sala.status_limpeza === 'Em Limpeza' && userRole === 'admin'
 
-    const adminConditionStyle = (!!visibleIniciarLimpeza !== !!visibleMarcarSalaComoSuja) || salaEmLimpeza
-    const adminButtonsStyle = adminConditionStyle ? " flex-row-reverse gap-2" : " flex-col gap-2"
+    const visibleGroupsButton = [visibleIniciarLimpeza, visibleMarcarSalaComoSuja]
+
+    const adminConditionStyle = visibleGroupsButton.filter(item => item).length > 1
+    const adminButtonsStyle = !adminConditionStyle ? " flex-row-reverse gap-2" : " flex-col gap-2"
 
     const buttonsVisibles = [visibleEditarSala, visibleExcluirSala, visibleIniciarLimpeza, visibleMarcarSalaComoSuja]
 

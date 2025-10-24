@@ -71,9 +71,57 @@ const LineChart = ({chartData}: LineChartProps) => {
 }
 
 
+interface EstatisticaSalaCardProps{
+    sala : SalaLimpeza,
+    onPress?: (sala: Sala) => void
+}
+
+const EstatisticaSalaCard = ({
+    sala,
+    onPress
+}: EstatisticaSalaCardProps) => {
+
+    const {limpezasCount, ...salaComum} = sala
+
+    return (
+        <TouchableRipple
+            borderless={true}
+            onPress={() => onPress?.(salaComum)} 
+            className=" rounded-xl shadow-md bg-white px-4 h-36"
+        >
+            <View className=" flex-1 flex-row gap-4" >
+                <View className=" aspect-square my-4 rounded-md">
+                    {sala.imagem ? 
+                        <Image
+                            className=" flex-1 aspect-square border-2 rounded-md"
+                            source={{uri: apiURL + sala.imagem}}
+                        />
+                        :
+                        <View className=" flex-1 border-2 bg-gray-200 items-center rounded-md justify-center">
+                            <Ionicons name="image-outline" size={24}/>
+                            <Text className=" text-black text-base text-center">Sem imagem</Text>
+                        </View>
+                    }
+                </View>
+                <View className=" flex-col flex-1 my-4 gap-3">
+                    <View className=" flex-row justify-between gap-3">
+                        <Text className=" text-xl font-bold flex-1" numberOfLines={2}>{sala.nome_numero}</Text>
+                        <Text className=" text-base font-bold">Limpezas: {sala.limpezasCount}</Text>
+                    </View>
+                    <View className=" flex-1 justify-center" >
+                        <View className={`p-1 px-2 rounded-xl self-start ${sala.ativa ? 'bg-sgreen/20' : 'bg-syellow/20'}`}>
+                            <Text className={`${sala.ativa ? 'text-sgreen' : 'text-syellow'}`}>{sala.ativa ? 'Ativa' : 'Inativa'}</Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        </TouchableRipple>
+    )
+}
+
 interface EstatisticaZeladorCardProps{
     zelador : Zelador,
-    onPress?: () => void
+    onPress?: (zelador: Usuario) => void
 }
 
 const EstatisticaZeladorCard = ({
@@ -81,12 +129,12 @@ const EstatisticaZeladorCard = ({
     onPress
 }: EstatisticaZeladorCardProps) => {
 
-
+    const {statusVelocidades, limpezasCount, ...zeladorComum} = zelador
 
     return (
         <TouchableRipple
             borderless={true}
-            onPress={onPress} 
+            onPress={() => onPress?.(zeladorComum)} 
             className=" rounded-xl shadow-md bg-white px-4 h-36"
         >
             <View className=" flex-1 flex-row gap-4" >
@@ -119,10 +167,12 @@ const EstatisticaZeladorCard = ({
 interface RenderEstatisticasCardListsProps{
     listType: 'LimpezasEmAndamento' | 'LimpezasZeladores' | 'LimpezasSalas'
     limpezasEmAndamento: RegistroSala[],
-    salas: Sala[],
+    salas: SalaLimpeza[],
     zeladores: Zelador[],
     onPress?: () => void,
     navigateToLimpeza?: (registro: RegistroSala) => void,
+    navigateToRegistrosZelador?: (zelador: Usuario) => void,
+    navigateToRegistrosSala?: (sala: Sala) => void,
     refreshing: boolean,
     carregarCardList: () => void
 }
@@ -132,8 +182,9 @@ const RenderEstatisticasCardLists = ({
     limpezasEmAndamento,
     salas,
     zeladores,
-    onPress,
     navigateToLimpeza,
+    navigateToRegistrosZelador,
+    navigateToRegistrosSala,
     refreshing,
     carregarCardList
 }: RenderEstatisticasCardListsProps) => {
@@ -154,6 +205,7 @@ const RenderEstatisticasCardLists = ({
     }
     
     if(listType === 'LimpezasZeladores'){
+
         return (
             <FlatList
                 data={zeladores}
@@ -163,25 +215,26 @@ const RenderEstatisticasCardLists = ({
                 nestedScrollEnabled={true}
                 onRefresh={carregarCardList}
                 refreshing={refreshing}
-                renderItem={(item) => <EstatisticaZeladorCard zelador={item.item} />}
+                renderItem={(item) => <EstatisticaZeladorCard zelador={item.item} onPress={(zelador) => navigateToRegistrosZelador?.(zelador)}/>}
             />
     
         )
     }
 
     if(listType === 'LimpezasSalas'){
-        return null
-        // return (
-        //     <FlatList
-        //         data={renderList}
-        //         keyExtractor={item => String(item.id)}
-        //         className=" "
-        //         contentContainerClassName=" gap-4 px-4 py-4"
-        //         nestedScrollEnabled={true}
-        //         renderItem={(item) => <LimpezasAndamentoCard type="AdminData" {...item.item} />}
-        //     />
+        return (
+            <FlatList
+                data={salas}
+                keyExtractor={item => String(item.id)}
+                className=" "
+                contentContainerClassName=" gap-4 px-4 py-4"
+                nestedScrollEnabled={true}
+                onRefresh={carregarCardList}
+                refreshing={refreshing}
+                renderItem={(item) => <EstatisticaSalaCard sala={item.item} onPress={(sala) => navigateToRegistrosSala?.(sala)}/>}
+            />
     
-        // )
+        )
     }
 
     return (null)
@@ -204,6 +257,10 @@ type Zelador = {
     statusVelocidades: chartData[]
 } & Usuario
 
+type SalaLimpeza = {
+    limpezasCount: number
+} & Sala
+
 export default function EstatisticasCardList(){
 
     const authContext = useContext(AuthContext)
@@ -220,7 +277,7 @@ export default function EstatisticasCardList(){
 
 
     const [registros, setRegistros] = useState<RegistroSala[]>([])
-    const [salas, setSalas] = useState<Sala[]>([])
+    const [salas, setSalas] = useState<SalaLimpeza[]>([])
     const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
     const [zeladores, setZeladores] = useState<Zelador[]>([])
 
@@ -231,12 +288,24 @@ export default function EstatisticasCardList(){
         carregarCardList().then(() => setCarregando(false))
     }, [])
 
-    const cardNavigate = ({registro}: {registro?: RegistroSala}) => {
+    const cardNavigate = ({registro, zelador, sala}: {registro?: RegistroSala, zelador?: Usuario, sala?: Sala}) => {
         if(type === 'LimpezasEmAndamento'){
             if(!registro){
                 return
             }
             navigation.navigate('Limpeza', {registroSala: registro, type: 'Observar'})
+        }
+        if(type === 'LimpezasZeladores'){
+            if(!zelador){
+                return
+            }
+            navigation.navigate('Registros', {zelador})
+        }
+        if(type === 'LimpezasSalas'){
+            if(!sala){
+                return
+            }
+            navigation.navigate('Registros', {sala})
         }
     }
 
@@ -258,6 +327,11 @@ export default function EstatisticasCardList(){
         if(type === 'LimpezasZeladores'){
             await carregarZeladores(limpezasConcluidas)
         }
+
+        if(type === 'LimpezasSalas'){
+            await carregarSalas(limpezas)
+        }
+
         setRefreshing(false)
     }
 
@@ -277,7 +351,7 @@ export default function EstatisticasCardList(){
 
    }    
 
-    const carregarSalas = async () => {
+    const carregarSalas = async (limpezas: RegistroSala[]) => {
         const obterSalasResult = await obterSalas({})
         if(!obterSalasResult.success){
             showErrorToast({errMessage: 'Erro ao carregar os status das salas'})
@@ -286,7 +360,20 @@ export default function EstatisticasCardList(){
 
         const salasList = obterSalasResult.data;
 
-        const salasCount = salasList.length
+        const salasLimpezas: SalaLimpeza[] = salasList.map(sala => {
+
+            const limpezasSalaCount = limpezas.filter(limpeza => limpeza.sala === sala.qr_code_id).length
+
+            return {
+                ...sala,
+                limpezasCount: limpezasSalaCount
+            }
+        })
+
+        const salasSort = salasLimpezas.sort((a, b) => b.limpezasCount - a.limpezasCount)
+
+        setSalas(salasSort)
+
     }
 
     const carregarZeladores = async (limpezas: RegistroSala[]) => {
@@ -346,7 +433,9 @@ export default function EstatisticasCardList(){
             }
         })
 
-        setZeladores(zeladoresChart)
+        const zeladoresSort = zeladoresChart.sort((a, b) => b.limpezasCount - a.limpezasCount)
+
+        setZeladores(zeladoresSort)
 
 
 
@@ -411,6 +500,8 @@ export default function EstatisticasCardList(){
                     salas={salas}
                     zeladores={zeladores}
                     navigateToLimpeza={(registro) => cardNavigate({registro})}
+                    navigateToRegistrosZelador={(zelador) => cardNavigate({zelador})}
+                    navigateToRegistrosSala={(sala) => cardNavigate({sala: sala})}
                     refreshing={refreshing}
                     carregarCardList={ async () => await carregarCardList()}
                 />

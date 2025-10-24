@@ -14,6 +14,7 @@ import EstatisticasCardList from "./EstatisticasCardList";
 import {Ionicons} from '@expo/vector-icons'
 import { obterUsuarios } from "../servicos/servicoUsuarios";
 import { AuthContext } from "../AuthContext";
+import { TouchableRipple } from "react-native-paper";
 
 
 
@@ -54,8 +55,14 @@ const LineChart = ({chartData}: LineChartProps) => {
         return
     }
 
+    const chartVisible = chartData.some(item => item.value > 0)
+
     return (
-        <View className="  h-6 flex-row rounded-lg gap-0.5 overflow-hidden">
+        <View className="  h-5 flex-row rounded-lg gap-0.5 overflow-hidden">
+            {chartVisible ? null : 
+                <View className=" w-full bg-sgray"></View>
+            }
+
             {
                 chartData.map((item, index) => (
     
@@ -101,7 +108,7 @@ interface FullLineChartProps{
     chartData?: chartData[]
 }
 
-const FullLineChart = ({title, chartData}: FullLineChartProps) => {
+export const FullLineChart = ({title, chartData}: FullLineChartProps) => {
 
 
     return(
@@ -113,6 +120,7 @@ const FullLineChart = ({title, chartData}: FullLineChartProps) => {
 
     )
 }
+
 
 const statsCardStyle =  "p-4 shadow-md gap-4 bg-white rounded-lg flex-col"
 
@@ -158,7 +166,8 @@ export default function EstatisticasLimpeza() {
     const [statusSalas, setStatusSalas] = useState<null| statusSalas>(null)
     const [statusLimpezasConcluidas, setStatusLimpezasConcluidas] = useState<null | statusLimpezasConcluidas>(null)
     const [limpezasEmAndamento, setLimpezasEmAndamento] = useState<RegistroSala[]>([])
-    const [zeladores, setZeladores] = useState<Usuario[]>([])
+    const [zeladoresCount, setZeladoresCount] = useState<number>(0)
+    const [salasCount, setSalasCount] = useState<number>(0)
 
     const carregarEstatisticas = async () => {
         setRefreshing(true)
@@ -186,8 +195,11 @@ export default function EstatisticasLimpeza() {
 
         const salasList = obterSalasResult.data;
 
+        
         const salasCount = salasList.length
 
+        setSalasCount(salasCount)
+        
         const salaLimpaCount = salasList.filter(item => item.status_limpeza === 'Limpa').length
         const salaSujaCount = salasList.filter(item => item.status_limpeza === 'Suja').length
         const salaLimpezaPendenteCount = salasList.filter(item => item.status_limpeza === 'Limpeza Pendente').length
@@ -316,9 +328,9 @@ export default function EstatisticasLimpeza() {
             return
         }
 
-        const zeladores = obterUsuariosResult.data
+        const zeladores = obterUsuariosResult.data.length
 
-        setZeladores(zeladores)
+        setZeladoresCount(zeladores)
 
 
 
@@ -329,7 +341,14 @@ export default function EstatisticasLimpeza() {
         <SafeAreaView edges={['top']} className=" flex-1 bg-gray-100 pb-0 flex-col">
 
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
-                <Text className=" text-2xl" >Estatísticas</Text>
+                <Text className=" text-2xl flex-1" >Estatísticas</Text>
+                <TouchableRipple
+                    borderless={true}
+                    className=" p-3 rounded-full"
+                    onPress={() => navigation.navigate('Registros', {})}
+                >
+                    <Ionicons name="reader-outline" size={24}/>
+                </TouchableRipple>
             </View>
             <ScrollView 
                 className=" mt-4 mb-4"
@@ -367,7 +386,7 @@ export default function EstatisticasLimpeza() {
                 <View className={statsCardStyle}>
                     <View className=" flex-col gap-2 justify-between items-center mb-2">
                         <Text className=" text-2xl font-bold text-center">Limpezas de zeladores</Text>
-                        <Text className=" text-lg font-bold text-center">Total de zeladores: {zeladores.length}</Text>
+                        <Text className=" text-lg font-bold text-center">Total de zeladores: {zeladoresCount}</Text>
                     </View>
                     <TouchableOpacity onPress={() => navigateToEstatisticaCardList('LimpezasZeladores')} className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
                         <Text className=" text-bold text-lg">Ver limpezas de zeladores</Text>
@@ -379,8 +398,12 @@ export default function EstatisticasLimpeza() {
                 <View className={statsCardStyle}>
                     <View className=" flex-col gap-2 justify-between items-center mb-2">
                         <Text className=" text-2xl font-bold text-center">Limpezas de salas</Text>
-                        <Text className=" text-lg font-bold text-center">Total de salas: {limpezasEmAndamento.length}</Text>
+                        <Text className=" text-lg font-bold text-center">Total de salas: {salasCount}</Text>
                     </View>
+                    <TouchableOpacity onPress={() => navigateToEstatisticaCardList('LimpezasSalas')} className=" rounded-full bg-gray-100 flex-row p-2 gap-4 justify-center items-center self-center px-8">
+                        <Text className=" text-bold text-lg">Ver limpezas de salas</Text>
+                        <Ionicons name="chevron-forward-outline" color={colors.sgray} size={20} />
+                    </TouchableOpacity>
                 </View>
 
                 {/* Zeladores */}

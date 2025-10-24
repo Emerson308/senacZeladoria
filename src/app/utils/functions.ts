@@ -121,5 +121,10 @@ export function utcToYYYYMMDD(utcDateTimeStr: string): string {
     return format(dateObjectUTC, 'yyyy-MM-dd', { locale: ptBR });
 }
 
-
+export function dateToUTC(date: Date): string {
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+        throw new Error('Data inválida');
+    }
+    return date.toISOString();
+}
 

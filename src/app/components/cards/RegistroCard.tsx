@@ -1,43 +1,185 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Card, Button } from "react-native-paper"
 import { RegistroSala, Sala } from "../../types/apiTypes";
-import { formatarDataISO } from "../../utils/functions";
+import { formatarDataISO, formatSecondsToHHMMSS, getSecondsUtcDiference } from "../../utils/functions";
 import { colors } from "../../../styles/colors";
 import React from "react";
 
-interface propsRegistroCard{
-    registro: RegistroSala;
-    key: number;
-    onPress?: (registro: RegistroSala) => void,
+
+
+interface CampoTextProps {
+    keyText: string,
+    value: string | number
 }
 
-function RegistroCard({registro, onPress}: propsRegistroCard){
+const CampoText = ({keyText, value}: CampoTextProps) => {
+
+    return (
+        <View className=" gap-1 flex-row items-center">
+            <Text className=" text-sm font-bold">{keyText}</Text>
+            <Text className=" text-sm">{value}</Text>
+        </View>
+    )
+
+}
+
+interface TempoDeLimpezaProps{
+    inicio: string,
+    fim: string
+}
+
+const TempoDeLimpeza = ({inicio, fim}: TempoDeLimpezaProps) => {
+    const seconds = getSecondsUtcDiference(inicio, fim)
+    const limpezaTimer = formatSecondsToHHMMSS(seconds)
+
+    const contadorStyle = {
+        fastTime: 'text-sgreen',
+        mediumTime: 'text-syellow',
+        slowTime: 'text-sred'
+    }
+
+    const getContadorStyle = (seconds: number): string => {
+        if (seconds < 1200) {
+            return contadorStyle.fastTime;
+        } else if (seconds < 2400) {
+            return contadorStyle.mediumTime;
+        } else {
+            return contadorStyle.slowTime;
+        }
+    }
 
 
     return (
-        <TouchableOpacity onPress={() => onPress?.(registro)} className="mb-4 mx-3 rounded-xl shadow-md bg-white">
-            <Card  style={{backgroundColor: 'white'}}>
-                <Card.Content style={styles.contentCard}>
-                    <View className=" mx-4 flex-1">
-                        <Text numberOfLines={1} ellipsizeMode="tail"
-                            className=" text-2xl"
-                        >
-                            {registro.sala_nome}
-                        </Text>
+        <View className=" items-center justify-center gap-1">
+            <Text className=" text-lg font-bold">Tempo de limpeza</Text>
+            <Text className={` text-lg font-bold ${getContadorStyle(seconds)} `}>{limpezaTimer}</Text>
+        </View>
 
-                        <View className="mt-2 pl-2 ">
-                            <Text className=" text-base">Última Limpeza: 
-                            </Text>
-                            <Text className=" text-sm"> {formatarDataISO(registro.data_hora_inicio) + ' até ' + 
-                                formatarDataISO(registro.data_hora_fim)}
-                            </Text>
-                            <Text className=" text-sm"> Por {registro.funcionario_responsavel}</Text>
+    )
+}
 
-                        </View>
+interface RegistroDataTempoProps{
+    inicio: string,
+    fim: string
+}
 
-                    </View>
-                </Card.Content>
-            </Card>
+const RegistroDataTempo = ({inicio, fim}: RegistroDataTempoProps) => {
+
+
+    return (
+        <View className=" bg-gray-100 p-3 rounded-md flex-row gap-2 justify-between items-center">
+            <View className=" gap-1">
+                <CampoText keyText="Início:" value={formatarDataISO(inicio)}/>
+                <CampoText keyText="Fim:" value={formatarDataISO(fim)}/>
+            </View>
+            <TempoDeLimpeza inicio={inicio} fim={fim}/>
+        </View>
+    )
+    
+}
+
+interface RegistroTitles {
+    nomeSala: string,
+    nomeResponsavel: string,
+    type: RegistroCardType
+}
+
+const RegistroTitles = ({nomeSala, nomeResponsavel, type}: RegistroTitles) => {
+
+    let salaTitleVisible = true
+    let responsavelTitleVisible = true
+    let ResponsavelTitle = "text-xl font-bold"
+
+    if(type === 'Sala'){
+        salaTitleVisible = false;
+        ResponsavelTitle = "text-2xl font-bold"
+    }
+
+    if(type === 'Zelador'){
+        responsavelTitleVisible = false
+    }
+
+
+    return (
+        <View className="  flex-1">
+            {!salaTitleVisible ? null : 
+                <Text className=" text-2xl font-bold" numberOfLines={1} ellipsizeMode="middle">{nomeSala}</Text>
+            }
+            {!responsavelTitleVisible ? null : 
+                <Text className={ResponsavelTitle} numberOfLines={1} ellipsizeMode="tail">{nomeResponsavel}</Text>
+            }
+        </View>
+
+    )
+}
+
+interface RegistroTags{
+    imagesCount: number,
+    observacoesVisible: boolean,
+}
+
+const RegistroTags = ({imagesCount, observacoesVisible}: RegistroTags) => {
+
+    return (
+        <View className=" h-16 justify-between">
+            <Text className=" p-1 bg-sgray/20 text-sgray rounded-md text-sm text-center font-bold">{imagesCount} imagens</Text>
+            {
+                observacoesVisible ? null :
+                <Text className=" p-1 bg-syellow/20 text-syellow rounded-md text-sm text-center font-bold">Observação</Text>
+
+            }
+        </View>
+
+    )
+}
+
+interface RegistroCardTopProps{
+    type: RegistroCardType,
+    nomeSala: string,
+    nomeResponsavel: string,
+    imagesCount: number,
+    observacoesVisible: boolean
+}
+
+const RegistroCardTop = ({type, nomeSala, nomeResponsavel, imagesCount, observacoesVisible}: RegistroCardTopProps) => {
+
+
+
+    return (
+        <View className=" flex-row gap-4">
+            <RegistroTitles nomeSala={nomeSala} nomeResponsavel={nomeResponsavel} type={type}/>
+            <RegistroTags imagesCount={imagesCount} observacoesVisible={observacoesVisible}/>
+        </View>
+    )
+}
+
+type RegistroCardType = 'All' | 'Sala' | 'Zelador'
+
+interface propsRegistroCard{
+    registro: RegistroSala;
+    type: RegistroCardType
+    // key: number;
+    onPress?: (registro: RegistroSala) => void,
+}
+
+function RegistroCard({registro, onPress, type}: propsRegistroCard){
+
+    if(registro.data_hora_fim === null){
+        return null
+    }
+
+    return (
+        <TouchableOpacity onPress={() => onPress?.(registro)} className=" rounded-xl h-48 justify-center shadow-md bg-white">
+            <View className="  flex-1 p-4 flex-col gap-3">
+                <RegistroCardTop 
+                    nomeSala={registro.sala_nome}
+                    nomeResponsavel={registro.funcionario_responsavel}
+                    imagesCount={registro.fotos.length}
+                    observacoesVisible={ !registro.observacoes ? true : false}
+                    type={type}
+                />
+                <RegistroDataTempo inicio={registro.data_hora_inicio} fim={registro.data_hora_fim} /> 
+            </View>
         </TouchableOpacity>
 
     )
