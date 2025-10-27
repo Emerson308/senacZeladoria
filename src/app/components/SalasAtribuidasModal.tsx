@@ -73,7 +73,7 @@ export default function SalasAtribuidasModal({salasAtribuidas, visible, onDismis
                         data={salasAtribuidas}
                         renderItem={(item) => renderSalaAtribuida(item.item)}
                         contentContainerClassName="px-4 py-2 gap-4"
-                        className=" my-2"
+                        className=" my-2 max-h-96"
                     />
 
 

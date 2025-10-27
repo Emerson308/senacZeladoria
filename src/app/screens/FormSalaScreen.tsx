@@ -24,7 +24,7 @@ import LoadingComponent from "../components/LoadingComponent";
 
 
 const salaSchema = z.object({
-    nome_numero: z.string().min(1, 'Esse campo é obrigatório'),
+    nome_numero: z.string().min(1, 'Esse campo é obrigatório').max(100, 'Esse campo deve ter no máximo 100 caracters'),
     capacidade: z.string().min(1, 'Esse campo é obrigatório').refine(num => !isNaN(Number(num)), {
         error: 'Capacidade tem que ser um número inteiro válido'
     }).refine(num => Number(num)%1 === 0 && Number(num) > 0, {
@@ -33,14 +33,14 @@ const salaSchema = z.object({
         error: 'Capacidade tem que ser menor ou igual à 2000'
     })
     ,
-    localizacao: z.string().min(1, 'Esse campo é obrigatório'),
-    descricao: z.string().optional(),
+    localizacao: z.string().min(1, 'Esse campo é obrigatório').max(100, 'Esse campo deve ter no máximo 100 caracteres'),
+    descricao: z.string().max(100, 'Esse campo deve ter no máximo 100 caracteres'),
     instrucoes: z.string().optional(),
     validade_limpeza_horas: z.string().refine(num => !!num ? !isNaN(Number(num)) : true, {
-        error: 'Capacidade tem que ser um número inteiro válido'
+        error: 'Esse campo tem que ser um número inteiro válido'
     }).refine(num => !!num ? (Number(num)%1 === 0 && Number(num) > 0) : true, {
-        error: 'Capacidade tem que ser um número inteiro válido'
-    }),
+        error: 'Esse campo tem que ser um número inteiro válido'
+    }).refine(num => Number(num) <= 1000000000, 'Esse campo tem um limite de 1000000000 de valor'),
     ativa: z.enum(['Ativa', 'Inativa']).default('Ativa').optional(),
     responsaveis: z.array(z.string('A lista deve ter os usernames dos usuários'))
 })
@@ -278,6 +278,7 @@ export default function FormSalaScreen(){
                             value={field.value}
                             onChangeText={field.onChange}
                             autoCapitalize="none"
+                            errorMessage={fieldState.error?.message}
                             keyboardType='default'
                             mode="outlined"
                             style={styles.input}

@@ -95,7 +95,7 @@ export default function DetalhesSalaScreen(){
         
         setLimpezasEmAndamento(limpezasAndamento)
 
-        console.log(limpezasAndamento)
+        // console.log(limpezasAndamento)
         
         return
         
@@ -112,7 +112,7 @@ export default function DetalhesSalaScreen(){
         }
         
         setDadosSala(obterDetalhesSalaResult.data)
-        console.log(dadosSala)
+        // console.log(dadosSala)
         setRefreshing(false)
     }
 
@@ -460,7 +460,7 @@ export default function DetalhesSalaScreen(){
                     <View className="flex-col flex-1 gap-2">
                         {visibleIniciarLimpeza && 
                             <TouchableOpacity
-                                className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+                                className=" h-14 bg-sgreen/20 flex-row gap-1 rounded-lg items-center justify-center"
                                 onPress={(e) => {
                                     e.stopPropagation()
                                     handleIniciarLimpeza()
@@ -472,7 +472,7 @@ export default function DetalhesSalaScreen(){
                         }
                         {visibleReportarSujeira && 
                             <TouchableOpacity
-                                className=" h-14 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
+                                className=" h-14 bg-syellow/20 flex-row gap-1 rounded-lg items-center justify-center"
                                 onPress={(e) => {
                                     e.stopPropagation();
                                     handleMarcarSalaComoSuja()
@@ -485,7 +485,7 @@ export default function DetalhesSalaScreen(){
                         }
                         {visibleSalaInativa && 
                             <TouchableOpacity
-                                className=" h-14 bg-sgray/30 flex-row gap-1 rounded-full items-center justify-center"
+                                className=" h-14 bg-sgray/30 flex-row gap-1 rounded-lg items-center justify-center"
                                 onPress={(e) => {
                                     e.stopPropagation();
                                 }}
@@ -504,7 +504,7 @@ export default function DetalhesSalaScreen(){
                     }>
                         {visibleEditarSala && 
                             <TouchableOpacity
-                                className=" h-14 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
+                                className=" h-14 px-6 bg-sblue/20 flex-row gap-1 rounded-lg items-center justify-center"
                                 onPress={(e) => {
                                     e.stopPropagation();
                                     navigation.navigate('FormSala', {sala: dadosSala})
@@ -515,7 +515,7 @@ export default function DetalhesSalaScreen(){
                         }
                         {visibleExcluirSala && 
                             <TouchableOpacity
-                                className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+                                className=" h-14 px-6 bg-sred/20 flex-row gap-1 rounded-lg items-center justify-center"
                                 onPress={(e) => {
                                     e.stopPropagation();
                                     handleExcluirSala()

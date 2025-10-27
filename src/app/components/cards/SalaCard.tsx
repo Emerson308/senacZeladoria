@@ -275,11 +275,11 @@ function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userG
                             <View className="flex-1 gap-2 flex-col pl-2 justify-center">
                                 <View className=" flex-row items-center gap-1">
                                     <MaterialCommunityIcons size={20} name='account-group' color={colors.sgray}/>
-                                    <Text className=" text-sm" numberOfLines={1} ellipsizeMode="tail">{sala.capacidade}</Text>
+                                    <Text className=" text-sm flex-1" numberOfLines={1} ellipsizeMode="tail">{sala.capacidade}</Text>
                                 </View>
                                 <View className=" flex-row items-center gap-1">
                                     <MaterialCommunityIcons size={20} name='map-marker' color={colors.sgray}/>
-                                    <Text className=" text-sm" numberOfLines={1} ellipsizeMode="tail">{sala.localizacao}</Text>
+                                    <Text className=" text-sm flex-1" numberOfLines={1} ellipsizeMode="tail">{sala.localizacao}</Text>
                                 </View>
 
                             </View>

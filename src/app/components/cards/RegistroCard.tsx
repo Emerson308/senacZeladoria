@@ -125,7 +125,7 @@ const RegistroTags = ({imagesCount, observacoesVisible}: RegistroTags) => {
             <Text className=" p-1 bg-sgray/20 text-sgray rounded-md text-sm text-center font-bold">{imagesCount} imagens</Text>
             {
                 observacoesVisible ? null :
-                <Text className=" p-1 bg-syellow/20 text-syellow rounded-md text-sm text-center font-bold">Observação</Text>
+                <Text className=" p-1 px-2 bg-syellow/20 text-syellow rounded-md text-sm text-center font-bold">Observação</Text>
 
             }
         </View>

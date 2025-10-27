@@ -23,7 +23,7 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
     
     const [responsaveisInputText, setResponsaveisInputText] = useState('')
     const [refreshing, setRefreshing] = useState(false)
-    const [selectedResponsaveis, setSelectedResponsaveis] = useState<string[]>([...selectedResponsaveisProps])
+    // const [selectedResponsaveisProps, setSelectedResponsaveisProps] = useState<string[]>([...selectedResponsaveisProps])
     
     const zeladoresFiltrados = zeladores.filter(zelador => {
         if(!responsaveisInputText){
@@ -36,18 +36,18 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
 
     const toggleUserSelection = (user: string) => {
         // const isSelected = selectedResponsaveis.some(u => u === user);
-        if(selectedResponsaveis.includes(user)){
-            setSelectedResponsaveisProps(selectedResponsaveis.filter(u => u !== user));
-            setSelectedResponsaveis(selectedResponsaveis.filter(u => u !== user));
+        if(selectedResponsaveisProps.includes(user)){
+            setSelectedResponsaveisProps(selectedResponsaveisProps.filter(u => u !== user));
+            setSelectedResponsaveisProps(selectedResponsaveisProps.filter(u => u !== user));
         } else{
-            setSelectedResponsaveisProps([...selectedResponsaveis, user]);
-            setSelectedResponsaveis([...selectedResponsaveis, user]);
+            setSelectedResponsaveisProps([...selectedResponsaveisProps, user]);
+            setSelectedResponsaveisProps([...selectedResponsaveisProps, user]);
         }
     };
 
     const renderZelador = ({item}: ListRenderItemInfo<Usuario>) => {
         // const isSelected = selectedResponsaveis.some(u => u === item.username);
-        const isSelected = selectedResponsaveis.includes(item.username);
+        const isSelected = selectedResponsaveisProps.includes(item.username);
         return (
             <TouchableOpacity
                 onPress={() => toggleUserSelection(item.username)}
@@ -83,7 +83,7 @@ export default function ResponsaveisMultiselect({visible, hideModal, zeladores, 
         <Modal
             visible={visible}
             onDismiss={() => {
-                setSelectedResponsaveis([...selectedResponsaveisProps])
+                setSelectedResponsaveisProps([...selectedResponsaveisProps])
                 hideModal()
             }}
             contentContainerStyle={{
