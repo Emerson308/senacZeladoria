@@ -7,12 +7,14 @@ import { ActivityIndicator, Avatar, Button, Portal } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
-import {Ionicons} from '@expo/vector-icons'
+import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from "../api/axiosConfig";
 import ImgTypeSelector from "../components/ImgTypeSelector";
 import { ImageURISource } from "react-native";
 import Toast from "react-native-toast-message";
 import { showErrorToast } from "../utils/functions";
+import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
+import { useSalas } from "../contexts/SalasContext";
 
 
 
@@ -27,12 +29,14 @@ export default function PerfilScreen(){
         return null
     }
 
+    const {salas} = useSalas()
 
     const { signOut, usersGroups } = authContext
     const [userData, setUserData] = useState<Usuario|null>(null)
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
     const [refreshing, setRefreshing] = useState(false)
+    const [salasAtribuidasModalVisible, setSalasAtribuidasModalVisible] = useState(false)
     const navigation = useNavigation()
 
     const [rodapeImgSelectorVisible, setRodapeImgSelectorVisible] = useState(false)
@@ -45,6 +49,7 @@ export default function PerfilScreen(){
     }, [])
 
     const carregarDadosDoUsuario = async () => {
+        setRefreshing(true)
         const usuarioLogadoResult = await usuarioLogado()
         if(!usuarioLogadoResult.success){
             showErrorToast({errMessage: usuarioLogadoResult.errMessage})
@@ -52,6 +57,7 @@ export default function PerfilScreen(){
         }
         
         setUserData(usuarioLogadoResult.data)
+        setRefreshing(false)
         
     }
     
@@ -95,6 +101,42 @@ export default function PerfilScreen(){
         await carregarDadosDoUsuario()
     }
 
+    const deleteProfileImage = async () => {
+        const formData = new FormData();
+
+        formData.append('profile_picture', '');
+        
+
+        const alterarFotoPerfilResult = await alterarFotoPerfil(formData)
+        if(!alterarFotoPerfilResult.success){
+            showErrorToast({errMessage: alterarFotoPerfilResult.errMessage})
+        }
+        
+        await carregarDadosDoUsuario()
+
+    }
+
+    const handleDeleteimage = async () => {
+        Alert.alert('Excluir imagem de perfil', 'Tem certeza que deseja excluir sua imagem de perfil?', [
+            {
+                text: 'Cancelar',
+                style: 'cancel'
+            },
+            {
+                text: 'Confirmar',
+                style: 'destructive',
+                onPress: async () => await deleteProfileImage()
+            }
+        ])
+    }
+
+    const salasAtribuidas = salas.filter(sala => {
+        if(!userData){
+            return false
+        }
+        return sala.responsaveis.includes(userData.username)
+    })
+
 
     const irParaAlterarSenha = () => {
         navigation.navigate('AlterarSenha')
@@ -118,29 +160,51 @@ export default function PerfilScreen(){
     
     return (
         <SafeAreaView edges={['top']} className=" flex-1 flex-col pb-4 bg-gray-100" >
+            <SalasAtribuidasModal 
+                salasAtribuidas={salasAtribuidas} 
+                visible={salasAtribuidasModalVisible}
+                onDismiss={() => setSalasAtribuidasModalVisible(false)}
+                navigateDetalhesSala={(id) => navigation.navigate('DetalhesSala', {id})}
+            />
             <ImgTypeSelector visible={rodapeImgSelectorVisible} header="Foto de perfil" hideModal={() => setRodapeImgSelectorVisible(false)} handleUploadImage={handleUploadImage}/>
             <View className=" bg-white py-2 pt-4 px-5 flex-row gap-6 items-center border-b-2 border-gray-100">
                 <Text className=" text-2xl flex-1" >Perfil</Text>
                 {
                     !userData.groups.includes(1) ? null : 
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Registros', {zelador: userData})}
-                    >
-                        <Ionicons name="stats-chart" size={24} color={'black'}/>
-                    </TouchableOpacity>
+                    <View className=" flex-row gap-8">
+                        <TouchableOpacity
+                            onPress={() => setSalasAtribuidasModalVisible(true)}
+                            className=" p-2"
+                            >
+                            <MaterialCommunityIcons name="file-document-multiple-outline" size={24} color={'black'}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Registros', {zelador: userData})}
+                            className=" p-2"
+                        >
+                            <Ionicons name="stats-chart" size={24} color={'black'}/>
+                        </TouchableOpacity>
+                    </View>
                 }
             </View>
-            <ScrollView style={{}} className=" flex-1 " contentContainerClassName=" flex-1" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarDadosDoUsuario}/>}>
+            <ScrollView style={{}} className=" flex-1 " contentContainerClassName=" flex-1" 
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarDadosDoUsuario}/>}
+            >
                 <View className=" items-center py-10 bg-white border-b border-gray-200">
-                    <TouchableOpacity onPress={() => setRodapeImgSelectorVisible(true)}>
-                    {
-                        userData.profile.profile_picture === null ?
-                            <Avatar.Text label={userData.username.charAt(0)} size={86}/>
-                        :
-                            <Avatar.Image size={86} source={ { uri: apiURL + userData.profile.profile_picture}} />
-                            // null
-                    }
-                    </TouchableOpacity>
+                    <View className=" ">
+                        <TouchableOpacity onPress={handleDeleteimage} className=" bg-gray-300 absolute -right-6 -top-3 z-10 p-1 rounded-full">
+                            <Ionicons name="close" size={24} color={colors.sgray}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setRodapeImgSelectorVisible(true)}>
+                        {
+                            userData.profile.profile_picture === null ?
+                                <Avatar.Text label={userData.username.charAt(0)} size={86}/>
+                            :
+                                <Avatar.Image size={86} source={ { uri: apiURL + userData.profile.profile_picture}} />
+                                // null
+                        }
+                        </TouchableOpacity>
+                    </View>
                     <Text className=" text-xl font-bold text-gray-800">{userData.username}</Text>
                 </View>
 

@@ -8,6 +8,7 @@ import { obterDetalhesSala } from '../servicos/servicoSalas';
 import { showErrorToast, showSuccessToast } from '../utils/functions';
 import { CommonActions, useNavigation, NavigationProp } from '@react-navigation/native';
 import { AdminStackParamList } from '../navigation/types/StackTypes';
+import { Ionicons } from '@expo/vector-icons'
 
 
 const { width, height } = Dimensions.get('window');
@@ -111,6 +112,10 @@ export default function QRCodeScanner() {
         }}
         style={StyleSheet.absoluteFillObject} 
       />
+
+      <TouchableOpacity className='absolute top-10 bg-black/20 p-4 rounded-full left-4' onPress={navigation.goBack}>
+        <Ionicons name='arrow-back' size={24} color={'white'}/>
+      </TouchableOpacity>
 
       <View className=' justify-center items-center bg-transparent' style={{...StyleSheet.absoluteFillObject}}>
         

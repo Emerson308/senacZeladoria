@@ -346,7 +346,7 @@ export default function FormSalaScreen(){
                                 key={'Ativa'}
                                 value={'Ativa'}
                                 label="Sala ativa"
-                                color={colors.sgreen}                        
+                                color={colors.sgreen}                   
                             />
 
                             <Picker.Item

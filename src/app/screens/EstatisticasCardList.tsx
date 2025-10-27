@@ -97,9 +97,9 @@ const EstatisticaSalaCard = ({
                             source={{uri: apiURL + sala.imagem}}
                         />
                         :
-                        <View className=" flex-1 border-2 bg-gray-200 items-center rounded-md justify-center">
+                        <View className=" flex-1 border-2 bg-gray-200 items-center rounded-md justify-center p-1">
                             <Ionicons name="image-outline" size={24}/>
-                            <Text className=" text-black text-base text-center">Sem imagem</Text>
+                            <Text className=" text-black text-sm text-center">Sem imagem</Text>
                         </View>
                     }
                 </View>
@@ -109,8 +109,8 @@ const EstatisticaSalaCard = ({
                         <Text className=" text-base font-bold">Limpezas: {sala.limpezasCount}</Text>
                     </View>
                     <View className=" flex-1 justify-center" >
-                        <View className={`p-1 px-2 rounded-xl self-start ${sala.ativa ? 'bg-sgreen/20' : 'bg-syellow/20'}`}>
-                            <Text className={`${sala.ativa ? 'text-sgreen' : 'text-syellow'}`}>{sala.ativa ? 'Ativa' : 'Inativa'}</Text>
+                        <View className={`p-1 px-2 rounded-xl self-start ${sala.ativa ? 'bg-sgreen/20' : 'bg-sgray/20'}`}>
+                            <Text className={`${sala.ativa ? 'text-sgreen' : 'text-sgray'}`}>{sala.ativa ? 'Ativa' : 'Inativa'}</Text>
                         </View>
                     </View>
                 </View>
@@ -152,7 +152,7 @@ const EstatisticaZeladorCard = ({
                 </View>
                 <View className=" flex-col flex-1 my-4 gap-3">
                     <View className=" flex-row justify-between items-center gap-3">
-                        <Text className=" text-xl font-bold">{zelador.username}</Text>
+                        <Text className=" text-xl font-bold flex-1" numberOfLines={1}>{zelador.username}</Text>
                         <Text className=" text-base font-bold">Limpezas: {zelador.limpezasCount}</Text>
                     </View>
                     <View className=" flex-1 justify-center" >
@@ -362,7 +362,7 @@ export default function EstatisticasCardList(){
 
         const salasLimpezas: SalaLimpeza[] = salasList.map(sala => {
 
-            const limpezasSalaCount = limpezas.filter(limpeza => limpeza.sala === sala.qr_code_id).length
+            const limpezasSalaCount = limpezas.filter(limpeza => limpeza.sala === sala.qr_code_id && limpeza.data_hora_fim !== null).length
 
             return {
                 ...sala,
@@ -455,7 +455,7 @@ export default function EstatisticasCardList(){
         if(type === 'LimpezasSalas'){
             return {
                 title: 'Limpezas de salas',
-                listCount: `Total de limpezas em andamento: ${salas.length}`
+                listCount: `Total de salas: ${salas.length}`
             }
         }
 

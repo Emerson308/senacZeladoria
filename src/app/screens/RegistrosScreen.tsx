@@ -8,7 +8,7 @@ import { chartData, FullLineChart } from "./EstatisticasLimpeza";
 import { useEffect, useState } from "react";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { colors } from "../../styles/colors";
-import { dateToUTC, showErrorToast, utcToYYYYMMDD } from "../utils/functions";
+import { dateToUTC, normalizarTexto, showErrorToast, utcToYYYYMMDD } from "../utils/functions";
 import { getSecondsUtcDiference } from "../utils/functions";
 import { RegistroSala } from "../types/apiTypes";
 import RegistroCard from "../components/cards/RegistroCard";
@@ -40,6 +40,7 @@ export default function RegistrosScreen() {
     const [statusVelocidadeData, setStatusVelocidadeData] = useState<chartData[]>([])
     const [carregando, setCarregando] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
+    const [searchText, setSearchText] = useState('')
     const [] = useState()
 
     useEffect(() => {
@@ -138,6 +139,18 @@ export default function RegistrosScreen() {
 
     const cardType = getCardType()
 
+    const searchTextFormatado = normalizarTexto(searchText)
+
+    const registrosFiltrados = registros.filter(registro => {
+        const salaNomeFormatado = normalizarTexto(registro.sala_nome)
+        const usernameFormatado = normalizarTexto(registro.funcionario_responsavel)
+
+        const salaNomeMatchSearch = salaNomeFormatado.includes(searchTextFormatado) && !sala
+        const usernameMatchSearch = usernameFormatado.includes(searchTextFormatado) && !zelador
+
+        return salaNomeMatchSearch || usernameMatchSearch
+    })
+
 
 
 
@@ -155,38 +168,56 @@ export default function RegistrosScreen() {
 
     return (
         <SafeAreaView className=" bg-gray-100 flex-1 flex-col">
-            <View className=" bg-white py-2 pt-4 px-5 flex-row gap-4 items-center border-b-2 border-gray-200">
-                <TouchableRipple
-                    borderless={true}
-                    className=" p-3 rounded-full"
-                    onPress={() => navigation.goBack()}
-                >
-                    <Ionicons name="arrow-back" size={24}/>
-                </TouchableRipple>
-                <Text className=" text-2xl flex-1" >Registros</Text>
-            </View>
-            <View className=" items-center justify-center p-4 shadow-md bg-white m-4 rounded-2xl gap-3">
-                {!sala ? null : <Text className=" text-center text-2xl font-bold px-8" numberOfLines={2}>{sala.nome_numero}</Text>}
-                {!zelador ? null : <Text className=" text-center text-2xl font-bold px-8" numberOfLines={2}>{zelador.username}</Text>}
-
-                <Text className=" text-xl font-bold">Número de registros: {registros.length}</Text>
-                <FullLineChart chartData={statusVelocidadeData} title="Velocidades de limpezas" />
+            <View className=" bg-white py-2 pt-4 px-5 flex-col gap-4 border-b-2 border-gray-200">
+                <View className=" flex-row gap-4 items-center">
+                    <TouchableRipple
+                        borderless={true}
+                        className=" p-3 rounded-full"
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Ionicons name="arrow-back" size={24}/>
+                    </TouchableRipple>
+                    <Text className=" text-2xl flex-1" >Registros</Text>
+                </View>
+                <View className=" gap-2">
+                    <Searchbar
+                        placeholder={'Procurar registros'}
+                        value={searchText}
+                        onChangeText={setSearchText}
+                        placeholderTextColor={colors.sgray}
+                        iconColor={colors.sgray}
+                        autoCapitalize="none"
+                        // submitBehavior="blurAndSubmit"
+                        // mode="view"
+                        className=" "
+                        style={{}}
+                        theme={{colors: {primary: colors.sblue, elevation: {level3: colors.sgray + '20'}}}}
+                    />
+                    {!searchText ? null : 
+                        <Text className=" text-base text-sgray ml-2">{registrosFiltrados.length} resultados.</Text>
+                    }
+                    
+                </View>
             </View>
             <View className=" flex-1 mb-4 flex-col">
-                {/* <View className=" px-4">
-                    <Searchbar 
-                        value="Text"
-                        // mode="view"
-                    />
-                </View> */}
 
                 <FlatList
-                    data={registros}
+                    data={registrosFiltrados}
                     keyExtractor={(item) => String(item.id)}
                     contentContainerClassName=" px-4 py-4 gap-4"
                     className=" mb-4"
                     onRefresh={async () => await carregarRegistros()}
                     refreshing={refreshing}
+                    ListHeaderComponent={() => (
+                        <View className=" items-center justify-center w-full self-center p-4 shadow-md bg-white m-4 rounded-2xl gap-3">
+                            {!sala ? null : <Text className=" text-center text-2xl font-bold px-8" numberOfLines={2}>{sala.nome_numero}</Text>}
+                            {!zelador ? null : <Text className=" text-center text-2xl font-bold px-8" numberOfLines={2}>{zelador.username}</Text>}
+
+                            <Text className=" text-xl font-bold">Número de registros: {registros.length}</Text>
+                            <FullLineChart chartData={statusVelocidadeData} title="Velocidades de limpezas" />
+                        </View>
+
+                    )}
                     renderItem={(item) => <RegistroCard type={cardType} registro={item.item} onPress={() => navegarToDetalhesLimpeza(item.item)}/>}
                 />
 

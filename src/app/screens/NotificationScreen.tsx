@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatList, ListRenderItemInfo, RefreshControl, ScrollView, Text, View } from "react-native";
 import { TouchableRipple } from "react-native-paper";
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { lerNotificacao, lerTodasAsNotificacoes, listarNotificacoes } from "../servicos/servicoNotificacoes";
@@ -49,10 +49,17 @@ export default function NotificationScreen(){
                 </TouchableRipple>
                 <Text className=" text-2xl flex-1 text-black">Notificações</Text>
             </View>
-            <View className=" items-end my-4">
+            <View className=" flex-row justify-between px-4 gap-4 my-4 items-center">
+                <View className=" flex-1">
+                    {/* <Text className=" text-lg font-bold">Notificações: {notifications.length}</Text> */}
+                    {/* <Text className=" text-base font-bold">Notificações nao lidas: {contagemNotificacoesNaoLidas}</Text> */}
+                </View>
                 <TouchableRipple className=" bg-sblue px-4 py-3 rounded-full" borderless={true} onPress={async () => await readAllNotifications()}>
-                    <View className=" ">
-                        <Text className=" text-white">Marcar notificações como lidas</Text>
+                    <View className=" flex-row gap-2 items-center">
+
+                        {/* <Ionicons size={24} name="notifications" color={'white'} /> */}
+                        <MaterialCommunityIcons size={28} name="bell-check" color={'white'}/>
+                        <Text className=" text-white">Marcar notificações como lidas ({contagemNotificacoesNaoLidas})</Text>
                     </View>
                 </TouchableRipple>
             </View>
