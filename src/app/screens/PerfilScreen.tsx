@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { usuarioLogado, alterarFotoPerfil } from "../servicos/servicoUsuarios";
 import { Usuario } from "../types/apiTypes";
 import { Alert, Text, View, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
-import { ActivityIndicator, Avatar, Button, Portal } from "react-native-paper";
+import { Avatar, Button, Portal } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
@@ -15,6 +15,7 @@ import { showErrorToast } from "../utils/functions";
 import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
 import { useSalas } from "../contexts/SalasContext";
 import { useAuthContext } from "../contexts/AuthContext";
+import LoadingComponent from "../components/LoadingComponent";
 
 
 
@@ -136,19 +137,9 @@ export default function PerfilScreen(){
         navigation.navigate('AlterarSenha')
     }
 
-    if (carregando){
-        return(
-            <View className='flex-1 bg-gray-50 justify-center p-16'>
-                <ActivityIndicator size={80}/>
-            </View>
-        )    
-    }
-
-    if (userData === null){
+    if (carregando || userData === null){
         return (
-            <View className='flex-1 bg-gray-50 justify-center p-16'>
-                <ActivityIndicator size={80}/>
-            </View>
+            <LoadingComponent loadLabel="Carregando dados do usuário..." reLoadFunction={async () => await carregarDadosDoUsuario()}/>
         )
     }
     

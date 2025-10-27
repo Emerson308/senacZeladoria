@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, Image, Modal, Pressable, Alert, ScrollView, TouchableOpacity, FlatList, ImageURISource } from "react-native"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { Button, Portal, ActivityIndicator, TouchableRipple } from "react-native-paper"
+import { Button, Portal, TouchableRipple } from "react-native-paper"
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../styles/colors";
@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Toast from "react-native-toast-message";
 import { showErrorToast } from "../utils/functions";
 import { useAuthContext } from "../contexts/AuthContext";
+import LoadingComponent from "../components/LoadingComponent";
 
 
 const salaSchema = z.object({
@@ -179,10 +180,8 @@ export default function FormSalaScreen(){
     }
 
     if(loading){
-        return(
-        <View className='flex-1 bg-gray-50 justify-center p-16'>
-            <ActivityIndicator size={80}/>
-        </View>
+        return (
+            <LoadingComponent />
         )
     }
 

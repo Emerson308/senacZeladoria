@@ -65,7 +65,7 @@ function IniciarLimpezaButton({ sala, iniciarLimpeza, visible }: IniciarLimpezaB
         const statusIconColor = sala.status_limpeza === 'Em Limpeza' ? colors.sgray : colors.sgreen
 
         return (
-            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-full items-center justify-center`}>
+            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-lg items-center justify-center`}>
                 <MaterialCommunityIcons size={24} name={sala.status_limpeza === 'Em Limpeza' ? 'broom' : 'check'} color={statusIconColor}/>
                 <Text className={statusTextClass}>Sala {sala.status_limpeza}</Text>
             </View>
@@ -74,7 +74,7 @@ function IniciarLimpezaButton({ sala, iniciarLimpeza, visible }: IniciarLimpezaB
 
     return (
         <TouchableOpacity
-            className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-full items-center justify-center"
+            className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-lg items-center justify-center"
             onPress={(e) => {
                 e.stopPropagation()
                 iniciarLimpeza(sala.qr_code_id)
@@ -96,7 +96,7 @@ function MarcarSalaComoSujaButton({ sala, marcarSalaComoSuja, visible }: MarcarS
         const statusIconColor = sala.status_limpeza === 'Em Limpeza' ? colors.sgray : colors.sred
 
         return (
-            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-full items-center justify-center`}>
+            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-lg items-center justify-center`}>
                 <MaterialCommunityIcons size={24} name={sala.status_limpeza === 'Em Limpeza' ? 'broom' : 'block-helper'} color={statusIconColor}/>
                 <Text className={statusTextClass}>Sala {sala.status_limpeza}</Text>
             </View>
@@ -105,7 +105,7 @@ function MarcarSalaComoSujaButton({ sala, marcarSalaComoSuja, visible }: MarcarS
 
     return (
         <TouchableOpacity
-            className=" h-12 bg-syellow/20 flex-row gap-1 rounded-full items-center justify-center"
+            className=" h-12 bg-syellow/20 flex-row gap-1 rounded-lg items-center justify-center"
             onPress={(e) => {
                 e.stopPropagation();
                 marcarSalaComoSuja(sala.qr_code_id);
@@ -122,7 +122,7 @@ function EditarSalaButton({ sala, editarSala, visible }: EditarSalaButtonProps) 
 
     return (
         <TouchableOpacity
-            className=" h-12 px-6 bg-sblue/20 flex-row gap-1 rounded-full items-center justify-center"
+            className=" h-12 aspect-square bg-sblue/20 flex-row gap-1 rounded-lg items-center justify-center"
             onPress={(e) => {
                 e.stopPropagation();
                 editarSala(sala);
@@ -137,7 +137,7 @@ function ExcluirSalaButton({ sala, excluirSala, visible }: ExcluirSalaButtonProp
     if (!visible) return null;
     return (
         <TouchableOpacity
-            className=" h-12 px-6 bg-sred/20 flex-row gap-1 rounded-full items-center justify-center"
+            className=" h-12 aspect-square bg-sred/20 flex-row gap-1 rounded-lg items-center justify-center"
             onPress={(e) => {
                 e.stopPropagation();
                 excluirSala(sala.qr_code_id);
@@ -150,7 +150,7 @@ function ExcluirSalaButton({ sala, excluirSala, visible }: ExcluirSalaButtonProp
 
 function EmLimpezaButton(){
     return (
-        <View className=" h-12 bg-sgray/20 flex-row gap-2 rounded-full items-center justify-center">
+        <View className=" h-12 bg-sgray/20 flex-row gap-2 rounded-lg items-center justify-center">
             <MaterialCommunityIcons size={24} name='broom' color={colors.sgray}/>
             <Text className=" text-sgray">Sala em limpeza</Text>
         </View>
@@ -166,7 +166,7 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
     if(!sala.ativa){
         return (
             <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
-                <View className=" flex-1 bg-gray-200 rounded-full flex-row gap-2 items-center justify-center h-12">
+                <View className=" flex-1 bg-gray-200 rounded-lg flex-row gap-2 items-center justify-center h-12">
                     <Ionicons name="ban" size={24} color={colors.sgray} />
                     <Text className=" text-sgray italic">Sala inativa</Text>
                 </View>

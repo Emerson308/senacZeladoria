@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Alert, Text, View, StyleSheet, KeyboardAvoidingView } from "react-native";
-import { ActivityIndicator, Avatar, Button, TextInput as TextInputPaper } from "react-native-paper";
+import { Avatar, Button, TextInput as TextInputPaper } from "react-native-paper";
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import * as z from 'zod'
 import {useForm, Controller} from 'react-hook-form'

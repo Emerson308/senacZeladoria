@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
-import { TouchableRipple, ActivityIndicator, Searchbar } from "react-native-paper";
+import { TouchableRipple, Searchbar } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AdminStackParamList, TelaRegistros } from "../navigation/types/StackTypes";
@@ -12,6 +12,7 @@ import { dateToUTC, normalizarTexto, showErrorToast, utcToYYYYMMDD } from "../ut
 import { getSecondsUtcDiference } from "../utils/functions";
 import { RegistroSala } from "../types/apiTypes";
 import RegistroCard from "../components/cards/RegistroCard";
+import LoadingComponent from "../components/LoadingComponent";
 
 
 
@@ -155,14 +156,9 @@ export default function RegistrosScreen() {
 
 
     if(carregando){
+
         return( 
-            <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
-                <TouchableOpacity onPress={async () => await null}>
-                    <ActivityIndicator size={80}/>
-                </TouchableOpacity>
-                <Text className=' mt-2 text-center'>Carregando registros...</Text>
-            </SafeAreaView>
-            
+            <LoadingComponent loadLabel="Carregando registros..." reLoadFunction={async () => await carregarRegistros()}/>            
         )        
     }
 

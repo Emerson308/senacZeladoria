@@ -4,12 +4,13 @@ import { realizarLogin } from '../servicos/servicoAutenticacao';
 import api from '../api/axiosConfig';
 import { getAllUsersGroups, usuarioLogado } from '../servicos/servicoUsuarios';
 import { RegistroSala, UserGroup, Usuario } from '../types/apiTypes';
-import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import eventBus from '../utils/eventBus';
 import Toast from 'react-native-toast-message';
 import { listarNotificacoes } from '../servicos/servicoNotificacoes';
 import { getRegistrosService } from '../servicos/servicoLimpezas';
 import { showErrorToast } from '../utils/functions';
+import LoadingComponent from '../components/LoadingComponent';
 
 type UserRole = 'user' | 'admin' | null;
 
@@ -144,13 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   if (isLoading) {
     return( 
-      <View className='flex-1 bg-gray-50 justify-center p-16'>
-        <TouchableOpacity onPress={async () => await verificarAutenticacao()}>
-          <ActivityIndicator size={80}/>
-        </TouchableOpacity>
-        <Text className=' mt-2 text-center'>Erro ao conectar na sua conta, Tente novamente mais tarde</Text>
-      </View>
-      
+      <LoadingComponent loadLabel='Conectando na sua conta...' reLoadLabel='Ocorreu um erro ao conectar na sua conta' reLoadFunction={async () => await verificarAutenticacao()}/>            
     )
 
   }

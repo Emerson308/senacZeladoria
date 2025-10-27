@@ -1,6 +1,6 @@
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
 import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, ImageBackground, RefreshControl } from 'react-native'
-import { Card, Button, ActivityIndicator, Appbar, TouchableRipple } from 'react-native-paper';
+import { Card, Button, Appbar, TouchableRipple } from 'react-native-paper';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { TelaDetalhesSala } from '../navigation/types/StackTypes';
 import React, { useContext, useEffect, useState } from 'react';
@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 import HandleConfirmation from '../components/HandleConfirmation';
 import { useSalas } from '../contexts/SalasContext';
 import { useAuthContext } from '../contexts/AuthContext';
+import LoadingComponent from '../components/LoadingComponent';
 
 
 type editingSalaType = 'edit' | 'delete' | 'startCleaning' | 'markAsDirty';
@@ -203,10 +204,8 @@ export default function DetalhesSalaScreen(){
     }, [dadosSala])
 
     if(carregando){
-        return(
-        <View className='flex-1 bg-gray-50 justify-center p-16'>
-            <ActivityIndicator size={80}/>
-        </View>
+        return (
+            <LoadingComponent loadLabel='' />
         )
     }
 

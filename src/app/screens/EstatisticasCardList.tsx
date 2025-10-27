@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
-import { TouchableRipple, ActivityIndicator } from "react-native-paper";
+import { TouchableRipple } from "react-native-paper";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import {Ionicons} from '@expo/vector-icons'
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -15,6 +15,7 @@ import { chartData } from "./EstatisticasLimpeza";
 import { colors } from "../../styles/colors";
 import { apiURL } from "../api/axiosConfig";
 import { useAuthContext } from "../contexts/AuthContext";
+import LoadingComponent from "../components/LoadingComponent";
 
 
 // type RenderEstatisticasCardListsProps = { listType: 'LimpezasEmAndamento', renderList: RegistroSala[] } | { listType: 'LimpezasZeladores', renderList: Usuario[] } | { listType: 'LimpezasSalas', renderList: Sala[] }
@@ -466,15 +467,9 @@ export default function EstatisticasCardList(){
     const cardListProps = getCardListProps()
 
     if(carregando){
-        return( 
-            <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
-                <TouchableOpacity onPress={async () => await carregarCardList()}>
-                    <ActivityIndicator size={80}/>
-                </TouchableOpacity>
-                <Text className=' mt-2 text-center'>Carregando {cardListProps?.title}...</Text>
-            </SafeAreaView>
-            
-        )        
+        return (
+            <LoadingComponent loadLabel={`Carregando ${cardListProps?.title}...`} reLoadFunction={async () => await carregarCardList()}/>
+        )
     }
 
     return(

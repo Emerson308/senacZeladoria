@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
 import { View, ScrollView, TouchableOpacity, Alert, RefreshControl, Text, FlatList } from 'react-native';
-import { Button, ActivityIndicator, TouchableRipple } from 'react-native-paper';
+import { Button, TouchableRipple } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -65,7 +65,9 @@ export default function SalasScreen() {
     } = useSalas()
 
     const {contagemNotificacoesNaoLidas, carregarNotificacoes} = useNotifications()
+
     const {userRole, user} = useAuthContext()
+    
     if(!user || !userRole){
         return null
     }

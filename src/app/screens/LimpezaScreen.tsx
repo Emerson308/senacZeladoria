@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, FlatList, Dimensions, Image, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import { useContext, useEffect, useState } from "react";
-import { TouchableRipple, ActivityIndicator } from "react-native-paper";
+import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { CommonActions, useNavigation, useRoute } from "@react-navigation/native";
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
@@ -13,6 +13,7 @@ import { TelaLimpeza } from "../navigation/types/StackTypes";
 import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';
 import { apiURL } from "../api/axiosConfig";
 import { useAuthContext } from "../contexts/AuthContext";
+import LoadingComponent from "../components/LoadingComponent";
 
 
 type CarouselItem = {
@@ -353,15 +354,9 @@ export default function LimpezaScreen() {
     const limpezaScreenData = getLimpezaScreenData()
 
     if(carregando){
-        return( 
-            <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
-                <TouchableOpacity onPress={async () => await carregarRegistroSala()}>
-                    <ActivityIndicator size={80}/>
-                </TouchableOpacity>
-                <Text className=' mt-2 text-center'>Carregando limpeza...</Text>
-            </SafeAreaView>
-            
-        )        
+        return (
+            <LoadingComponent loadLabel="Carregando limpeza..." reLoadFunction={async () => await carregarRegistroSala()}/>
+        )
     }
 
 

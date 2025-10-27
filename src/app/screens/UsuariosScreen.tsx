@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, StyleSheet, Alert, RefreshControl } from 'react-native';
-import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
+import { Card, Button, Text, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { colors } from "../../styles/colors";
 import { NovoUsuario, UserGroup, Usuario } from "../types/apiTypes";
@@ -72,14 +72,6 @@ export default function UsuariosScreen(){
         carregarUsuarios().then(() => setCarregando(false))
     },[]))
     
-    // if(carregando){
-    //     return(
-    //     <View className='flex-1 bg-gray-50 justify-center p-16'>
-    //         <ActivityIndicator size={80}/>
-    //     </View>
-    //     )
-    // }
-
     const searchUsuariosTextFormatado = normalizarTexto(searchUsuariosText)
 
     const usuariosFiltrados = usuarios.filter(usuario => {
