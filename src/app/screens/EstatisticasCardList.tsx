@@ -10,11 +10,11 @@ import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { obterSalas } from "../servicos/servicoSalas";
-import { AuthContext } from "../AuthContext";
 import { obterUsuarios } from "../servicos/servicoUsuarios";
 import { chartData } from "./EstatisticasLimpeza";
 import { colors } from "../../styles/colors";
 import { apiURL } from "../api/axiosConfig";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 // type RenderEstatisticasCardListsProps = { listType: 'LimpezasEmAndamento', renderList: RegistroSala[] } | { listType: 'LimpezasZeladores', renderList: Usuario[] } | { listType: 'LimpezasSalas', renderList: Sala[] }
@@ -263,12 +263,7 @@ type SalaLimpeza = {
 
 export default function EstatisticasCardList(){
 
-    const authContext = useContext(AuthContext)
-    if(!authContext){
-        return
-    }
-
-    const {usersGroups} = authContext
+    const {usersGroups} = useAuthContext()
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>()
     const route = useRoute<TelaEstatisticaCardList['route']>()
     const {type} = route.params

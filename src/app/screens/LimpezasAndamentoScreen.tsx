@@ -3,12 +3,12 @@ import { View, Text, FlatList } from "react-native";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons'
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { AuthContext } from "../AuthContext";
 import React, { useContext, useEffect, useState } from "react";
 import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
 import { RegistroSala } from "../types/apiTypes";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { showErrorToast } from "../utils/functions";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 
@@ -18,17 +18,12 @@ import { showErrorToast } from "../utils/functions";
 
 export default function LimpezasAndamentoScreen(){
 
-    const authContext = useContext(AuthContext)
-
-    if(!authContext){
-        return
+    const { user } = useAuthContext()
+    if(!user){
+        return null
     }
 
-    if(!authContext.user){
-        return
-    }
 
-    const { user } = authContext
     const navigation = useNavigation()
     const [ refreshing, setRefreshing ] = useState(false)
 

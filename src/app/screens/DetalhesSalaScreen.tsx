@@ -7,7 +7,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { obterDetalhesSala, excluirSalaService} from '../servicos/servicoSalas';
 import { iniciarLimpezaSala, marcarSalaComoSujaService, getRegistrosService } from '../servicos/servicoLimpezas';
 import { RegistroSala, Sala } from '../types/apiTypes';
-import { AuthContext } from '../AuthContext';
 import { colors } from '../../styles/colors';
 import { formatarDataISO, showErrorToast } from '../utils/functions';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +15,7 @@ import { apiURL } from '../api/axiosConfig';
 import Toast from 'react-native-toast-message';
 import HandleConfirmation from '../components/HandleConfirmation';
 import { useSalas } from '../contexts/SalasContext';
+import { useAuthContext } from '../contexts/AuthContext';
 
 
 type editingSalaType = 'edit' | 'delete' | 'startCleaning' | 'markAsDirty';
@@ -32,15 +32,7 @@ interface confirmationModalProps {
     type: 'confirmAction' | 'destructiveAction' | 'reportAction';
 }
 
-export default function DetalhesSalaScreen(){
-    const authContext = useContext(AuthContext)
-    if(!authContext){
-        return null
-    }
-    if(!authContext.user){
-        return null
-    }
-    
+export default function DetalhesSalaScreen(){    
 
     const {
         iniciarLimpeza,
@@ -48,7 +40,11 @@ export default function DetalhesSalaScreen(){
         excluirSala,
         carregarSalas,
     } = useSalas()
-    const {user, userRole} = authContext
+    const {user, userRole} = useAuthContext()
+    if(!user){
+        return null
+    }
+
     const route = useRoute<TelaDetalhesSala['route']>()
     const navigation = useNavigation()
     const {id} = route.params;

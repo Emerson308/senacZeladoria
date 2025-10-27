@@ -12,7 +12,7 @@ import { imageRegistro, imagesToUpload } from "../types/apiTypes";
 import { TelaLimpeza } from "../navigation/types/StackTypes";
 import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';
 import { apiURL } from "../api/axiosConfig";
-import { AuthContext } from "../AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 type CarouselItem = {
@@ -154,16 +154,8 @@ function Pagination({ data, activeIndex, imagesLength, type }: PaginationProps) 
 
 export default function LimpezaScreen() {
 
-    const authContext = useContext(AuthContext)
-
-    if(!authContext || !authContext.user){
-        return
-    }
-
-    // const type = 'Observar'
-    // let type: 'Concluir' | 'Observar' = 'Concluir'
     
-    const {user} = authContext
+    const {user} = useAuthContext()
     const navigation = useNavigation()
     const route = useRoute<TelaLimpeza['route']>()
 

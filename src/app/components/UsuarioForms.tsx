@@ -7,9 +7,9 @@ import { colors } from "../../styles/colors";
 import * as z from 'zod'
 import { newSala, NovoUsuario, Sala, UserGroup, Usuario } from "../types/apiTypes";
 import {Picker} from '@react-native-picker/picker'
-import { AuthContext } from "../AuthContext";
 import { CustomTextInput as TextInput } from "./CustomTextInput";
 import GroupsSelector from "./GroupsSelector"
+import { useAuthContext } from "../contexts/AuthContext"
 
 
 interface propsCriarUsuarioForm{
@@ -39,13 +39,7 @@ type UsuarioFormData = z.infer<typeof usuarioSchema>
 
 export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarUsuarioForm){
 
-    const authContext = useContext(AuthContext)
-
-    if(!authContext) {
-        return null
-    }
-
-    const {usersGroups} = authContext
+    const {usersGroups} = useAuthContext()
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity, Alert, KeyboardAvoidingView, Text } from 'react-native';
 import { TextInput as TextInputPaper ,Button, ActivityIndicator } from 'react-native-paper';
-import { AuthContext } from '../AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as z from 'zod'
 import {useForm, Controller} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {CustomTextInput as TextInput} from '../components/CustomTextInput';
+import { useAuthContext } from '../contexts/AuthContext';
 
 const LoginSchema = z.object({
   username: z.string().min(1, 'Esse campo é obrigatório'),
@@ -16,13 +16,7 @@ const LoginSchema = z.object({
 type LoginFormData = z.infer<typeof LoginSchema>;
 
 const LoginScreen = () => {
-  const authContext = useContext(AuthContext);
-
-  if (!authContext) {
-    return null;
-  }
-
-  const { signIn } = authContext;
+  const { signIn } = useAuthContext();
 
   const [carregando, setCarregando] = useState(false);
   const [showPassword, setShowPassword] = useState(false)

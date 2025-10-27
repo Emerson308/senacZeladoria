@@ -3,7 +3,7 @@ import { Sala, RegistroSala} from '../types/apiTypes'
 import { obterSalas, excluirSalaService } from "../servicos/servicoSalas";
 import { iniciarLimpezaSala, marcarSalaComoSujaService } from "../servicos/servicoLimpezas";
 import { showErrorToast } from "../utils/functions";
-import { AuthContext } from "../AuthContext";
+import { useAuthContext } from "./AuthContext";
 
 type LimpezaStatus = 'Todas' | 'Limpa' | 'Limpeza Pendente' | 'Em Limpeza' | 'Suja'
 type SalaStatus = 'Todas' | 'Ativas' | 'Inativas'
@@ -31,17 +31,7 @@ interface SalasProviderProps{
 }
 
 export const SalasProvider = ({children}: SalasProviderProps) => {
-    const authContext = useContext(AuthContext)
-
-    if(!authContext){
-        return null
-    }
-
-    // if(!authContext.user){
-    //     return children
-    // }
-
-    const {user, userRole} = authContext;
+    const {user, userRole} = useAuthContext();
 
     const [salas, setSalas] = useState<Sala[]>([])
     const [carregando, setCarregando] = useState(false)

@@ -6,8 +6,6 @@ import { colors } from "../../../styles/colors";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from "../../api/axiosConfig";
 import React, { useContext } from "react";
-import { AuthContext } from "../../AuthContext";
-import { int } from "zod";
 
 interface propsSalaCard{
     sala: Sala;

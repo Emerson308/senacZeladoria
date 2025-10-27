@@ -4,15 +4,15 @@ import { Sala, RegistroSala, Notification} from '../types/apiTypes'
 import { obterSalas, excluirSalaService } from "../servicos/servicoSalas";
 import { iniciarLimpezaSala, marcarSalaComoSujaService } from "../servicos/servicoLimpezas";
 import { showErrorToast } from "../utils/functions";
-import { AuthContext } from "../AuthContext";
 import { listarNotificacoes, lerNotificacao, lerTodasAsNotificacoes } from "../servicos/servicoNotificacoes";
+import { useAuthContext } from "./AuthContext";
 
 
 interface NotificationsContextType{
     notifications: Notification[]
     contagemNotificacoesNaoLidas: number,
     refreshing: boolean,
-    carregarNotificacoes: () => Promise<void>,
+    carregarNotificacoes: (refreshing?: boolean) => Promise<void>,
     readAllNotifications: () => Promise<void>,
     readNotification: (NotificationId: number) => Promise<void>
 }
@@ -24,35 +24,32 @@ interface NotificationsProviderProps{
 }
 
 export const NotificationsProvider = ({children}: NotificationsProviderProps) => {
-    const authContext = useContext(AuthContext)
 
-    if(!authContext){
-        return null
-    }
-
-    const {user} = authContext
+    const {user} = useAuthContext()
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [refreshing, setRefreshing] = useState(false)
-    // const [carregando, setCarregando] = useState(false)
 
     const contagemNotificacoesNaoLidas = useMemo(() => notifications.filter(item => item.lida === false).length, [notifications])
 
-    const carregarNotificacoes = useCallback(async () => {
+    const carregarNotificacoes = useCallback(async (refreshing?:boolean) => {
         if(!user?.groups.includes(1)){
             setNotifications([])
             return
         }
 
-        
-        setRefreshing(true)
+        if(refreshing === true){
+            setRefreshing(true)
+        }
         const listarNotificacoesResult = await listarNotificacoes()
         if(!listarNotificacoesResult.success){
             showErrorToast({errMessage: listarNotificacoesResult.errMessage})
             return;
         }
         setNotifications(listarNotificacoesResult.data)
-        setRefreshing(false)
-        // console.log('Notificacoes atualizadas')
+        
+        if(refreshing === true){
+            setRefreshing(false)
+        }
 
     }, [user])
 

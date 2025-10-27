@@ -3,7 +3,6 @@ import '../styles/global.css'
  
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthProvider, AuthContext } from './AuthContext';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -16,15 +15,10 @@ import CustomToast from './components/CustomToast';
 import { SalasProvider } from './contexts/SalasContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { View, Text } from 'react-native';
+import { useAuthContext, AuthProvider } from './contexts/AuthContext';
 
 const RootNavigation = () => {
-  const authContext = useContext(AuthContext);
-
-  if (!authContext) {
-    throw new Error('AuthContext must be used within an AuthProvider');
-  }
-
-  const { userRole } = authContext;
+  const { userRole } = useAuthContext();
 
   return (
       <NavigationContainer>

@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { Card, Button, Text, ActivityIndicator, Appbar, SegmentedButtons, BottomNavigation, Icon } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
 import { NovoUsuario, UserGroup, Usuario } from "../types/apiTypes";
 import { criarUsuarioService, getAllUsersGroups, obterUsuarios } from "../servicos/servicoUsuarios";
@@ -16,6 +15,7 @@ import {Ionicons} from '@expo/vector-icons';
 import FiltersOptions from "../components/FiltersOptions";
 import FilterSelector from "../components/FilterSelector";
 import LoadingCard from "../components/cards/LoadingCard";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 
@@ -23,17 +23,7 @@ type UsuarioStatus = 'Todos' | 'Admin' | 'Usuário padrão'
 
 export default function UsuariosScreen(){
 
-    const authContext = useContext(AuthContext)
-
-    if(!authContext){
-        return null
-    }
-
-    if(authContext.usersGroups.length === 0){
-        return null
-    }
-
-    const {usersGroups} = authContext
+    const {usersGroups} = useAuthContext()
     const [carregando, setCarregando] = useState(false)
     const [usuarios, setUsuarios] = useState<Usuario[]>([])
     const [criarUsuarioForm, setCriarUsuarioFormVisible] = useState(false)

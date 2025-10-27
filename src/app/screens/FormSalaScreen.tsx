@@ -15,11 +15,11 @@ import { criarNovaSala, editarSalaService } from "../servicos/servicoSalas";
 import { TelaEditarSala } from "../navigation/types/StackTypes";
 import { apiURL } from "../api/axiosConfig";
 import { obterUsuarios } from "../servicos/servicoUsuarios";
-import { AuthContext } from "../AuthContext";
 import ResponsaveisMultiselect from "../components/ResponsaveisMultiselect";
 import { Ionicons } from '@expo/vector-icons'
 import Toast from "react-native-toast-message";
 import { showErrorToast } from "../utils/functions";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 const salaSchema = z.object({
@@ -49,18 +49,8 @@ type salaFormData = z.infer<typeof salaSchema>
 
 
 export default function FormSalaScreen(){
-
-    const authContext = useContext(AuthContext)
-
-    if (!authContext){
-        return null
-    }
-    if (!authContext.usersGroups){
-        return null
-    }
     
-
-    const {usersGroups} = authContext
+    const {usersGroups} = useAuthContext()
     const navigation = useNavigation()
     const route = useRoute<TelaEditarSala['route']>()
     const {sala} = route.params;

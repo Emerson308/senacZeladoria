@@ -56,8 +56,6 @@ export default function NotificationScreen(){
                 </View>
                 <TouchableRipple className=" bg-sblue px-4 py-3 rounded-full" borderless={true} onPress={async () => await readAllNotifications()}>
                     <View className=" flex-row gap-2 items-center">
-
-                        {/* <Ionicons size={24} name="notifications" color={'white'} /> */}
                         <MaterialCommunityIcons size={28} name="bell-check" color={'white'}/>
                         <Text className=" text-white">Marcar notificações como lidas ({contagemNotificacoesNaoLidas})</Text>
                     </View>
@@ -80,9 +78,10 @@ export default function NotificationScreen(){
                     data={notifications}
                     keyExtractor={(item) => String(item.id)}
                     contentContainerClassName="gap-4 px-3 pb-4"
+                    
                     refreshing={refreshing}
                     onRefresh={async () => {
-                        await carregarNotificacoes()
+                        await carregarNotificacoes(true)
                     }}
                 />
 

@@ -1,8 +1,6 @@
 
 import axios from "axios";
 import { obterToken } from '../servicos/servicoArmazenamento';
-import { AuthContext } from "../AuthContext";
-import { useContext } from "react";
 import eventBus from "../utils/eventBus";
 
 export const apiURL = 'https://zeladoria.tsr.net.br/'

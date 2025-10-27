@@ -7,11 +7,11 @@ import SalasScreen from "../../screens/SalasScreen";
 import { colors } from "../../../styles/colors";
 import UsuariosScreen from "../../screens/UsuariosScreen";
 import PerfilScreen from "../../screens/PerfilScreen";
-import { AuthContext } from "../../AuthContext";
 import { Platform, View, Text } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNotifications } from "../../contexts/NotificationsContext";
 import EstatisticasLimpeza from "../../screens/EstatisticasLimpeza";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 
 
@@ -57,16 +57,9 @@ const HomeTabIcon = ({focused, color, size}: HomeTabIconProps) => {
 
 export default function BottomTabs(){
 
-    const authContext = useContext(AuthContext)
-
-    if(!authContext){
-        return null
-    }
-
-
     const insets = useSafeAreaInsets()
 
-    const {userRole} = authContext
+    const {userRole} = useAuthContext()
 
     const commonScreenOptions = {
         tabBarActiveTintColor: colors.sblue,

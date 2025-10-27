@@ -6,10 +6,10 @@ import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import * as z from 'zod'
 import {useForm, Controller} from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthContext } from "../AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { alterarSenha } from "../servicos/servicoUsuarios";
+import { useAuthContext } from "../contexts/AuthContext";
 
 const changePasswordSchema = z.object({
     old_password: z.string().min(1, 'Esse campo é obrigatório'),
@@ -24,13 +24,7 @@ type changePasswordFormData = z.infer<typeof changePasswordSchema>
 
 export default function AlterarSenhaScreen(){
 
-    const authContext = useContext(AuthContext)
-
-    if (!authContext){
-        return null
-    }
-
-    const {signOut} = authContext
+    const {signOut} = useAuthContext()
     const navigation = useNavigation()
     const { control, handleSubmit } = useForm<changePasswordFormData>({
         resolver: zodResolver(changePasswordSchema),

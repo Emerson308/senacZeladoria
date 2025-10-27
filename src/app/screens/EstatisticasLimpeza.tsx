@@ -13,9 +13,9 @@ import { AdminStackParamList } from "../navigation/types/StackTypes";
 import EstatisticasCardList from "./EstatisticasCardList";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { obterUsuarios } from "../servicos/servicoUsuarios";
-import { AuthContext } from "../AuthContext";
 import { TouchableRipple } from "react-native-paper";
 import { apiURL } from "../api/axiosConfig";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 
@@ -159,13 +159,7 @@ const velocidadeLimpezaConditional = ({item, type} : velocidadeLimpezaConditiona
 
 export default function EstatisticasLimpeza() {
 
-    const authContext = useContext(AuthContext)
-
-    if(!authContext){
-        return
-    }
-
-    const {usersGroups} = authContext
+    const {usersGroups} = useAuthContext()
 
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>()
 

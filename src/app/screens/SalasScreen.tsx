@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect, useCallback, useRef } from "rea
 import { View, ScrollView, TouchableOpacity, Alert, RefreshControl, Text, FlatList } from 'react-native';
 import { Button, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { AuthContext } from "../AuthContext";
 import { colors } from "../../styles/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import { UserStackParamList } from "../navigation/types/UserStackTypes";
@@ -23,6 +22,7 @@ import { id } from "date-fns/locale";
 import LoadingCard from "../components/cards/LoadingCard";
 import { useSalas } from "../contexts/SalasContext";
 import { useNotifications } from "../contexts/NotificationsContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 
@@ -47,17 +47,6 @@ type LimpezaStatus = 'Todas' | 'Limpa' | 'Limpeza Pendente' | 'Em Limpeza' | 'Su
 type SalaStatus = 'Todas' | 'Ativas' | 'Inativas'
 
 export default function SalasScreen() {
-    const authContext = useContext(AuthContext);
-
-    if (!authContext) {
-        return;
-    }
-    if (authContext.userRole === null){
-        return
-    }
-    if (authContext.user === null){
-        return
-    }
     
     const {
         salas,
@@ -76,7 +65,12 @@ export default function SalasScreen() {
     } = useSalas()
 
     const {contagemNotificacoesNaoLidas, carregarNotificacoes} = useNotifications()
-    const {userRole, user} = authContext
+    const {userRole, user} = useAuthContext()
+    if(!user || !userRole){
+        return null
+    }
+
+
     const navigation = useNavigation<NavigationProp<AdminStackParamList>>();
 
     const activeFilters = 

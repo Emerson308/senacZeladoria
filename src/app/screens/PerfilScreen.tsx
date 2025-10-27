@@ -4,7 +4,6 @@ import { usuarioLogado, alterarFotoPerfil } from "../servicos/servicoUsuarios";
 import { Usuario } from "../types/apiTypes";
 import { Alert, Text, View, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
 import { ActivityIndicator, Avatar, Button, Portal } from "react-native-paper";
-import { AuthContext } from "../AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
@@ -15,6 +14,7 @@ import Toast from "react-native-toast-message";
 import { showErrorToast } from "../utils/functions";
 import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
 import { useSalas } from "../contexts/SalasContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 
@@ -23,15 +23,9 @@ import { useSalas } from "../contexts/SalasContext";
 
 export default function PerfilScreen(){
 
-    const authContext = useContext(AuthContext);
-
-    if (!authContext){
-        return null
-    }
-
     const {salas} = useSalas()
 
-    const { signOut, usersGroups } = authContext
+    const { signOut, usersGroups } = useAuthContext()
     const [userData, setUserData] = useState<Usuario|null>(null)
     const [carregando, setCarregando] = useState(false)
     const [mensagemErro, setMensagemErro] = useState('')
