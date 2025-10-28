@@ -8,28 +8,16 @@ import { chartData, FullLineChart } from "./EstatisticasLimpeza";
 import { useEffect, useState } from "react";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { colors } from "../../styles/colors";
-import { dateToUTC, normalizarTexto, showErrorToast, utcToYYYYMMDD } from "../utils/functions";
-import { getSecondsUtcDiference } from "../utils/functions";
+import { normalizarTexto, showErrorToast } from "../utils/functions";
+import { utcToYYYYMMDD, dateToUTC } from "../utils/dateFunctions";
 import { RegistroSala } from "../types/apiTypes";
 import RegistroCard from "../components/cards/RegistroCard";
 import LoadingComponent from "../components/LoadingComponent";
+import { getLimpezaStatusVelocidade } from "../utils/dateFunctions";
 
 
 
 
-
-
-const getLimpezaStatusVelocidade = (inicio: string, fim: string | null) => {
-    if(!fim){
-        return
-    }
-    const seconds = getSecondsUtcDiference(inicio, fim)
-
-    if(seconds < 1200) return 'Rapida'
-    if(seconds < 2400 && seconds > 1200) return 'Media'
-    if(seconds > 3600) return 'Lenta'
-
-}
 
 export default function RegistrosScreen() {
 

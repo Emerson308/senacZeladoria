@@ -7,7 +7,7 @@ import { NavigationProp, useNavigation, useRoute } from "@react-navigation/nativ
 import { AdminStackParamList, TelaEstatisticaCardList } from "../navigation/types/StackTypes";
 import { RegistroSala, Sala, Usuario } from "../types/apiTypes";
 import LimpezasAndamentoCard from "../components/cards/LimpezasAndamentoCard";
-import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
+import { showErrorToast } from "../utils/functions";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { obterSalas } from "../servicos/servicoSalas";
 import { obterUsuarios } from "../servicos/servicoUsuarios";
@@ -16,7 +16,7 @@ import { colors } from "../../styles/colors";
 import { apiURL } from "../api/axiosConfig";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
-
+import { getLimpezaStatusVelocidade } from "../utils/dateFunctions";
 
 // type RenderEstatisticasCardListsProps = { listType: 'LimpezasEmAndamento', renderList: RegistroSala[] } | { listType: 'LimpezasZeladores', renderList: Usuario[] } | { listType: 'LimpezasSalas', renderList: Sala[] }
 
@@ -241,17 +241,6 @@ const RenderEstatisticasCardLists = ({
     return (null)
 }
 
-const getLimpezaStatusVelocidade = (inicio: string, fim: string | null) => {
-    if(!fim){
-        return
-    }
-    const seconds = getSecondsUtcDiference(inicio, fim)
-
-    if(seconds < 1200) return 'Rapida'
-    if(seconds < 2400 && seconds > 1200) return 'Media'
-    if(seconds > 3600) return 'Lenta'
-
-}
 
 type Zelador = {
     limpezasCount: number,

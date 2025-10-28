@@ -1,6 +1,5 @@
 import api from "../api/axiosConfig";
 import { newSala, RegistroSala, Sala, ServiceResult, Notification, imageRegistro } from "../types/apiTypes";
-import { utcToYYYYMMDD } from "../utils/functions";
 
 
 interface getRegistrosServiceParams{

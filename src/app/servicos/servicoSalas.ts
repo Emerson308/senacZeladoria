@@ -1,6 +1,5 @@
 import api from "../api/axiosConfig";
 import { Sala, ServiceResult } from "../types/apiTypes";
-import { utcToYYYYMMDD } from "../utils/functions";
 
 interface obterSalasParams{
     statusLimpeza?: 'Todas' | 'Limpa' | 'Limpeza Pendente' | 'Em Limpeza' | 'Suja',

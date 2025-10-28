@@ -7,7 +7,8 @@ import { CommonActions, useNavigation, useRoute } from "@react-navigation/native
 import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { colors } from "../../styles/colors";
 import * as ImagePicker from 'expo-image-picker'
-import { formatarDataISO, formatSecondsToHHMMSS, getSecondsElapsed, getSecondsUtcDiference, showErrorToast, showSuccessToast } from "../utils/functions";
+import { showErrorToast, showSuccessToast } from "../utils/functions";
+import {formatarDataISO, formatSecondsToHHMMSS, getSecondsElapsed, getSecondsUtcDiference} from '../utils/dateFunctions'
 import { imageRegistro, imagesToUpload } from "../types/apiTypes";
 import { TelaLimpeza } from "../navigation/types/StackTypes";
 import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';

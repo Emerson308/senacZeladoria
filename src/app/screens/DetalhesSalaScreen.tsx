@@ -8,7 +8,8 @@ import { obterDetalhesSala, excluirSalaService} from '../servicos/servicoSalas';
 import { iniciarLimpezaSala, marcarSalaComoSujaService, getRegistrosService } from '../servicos/servicoLimpezas';
 import { RegistroSala, Sala } from '../types/apiTypes';
 import { colors } from '../../styles/colors';
-import { formatarDataISO, showErrorToast } from '../utils/functions';
+import { showErrorToast } from '../utils/functions';
+import { formatarDataISO } from '../utils/dateFunctions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from '../api/axiosConfig';

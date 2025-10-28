@@ -3,7 +3,7 @@ import { View, Text, ScrollView, RefreshControl, TouchableOpacity, Linking } fro
 import { useCallback, useContext, useEffect, useState } from "react";
 import { colors } from "../../styles/colors";
 import { obterSalas } from "../servicos/servicoSalas";
-import { getSecondsUtcDiference, showErrorToast } from "../utils/functions";
+import { showErrorToast } from "../utils/functions";
 import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getRegistrosService } from "../servicos/servicoLimpezas";
 import { RegistroSala, Sala, Usuario } from "../types/apiTypes";
@@ -16,6 +16,7 @@ import { obterUsuarios } from "../servicos/servicoUsuarios";
 import { TouchableRipple } from "react-native-paper";
 import { apiURL } from "../api/axiosConfig";
 import { useAuthContext } from "../contexts/AuthContext";
+import { listLimpezasConcluidasVelocidadeType } from "../utils/dateFunctions";
 
 
 
@@ -137,25 +138,6 @@ interface velocidadeLimpezaConditionalParams{
     type: 'Rapida' | 'Media' | 'Lenta'
 }
 
-const velocidadeLimpezaConditional = ({item, type} : velocidadeLimpezaConditionalParams): Boolean => {
-    if (!item.data_hora_fim){
-        return false
-    }
-
-    const timeDiference = getSecondsUtcDiference(item.data_hora_inicio, item.data_hora_fim)
-
-    if (type === 'Rapida'){
-        return (timeDiference < 1200)
-    }
-    if (type === 'Media'){
-        return (timeDiference < 2400 && timeDiference >= 1200)
-    }
-    if (type === 'Lenta'){
-        return (timeDiference > 2400)
-    }
-
-    return false
-}
 
 export default function EstatisticasLimpeza() {
 
@@ -301,9 +283,9 @@ export default function EstatisticasLimpeza() {
         const limpezasConcluidas = limpezas.filter(item => item.data_hora_fim !== null)
         const limpezasConcluidasCount = limpezasConcluidas.length
         
-        const limpezaRapidaCount = limpezasConcluidas.filter(item => velocidadeLimpezaConditional({item, type: 'Rapida'})).length
-        const limpezaMediaCount = limpezasConcluidas.filter(item => velocidadeLimpezaConditional({item, type: 'Media'})).length
-        const limpezaLentaCount = limpezasConcluidas.filter(item => velocidadeLimpezaConditional({item, type: 'Lenta'})).length
+        const limpezaRapidaCount = listLimpezasConcluidasVelocidadeType(limpezasConcluidas, 'Rapida').length
+        const limpezaMediaCount = listLimpezasConcluidasVelocidadeType(limpezasConcluidas, 'Media').length
+        const limpezaLentaCount = listLimpezasConcluidasVelocidadeType(limpezasConcluidas, 'Lenta').length
 
         const limpezaRapidaPercentage = limpezaRapidaCount === 0? 0 : (limpezaRapidaCount/limpezasConcluidasCount) * 100
         const limpezaMediaPercentage = limpezaMediaCount === 0? 0 : (limpezaMediaCount/limpezasConcluidasCount) * 100

@@ -1,7 +1,7 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Card, Button, Avatar } from "react-native-paper"
 import { Sala, UserGroup, Usuario } from "../../types/apiTypes";
-import { formatarDataISO } from "../../utils/functions";
+import { formatarDataISO } from "../../utils/dateFunctions";
 import React from "react";
 import { colors } from "../../../styles/colors";
 import { apiURL } from "../../api/axiosConfig";

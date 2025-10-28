@@ -1,8 +1,7 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Card, Button } from "react-native-paper"
 import { RegistroSala, Sala } from "../../types/apiTypes";
-import { formatarDataISO, formatSecondsToHHMMSS, getSecondsUtcDiference } from "../../utils/functions";
-import { colors } from "../../../styles/colors";
+import { formatarDataISO, formatSecondsToHHMMSS, getSecondsUtcDiference, getContadorTailwind } from "../../utils/dateFunctions";
 import React from "react";
 
 
@@ -32,27 +31,10 @@ const TempoDeLimpeza = ({inicio, fim}: TempoDeLimpezaProps) => {
     const seconds = getSecondsUtcDiference(inicio, fim)
     const limpezaTimer = formatSecondsToHHMMSS(seconds)
 
-    const contadorStyle = {
-        fastTime: 'text-sgreen',
-        mediumTime: 'text-syellow',
-        slowTime: 'text-sred'
-    }
-
-    const getContadorStyle = (seconds: number): string => {
-        if (seconds < 1200) {
-            return contadorStyle.fastTime;
-        } else if (seconds < 2400) {
-            return contadorStyle.mediumTime;
-        } else {
-            return contadorStyle.slowTime;
-        }
-    }
-
-
     return (
         <View className=" items-center justify-center gap-1">
             <Text className=" text-lg font-bold">Tempo de limpeza</Text>
-            <Text className={` text-lg font-bold ${getContadorStyle(seconds)} `}>{limpezaTimer}</Text>
+            <Text className={` text-lg font-bold ${getContadorTailwind(seconds)} `}>{limpezaTimer}</Text>
         </View>
 
     )
