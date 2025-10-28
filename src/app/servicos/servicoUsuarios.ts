@@ -126,13 +126,14 @@ export async function alterarFotoPerfil(newPhoto: FormData): Promise<ServiceResu
         // console.log(resposta.data)
         return {success: true, data: null}
     } catch(erro: any){
-        console.error(erro)
+        // console.error(erro)
+        console.log(erro.data)
 
         if(erro.response && erro.response.status === 401){
             return {success: false, errMessage: 'As credenciais de autenticação não foram fornecidas'}
         }
 
-        return {success: false, errMessage: 'Erro ao alterar foto de usuário'}
+        return {success: false, errMessage: 'Erro ao mudar sua foto de perfil'}
 }
     
 

@@ -36,8 +36,8 @@ const SelectorButton = ({ selected, label, onPress }: { selected: boolean, label
             borderless={true}
             className={
                 selected
-                    ? "flex-row bg-sgray/30 items-center border rounded-full p-1 px-3"
-                    : "flex-row items-center border border-gray-300 rounded-full p-1 px-3"
+                    ? "flex-row bg-sgray/10 items-center border rounded-lg p-1.5 px-4"
+                    : "flex-row items-center border border-gray-300 rounded-lg p-1.5 px-4"
             }
         >
             <View className=" flex-row items-center gap-1">
@@ -75,7 +75,7 @@ export default function FilterSelector<T extends string = string>(props: FilterS
         };
         return (
             <View key={label} className=" gap-2 my-2">
-                <Text className="font-bold">{label}</Text>
+                <Text className="font-bold text-lg">{label}</Text>
                 <View className="flex-row gap-2 flex-wrap">
                     {buttons.map((button) => {
                         const selected = value.includes(button.value);
@@ -114,7 +114,7 @@ export default function FilterSelector<T extends string = string>(props: FilterS
 
         return (
             <View key={label} className=" gap-2 my-2">
-                <Text className="font-bold">{label}</Text>
+                <Text className="font-bold text-lg">{label}</Text>
                 <View className="flex-row gap-2 flex-wrap">
                     {buttons.map((button) => (
                         <SelectorButton

@@ -165,11 +165,11 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
 
     if(!sala.ativa){
         return (
-            <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
-                <View className=" flex-1 bg-gray-200 rounded-lg flex-row gap-2 items-center justify-center h-12">
+            <View  className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
+                <TouchableOpacity onPress={(e) => e.stopPropagation()} activeOpacity={1} className=" flex-1 bg-gray-200 rounded-lg flex-row gap-2 items-center justify-center h-12">
                     <Ionicons name="ban" size={24} color={colors.sgray} />
                     <Text className=" text-sgray italic">Sala inativa</Text>
-                </View>
+                </TouchableOpacity>
                 <EditarSalaButton sala={sala} editarSala={editarSala} visible={userRole !== 'user'}/>
             </View>
         )

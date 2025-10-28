@@ -38,7 +38,7 @@ export default function ImgTypeSelector({visible, hideModal, handleUploadImage, 
             mediaTypes: ['images'],
             allowsEditing: true,
             aspect: aspect,
-            quality: 1,
+            quality: 0.5,
         });
                 
         if (result.canceled) {

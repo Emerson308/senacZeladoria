@@ -16,6 +16,7 @@ import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
 import { useSalas } from "../contexts/SalasContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
+import { getFileSizeInBytes } from "../utils/imageCompressor";
 
 
 
@@ -34,8 +35,7 @@ export default function PerfilScreen(){
     const [salasAtribuidasModalVisible, setSalasAtribuidasModalVisible] = useState(false)
     const navigation = useNavigation()
 
-    const [rodapeImgSelectorVisible, setRodapeImgSelectorVisible] = useState(false)
-    
+    const [rodapeImgSelectorVisible, setRodapeImgSelectorVisible] = useState(false)    
 
     useEffect(() => {
         setCarregando(true)
@@ -71,6 +71,8 @@ export default function PerfilScreen(){
     }
 
     const handleUploadImage = async (photo:ImageURISource) => {
+        console.log('Teste imagem: \n')
+        console.log(getFileSizeInBytes(photo.uri ? photo.uri : ''))
         console.log(photo)
         
         if(!photo.uri){
