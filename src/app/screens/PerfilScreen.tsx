@@ -16,7 +16,8 @@ import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
 import { useSalas } from "../contexts/SalasContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
-import { getFileSizeInBytes } from "../utils/imageCompressor";
+import { getFileSizeInBytes, imageOptimized } from "../utils/imageCompressor";
+import { SaveFormat, useImageManipulator } from "expo-image-manipulator";
 
 
 
@@ -71,14 +72,30 @@ export default function PerfilScreen(){
     }
 
     const handleUploadImage = async (photo:ImageURISource) => {
-        console.log('Teste imagem: \n')
-        console.log(getFileSizeInBytes(photo.uri ? photo.uri : ''))
-        console.log(photo)
         
         if(!photo.uri){
             showErrorToast({errMessage: 'Nenhuma imagem selecionada para enviar'})
             return
         }
+
+
+        // console.log('\n \n \n \n \n \n \n \n \n \n \n \n \n ')
+
+        console.log('Teste imagem: \n')
+        console.log('Foto uri: ' + photo.uri)
+
+        console.log('Imagem antes do compressor: ' + getFileSizeInBytes(photo.uri))
+
+        const imageOtimizated = await imageOptimized(photo.uri)
+
+        console.log('Imagem otimizada: ' + imageOtimizated)
+        if(imageOtimizated !== null){
+            console.log(`Bytes imagem otimizada: ${getFileSizeInBytes(photo.uri)}`)
+            console.log(photo)
+
+        }
+
+
 
         const formData = new FormData();
         const imageName = photo.uri.split('/').pop();

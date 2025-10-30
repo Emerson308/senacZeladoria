@@ -1,5 +1,4 @@
-import {ImageManipulator} from 'expo-image-manipulator';
-// import 
+import { ImageManipulator, ImageRef, SaveFormat, useImageManipulator } from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 
@@ -14,6 +13,7 @@ interface CompressedImageResult {
 
 export async function getFileSizeInBytes(fileUri: string): Promise<number | null> {
   let localUri = fileUri;
+
   // if (Platform.OS === 'android' && !fileUri.startsWith('file://')) {
   //     localUri = `file://${fileUri}`;
   // }
@@ -40,33 +40,35 @@ export async function getFileSizeInBytes(fileUri: string): Promise<number | null
   }
 }
 
-// const imageOptimized = async (uri: string) => {
-//   try {
-//     // 1. Array de ações: Redimensionar para largura máxima de 1000 pixels
-//     const actions = [
-//       { 
-//         resize: { width: 1000 } 
-//       }
-//     ];
+export const imageOptimized = async (uri: string) => {
+  try {
 
-//     // 2. Opções de salvamento: Formato JPEG e qualidade de compressão
-//     const saveOptions = { 
-//       compress: 0.7, 
-//       format: ImageManipulator.SaveFormat.JPEG 
-//     };
+    const saveOptions = { 
+      compress: 0.7, 
+      format: SaveFormat.JPEG
+    };
 
-//     // Chamada correta: ImageManipulator.manipulate(uri, actions, saveOptions)
-//     const manipResult = await ImageManipulator.manipulate(
-//       uri,
-//       actions, 
-//       saveOptions
-//     );
+    // console.log(uri)
+    
+    const manipulator = ImageManipulator.manipulate(uri);  
+    
+    console.log(manipulator)
+    // const resizedManipulator =  manipulator.resize({width: 1000})
 
-//     console.log('URI da Imagem Otimizada (Novo Método):', manipResult.uri);
-//     return manipResult.uri;
+    const renderedImage = await manipulator.renderAsync();
 
-//   } catch (error) {
-//     console.error('Erro ao otimizar imagem (Novo Método):', error);
-//     return null;
-//   }
-// };
+    const manipResult = await renderedImage.saveAsync(saveOptions)
+
+    console.log('URI da Imagem Otimizada (Novo Método):', manipResult.uri);
+    return manipResult.uri;
+
+  } catch (error) {
+    console.error('Erro ao otimizar imagem (Novo Método):', error);
+    return null;
+  }
+};
+
+
+
+
+
