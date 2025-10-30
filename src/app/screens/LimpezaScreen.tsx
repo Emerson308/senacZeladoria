@@ -15,6 +15,7 @@ import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaServic
 import { apiURL } from "../api/axiosConfig";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
+import { compressImage } from "../utils/imageCompressor";
 
 
 type CarouselItem = {
@@ -268,9 +269,13 @@ export default function LimpezaScreen() {
             return null
         }
 
-        const imageName = result.assets[0].uri.split('/').pop() || '';
+        const image = result.assets[0].uri
+
+        const compressedImage = await compressImage(image)
+
+        const imageName = compressedImage.split('/').pop() || '';
         const newImage = {
-            uri: result.assets[0].uri,
+            uri: compressedImage,
             name: imageName,
             type: 'image/jpeg'
         };

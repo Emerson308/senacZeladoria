@@ -2,7 +2,7 @@ import { ImageManipulator, ImageRef, SaveFormat, useImageManipulator } from 'exp
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 
-const MAX_FILE_SIZE_BYTES = 6 * 1024 * 1024; 
+const MAX_FILE_SIZE_BYTES = 5 * 1024**2; 
 
 interface CompressedImageResult {
   uri: string;
@@ -13,10 +13,6 @@ interface CompressedImageResult {
 
 export async function getFileSizeInBytes(fileUri: string): Promise<number | null> {
   let localUri = fileUri;
-
-  // if (Platform.OS === 'android' && !fileUri.startsWith('file://')) {
-  //     localUri = `file://${fileUri}`;
-  // }
 
   try {
       const response = await fetch(localUri);
@@ -30,7 +26,7 @@ export async function getFileSizeInBytes(fileUri: string): Promise<number | null
 
       const sizeInBytes = blob.size; 
 
-      console.log(`Tamanho da foto (usando fetch/Blob.size): ${sizeInBytes} bytes`);
+      // console.log(`Tamanho da foto (usando fetch/Blob.size): ${sizeInBytes} bytes`);
 
       return sizeInBytes;
 
@@ -40,11 +36,15 @@ export async function getFileSizeInBytes(fileUri: string): Promise<number | null
   }
 }
 
-export const imageOptimized = async (uri: string) => {
+export const imageOptimized = async (uri: string, compress: number = 1) => {
   try {
 
+    if(compress <= 0 || compress > 1){
+      return null
+    }
+
     const saveOptions = { 
-      compress: 0.7, 
+      compress: compress, 
       format: SaveFormat.JPEG
     };
 
@@ -53,7 +53,8 @@ export const imageOptimized = async (uri: string) => {
     const manipulator = ImageManipulator.manipulate(uri);  
     
     console.log(manipulator)
-    // const resizedManipulator =  manipulator.resize({width: 1000})
+
+    manipulator.resize({width: 1000})
 
     const renderedImage = await manipulator.renderAsync();
 
@@ -67,6 +68,49 @@ export const imageOptimized = async (uri: string) => {
     return null;
   }
 };
+
+export const compressImage = async (uri: string) => {
+
+  let i = 1;
+  let compressImage = uri
+  let imageBytes = await getFileSizeInBytes(compressImage)
+
+  if(!imageBytes){
+    return compressImage
+  }
+
+  while (i >= 0.1 && imageBytes > MAX_FILE_SIZE_BYTES){
+    console.log(`Images bytes: ${imageBytes}`)
+    
+    if (imageBytes <= MAX_FILE_SIZE_BYTES){
+      return compressImage
+    }
+    
+    const imageOptimizedUri = await imageOptimized(compressImage, i)
+
+    if(imageOptimizedUri){
+
+      compressImage = imageOptimizedUri
+
+      const imageBytesResult = await getFileSizeInBytes(compressImage)
+
+      if(imageBytesResult){
+        imageBytes = imageBytesResult
+      }
+
+    }
+
+
+    
+    console.log(i.toFixed(1)); 
+    let nextValue = i - 0.1;
+    i = parseFloat(nextValue.toFixed(1)); 
+    i = Math.max(0, i);
+  }
+
+  return compressImage
+
+}
 
 
 

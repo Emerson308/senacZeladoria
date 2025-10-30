@@ -16,7 +16,7 @@ import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
 import { useSalas } from "../contexts/SalasContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
-import { getFileSizeInBytes, imageOptimized } from "../utils/imageCompressor";
+import { compressImage, getFileSizeInBytes, imageOptimized } from "../utils/imageCompressor";
 import { SaveFormat, useImageManipulator } from "expo-image-manipulator";
 
 
@@ -78,30 +78,17 @@ export default function PerfilScreen(){
             return
         }
 
+        const compressedImage = await compressImage(photo.uri)
 
-        // console.log('\n \n \n \n \n \n \n \n \n \n \n \n \n ')
-
-        console.log('Teste imagem: \n')
-        console.log('Foto uri: ' + photo.uri)
-
-        console.log('Imagem antes do compressor: ' + getFileSizeInBytes(photo.uri))
-
-        const imageOtimizated = await imageOptimized(photo.uri)
-
-        console.log('Imagem otimizada: ' + imageOtimizated)
-        if(imageOtimizated !== null){
-            console.log(`Bytes imagem otimizada: ${getFileSizeInBytes(photo.uri)}`)
-            console.log(photo)
-
-        }
-
-
-
+        // console.log('Imagem comprimida: ' + compressedImage)
+        // console.log(`Tamanho imagem comprimida: ${await getFileSizeInBytes(compressedImage)}`)
+        
+        
         const formData = new FormData();
-        const imageName = photo.uri.split('/').pop();
+        const imageName = compressedImage.split('/').pop();
 
         formData.append('profile_picture', {
-            uri: photo.uri,
+            uri: compressedImage,
             name: imageName,
             type: 'image/jpeg',
         } as any);

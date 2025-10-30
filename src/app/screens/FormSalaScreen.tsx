@@ -21,6 +21,7 @@ import Toast from "react-native-toast-message";
 import { showErrorToast } from "../utils/functions";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
+import { compressImage } from "../utils/imageCompressor";
 
 
 const salaSchema = z.object({
@@ -105,14 +106,23 @@ export default function FormSalaScreen(){
         setZeladores(obterUsuariosResult.data)
     }
 
-    const adicionarImageNoFormdata = (formData: FormData) => {
+    const adicionarImageNoFormdata = async (formData: FormData) => {
         if(image && image.uri){
+            
+            
             if(sala && sala.imagem && image.uri.includes(sala.imagem)){
                 return
             }
-            const imageName = image.uri.split('/').pop();
+
+
+            const compressedImage = await compressImage(image.uri)
+            if(!compressedImage){
+                return
+            }
+            
+            const imageName = compressedImage.split('/').pop();
             formData.append('imagem', {
-                uri: image.uri,
+                uri: compressedImage,
                 name: imageName,
                 type: 'image/jpeg',
             } as any)
@@ -145,7 +155,7 @@ export default function FormSalaScreen(){
             }
         })
     
-        adicionarImageNoFormdata(formData)
+        await adicionarImageNoFormdata(formData)
     
 
         if(!sala){
