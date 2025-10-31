@@ -103,7 +103,7 @@ export const formatarDataISO = (utcDateTimeStr: string|null) => {
     try{
         const dateObjectUTC = parseISO(utcDateTimeStr)
 
-        const localAdjustedUTC = addHours(dateObjectUTC, 0)
+        const localAdjustedUTC = addHours(dateObjectUTC, -3)
 
         return format(localAdjustedUTC, "dd/MM/yyyy 'às' HH:mm")
     } catch(error){

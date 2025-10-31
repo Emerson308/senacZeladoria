@@ -6,6 +6,8 @@ import { colors } from "../../../styles/colors";
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from "../../api/axiosConfig";
 import React, { useContext } from "react";
+// import image from '../../../../assets'
+
 
 interface propsSalaCard{
     sala: Sala;
@@ -227,6 +229,8 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
 function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
 
     // const userGroups: number[] = []
+    const salaCardImage = require('../../../../assets/salaCardImage.jpg')
+    const salaImage = sala.imagem ? {uri: apiURL + sala.imagem} : salaCardImage
 
     return (
         <TouchableOpacity className="mb-4 rounded-xl shadow-md" onPress={onPress}>
@@ -234,28 +238,12 @@ function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userG
                 <Card.Content className=" flex-col gap-0 px-0 py-0">
                     <View className=" gap-1 flex-row ">
                         <View className=" aspect-square h-40">
-                            {
-                                sala.imagem ?
-                                <Image
-                                    className={
-                                        (userGroups.length === 0 && userRole === 'user') ?
-                                        " flex-1 rounded-l-xl"
-                                        :
-                                        " flex-1 rounded-tl-xl"
-                                    }
-                                    source={{uri: apiURL + sala.imagem}}
-                                    resizeMode="cover"
-                                />
-                                :
-                                <View className={
-                                        (userGroups.length === 0 && userRole === 'user') ?
-                                        "flex-1 bg-gray-200 rounded-l-xl items-center justify-center"
-                                        :
-                                        "flex-1 bg-gray-200 rounded-tl-xl items-center justify-center"
-                                    }>
-                                    <Ionicons size={30} name="image-outline" />
-                                </View>
-                            }
+                            <Image
+                                className={`flex-1 aspect-square ${(userGroups.length === 0 && userRole === 'user') ? 'rounded-l-xl': 'rounded-tl-xl'} ${sala.imagem ? '' : 'bg-black opacity-80'}`}
+                                source={salaImage}
+                                resizeMode="cover"
+                            />
+                            {sala.imagem ? null : <Text className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-lg">Sem imagem</Text>}
                         </View>
                         <View className=" flex-1 rounded-r-lg p-2 flex-col gap-1">
                             <Text className=" text-2xl" numberOfLines={1} ellipsizeMode="tail">{sala.nome_numero}</Text>

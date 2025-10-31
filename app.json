@@ -4,7 +4,7 @@
     "slug": "senacZeladoria",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/senacLogo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -24,7 +24,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.emerson308.senacZeladoria"
+      "package": "com.senac.senacZeladoria"
     },
     "web": {
       "favicon": "./assets/favicon.png",

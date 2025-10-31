@@ -23,7 +23,7 @@ type typeRole = 'User' | 'Admin'
 
 const usuarioSchema = z.object({
     username: z.string().min(1, 'Esse campo é obrigatório'),
-    password: z.string().min(1, 'Esse campo é obrigatório'),
+    password: z.string().min(1, 'Esse campo é obrigatório').min(8, 'A senha deve ter no mínimo 8 caracteres').refine(password => isNaN(Number(password)),{error: 'A senha não pode ser apenas números'}),
     confirm_password: z.string().min(1, 'Esse campo é obrigatório'),
     nome: z.string(),
     email: z.email('E-mail inválido').or(z.literal('')),
@@ -111,7 +111,7 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                                 activeOutlineColor='#004A8D'
                                 secureTextEntry={!showPassword}
                                 errorMessage={fieldState.error?.message}
-                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}                        
+                                right={<TextInputPaper.Icon icon={showPassword ? 'eye-off' : 'eye'} onPress={() => setShowPassword(!showPassword)}/>}                        
                                 className=" mb-2"
                             />
                         )}                    
@@ -131,7 +131,7 @@ export default function UsuariosForms({onClose, visible, onSubmit }: propsCriarU
                                 secureTextEntry={!showConfirmPassword}
                                 activeOutlineColor='#004A8D'
                                 errorMessage={fieldState.error?.message}
-                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}                        
+                                right={<TextInputPaper.Icon icon={showConfirmPassword ? 'eye-off' : 'eye'} onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}                        
                                 className=" mb-2"
                             />
                             

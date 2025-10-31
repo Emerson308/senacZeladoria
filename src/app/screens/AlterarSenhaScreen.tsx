@@ -13,7 +13,7 @@ import { useAuthContext } from "../contexts/AuthContext";
 
 const changePasswordSchema = z.object({
     old_password: z.string().min(1, 'Esse campo é obrigatório'),
-    new_password: z.string().min(1, 'Esse campo é obrigatório'),
+    new_password: z.string().min(1, 'Esse campo é obrigatório').min(8, 'A senha deve ter no mínimo 8 caracteres').refine(password => isNaN(Number(password)),{error: 'A senha não pode ser apenas números'}),
     confirm_new_password: z.string().min(1, 'Esse campo é obrigatório')
 }).refine((data) => data.new_password === data.confirm_new_password, {
     error: 'As senhas não coincidem',
@@ -57,6 +57,10 @@ export default function AlterarSenhaScreen(){
 
     }
 
+    // return (
+    //     <View></View>
+    // )
+
 
     return (
         <SafeAreaView className=" bg-gray-100 flex-1 justify-center">
@@ -81,7 +85,7 @@ export default function AlterarSenhaScreen(){
                                 activeOutlineColor={colors.sblue}
                                 secureTextEntry={!showOldPassword}
                                 errorMessage={fieldState.error?.message}
-                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowOldPassword(!showOldPassword)}/>}
+                                right={<TextInputPaper.Icon icon={showOldPassword ? 'eye-off' : 'eye'} onPress={() => setShowOldPassword(!showOldPassword)}/>}
                             />
                         )}
                     />
@@ -101,7 +105,7 @@ export default function AlterarSenhaScreen(){
                                 activeOutlineColor={colors.sblue}
                                 secureTextEntry={!showPassword}
                                 errorMessage={fieldState.error?.message}
-                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                                right={<TextInputPaper.Icon icon={showPassword ? 'eye-off' : 'eye'} onPress={() => setShowPassword(!showPassword)}/>}
                             />
                         )}
                     />
@@ -121,7 +125,7 @@ export default function AlterarSenhaScreen(){
                                 activeOutlineColor={colors.sblue}
                                 secureTextEntry={!showConfirmPassword}
                                 errorMessage={fieldState.error?.message}
-                                right={<TextInputPaper.Icon icon="eye" onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}
+                                right={<TextInputPaper.Icon icon={showConfirmPassword ? 'eye-off' : 'eye'} onPress={() => setShowConfirmPassword(!showConfirmPassword)}/>}
                             />
                         )}
                     />

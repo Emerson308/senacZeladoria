@@ -9,6 +9,7 @@ import {CustomTextInput as TextInput} from '../components/CustomTextInput';
 import { useAuthContext } from '../contexts/AuthContext';
 import LoadingComponent from '../components/LoadingComponent';
 
+
 const LoginSchema = z.object({
   username: z.string().min(1, 'Esse campo é obrigatório'),
   password: z.string().min(1, 'Esse campo é obrigatório')
@@ -42,17 +43,19 @@ const LoginScreen = () => {
     )
   }
 
+  const uriSenac = require('../../../assets/senacLogo.png')
+
   return (
-    <SafeAreaView className='flex-1 bg-gray-50 justify-center p-16'>
+    <SafeAreaView className='flex-1 bg-gray-50 p-16 justify-center'>
       <KeyboardAvoidingView behavior='padding'>
 
-        <View className='items-center mb-10'>
+        <View className=' flex-col items-center gap-10 mb-10'>
           <Image
-            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/1200px-Senac_logo.svg.png" }}
-            resizeMode="contain"
-            className='h-24 w-40 mb-10'
+            source={uriSenac}
+            resizeMode="cover"
+            className=' h-32 aspect-video'
           />
-          <Text className='items-center text-3xl font-bold font-regular'>Login</Text>
+          <Text className=' text-center text-3xl font-bold font-regular'>Login</Text>
         </View>
 
         <View className='max-w-sm w-full gap-4 self-center'>
@@ -90,7 +93,7 @@ const LoginScreen = () => {
                   mode="outlined"
                   activeOutlineColor='#004A8D'
                   secureTextEntry={!showPassword}
-                  right={<TextInputPaper.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/>}
+                  right={<TextInputPaper.Icon icon={showPassword ? 'eye-off' : 'eye'} onPress={() => setShowPassword(!showPassword)}/>}
                   errorMessage={fieldState.error?.message}
                 />
             )}

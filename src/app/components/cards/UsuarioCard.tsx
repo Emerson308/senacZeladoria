@@ -53,7 +53,7 @@ function UsuarioCard({usuario, usersGroups}: propsUsuarioCard){
                             :
                             usersGroups.map(group => {
                                 if (usuario.groups.includes(group.id)){
-                                    return <Text key={group.id} style={{
+                                    return <Text key={group.id} className=" self-center" style={{
                                         padding: 1,
                                         paddingHorizontal: 5,
                                         borderRadius: 5,

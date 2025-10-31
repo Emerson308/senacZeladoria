@@ -38,6 +38,8 @@ export default function PerfilScreen(){
 
     const [rodapeImgSelectorVisible, setRodapeImgSelectorVisible] = useState(false)    
 
+    // console.log(apiURL + userData?.profile.profile_picture)
+
     useEffect(() => {
         setCarregando(true)
         carregarDadosDoUsuario()
@@ -66,7 +68,7 @@ export default function PerfilScreen(){
             {
                 text: 'Confirmar',
                 style: 'destructive',
-                onPress: async () => await signOut()
+                onPress: async () => signOut()
             }
         ])
     }

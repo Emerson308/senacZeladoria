@@ -19,6 +19,7 @@ export function CustomTextInput({errorMessage, error, className, style, ...restO
                 textColor="black"
                 outlineColor={colors.sgray}
                 theme={{colors:{onSurfaceVariant: colors.sgray}}}
+                outlineStyle={{borderWidth: 1.5}}
                 style={{
                     backgroundColor: 'white',
                     color: 'black',

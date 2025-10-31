@@ -135,6 +135,22 @@ export default function FormSalaScreen(){
         }
     }
 
+    const handleRemoveImage = () => {
+        Alert.alert('Remover foto', 'Tem certeza que deseja remover essa foto?',
+            [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Confirmar',
+                    style: 'default',
+                    onPress: () => setImage(null)
+                }
+            ]
+        )
+    }
+
     const onSubmit = async (data: salaFormData) => {
 
         const {ativa, responsaveis, ...salaData} = data
@@ -270,13 +286,13 @@ export default function FormSalaScreen(){
                 
          
                 <TouchableOpacity onPress={() => setResponsaveisMultiselectVisible(true)} 
-                className=" mt-1.5 border border-gray-700 items-center h-14 flex-row justify-center rounded-lg bg-sgray/20">
+                className=" mt-1.5 border border-sblue items-center h-14 flex-row justify-center rounded-lg bg-sblue">
                     <Ionicons
                         name='people-outline' 
                         size={22} 
-                        color={'black'}
+                        color={'white'}
                     />
-                    <Text className=" text-lg text-center text-black px-2" numberOfLines={1}>Selecionar responsáveis pela limpeza</Text>
+                    <Text className=" text-lg text-center text-white font-bold px-2" numberOfLines={1}>Selecionar responsáveis pela limpeza</Text>
                 </TouchableOpacity>
                 
                 <Controller
@@ -359,56 +375,32 @@ export default function FormSalaScreen(){
                     )}
                 />
 
-                <View className=" gap-4 flex-row flex-1 h-44 items-center">
-                    <View className=" border aspect-square h-full">
-                    {image ? 
+                <TouchableOpacity onPress={() => setImgSelectorVisible(true)} className=" rounded-md overflow-hidden border-2 aspect-square h-44 self-center">
+                    {
+                        image ? 
                         <View className=" flex-1">
                             <Image
-                                source={{uri: image.uri}}
+                                source={{uri: image?.uri}}
                                 className=" flex-1"
                             />
                             <TouchableOpacity
-                                onPress={() => {
-                                    Alert.alert('Remover foto', 'Tem certeza que deseja remover essa foto?',
-                                        [
-                                            {
-                                                text: 'Cancelar',
-                                                style: 'cancel'
-                                            },
-                                            {
-                                                text: 'Confirmar',
-                                                style: 'default',
-                                                onPress: () => setImage(null)
-                                            }
-                                        ]
-                                    )
+                                onPress={(e) => {
+                                    e.stopPropagation()
+                                    handleRemoveImage()
                                 }}
                                 className=" absolute right-1 top-1 bg-gray-100 rounded-full p-1"
                             >
                                 <Ionicons name="close-outline" size={22}/>
                             </TouchableOpacity>
                         </View>
-
-                        : 
-                        <View className=" flex-1 bg-gray-200 items-center justify-center">
+                        :
+                        <View className=" bg-gray-200 flex-1 gap-2 items-center justify-center">
                             <Ionicons name="image-outline" size={32}/>
+                            <Text className=" font-bold">Sem imagem</Text>
                         </View>
                     }
+                </TouchableOpacity>
 
-                    </View>
-
-                    <View className=" flex-1 flex-col gap-2">
-                        <TouchableOpacity onPress={() => setImgSelectorVisible(true)} className=" items-center h-14 justify-center rounded-lg bg-sblue/20">
-                            <Text className=" text-lg text-center text-sblue px-2" numberOfLines={1}>{sala ? 'Editar imagem': 'Inserir imagem'}</Text>
-                        </TouchableOpacity>
-                        {/* <TouchableOpacity onPress={() => setImage(null)} className=" items-center h-14 justify-center rounded-lg px-6 bg-sred/20">
-                            <Ionicons name="trash-bin-outline" size={28} color={colors.sred}/>
-                        </TouchableOpacity> */}
-
-                    </View>
-
-
-                </View>
             </ScrollView>
 
             <View className=" flex-row justify-between px-4 gap-8">
