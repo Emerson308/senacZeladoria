@@ -9,16 +9,54 @@ import React, { useContext } from "react";
 // import image from '../../../../assets'
 
 
-interface propsSalaCard{
-    sala: Sala;
-    onPress: () => void,
-    iniciarLimpeza: (id:string) => void,
-    marcarSalaComoSuja: (id:string) => void,
-    editarSala: (sala: Sala) => void,
-    excluirSala: (id: string) => void,
-    userRole: 'user' | 'admin',
-    userGroups: number[]
 
+interface SalaCardButtonProps{
+    onPress?: () => void,
+    visible: boolean,
+    label?: string
+    icon?: 'delete' | 'pencil' | 'delete-variant' | 'broom'
+    adminButton? : boolean
+    colors?: {
+        tailwind: string,
+        style: string
+    }
+}
+
+const SalaCardButton = ({
+    onPress,
+    visible,
+    label,
+    icon,
+    colors,
+    adminButton
+}: SalaCardButtonProps) => {
+
+    if(!visible){
+        return null
+    }
+
+    return (
+        <View className={`h-12 rounded-lg overflow-hidden ${adminButton ? 'aspect-square' : 'flex-1'}`}>
+            <TouchableOpacity
+            
+                className={`bg-${colors?.tailwind}/20 flex-1 flex-row gap-1 items-center justify-center`}
+                activeOpacity={visible ? 0.2 : 1}
+                onPress={(e) => {
+                    e.stopPropagation();
+                    if(visible){
+                        onPress?.()
+                    }
+                }}
+            >
+                {!icon ? null :
+                    <MaterialCommunityIcons size={24} name={icon} color={colors?.style}/>
+                }
+                {!label ? null : 
+                    <Text className={` text-${colors?.tailwind} text-base`}>{label}</Text>
+                }
+            </TouchableOpacity>
+        </View>
+    )
 }
 
 interface SalaCardButtonsProps{
@@ -31,133 +69,6 @@ interface SalaCardButtonsProps{
     userGroups: number[]
 }
 
-interface IniciarLimpezaButtonProps {
-    sala: Sala;
-    iniciarLimpeza: (id: string) => void;
-    visible: boolean;
-}
-
-interface MarcarSalaComoSujaButtonProps {
-    sala: Sala;
-    marcarSalaComoSuja: (id: string) => void;
-    visible: boolean;
-}
-
-interface EditarSalaButtonProps {
-    sala: Sala;
-    editarSala: (sala: Sala) => void;
-    visible: boolean;
-}
-
-interface ExcluirSalaButtonProps {
-    sala: Sala;
-    excluirSala: (id: string) => void;
-    visible: boolean;
-}
-
-
-
-function IniciarLimpezaButton({ sala, iniciarLimpeza, visible }: IniciarLimpezaButtonProps) {
-    if (!visible) return null;
-
-    if(sala.status_limpeza === 'Em Limpeza' || sala.status_limpeza === 'Limpa'){
-
-        const statusButtonClass = sala.status_limpeza === 'Em Limpeza' ? 'bg-sgray/20 text-sgray' : 'bg-sgreen/20 text-sgreen'
-        const statusTextClass = sala.status_limpeza === 'Em Limpeza' ? 'text-sgray' : 'text-sgreen'
-        const statusIconColor = sala.status_limpeza === 'Em Limpeza' ? colors.sgray : colors.sgreen
-
-        return (
-            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-lg items-center justify-center`}>
-                <MaterialCommunityIcons size={24} name={sala.status_limpeza === 'Em Limpeza' ? 'broom' : 'check'} color={statusIconColor}/>
-                <Text className={statusTextClass}>Sala {sala.status_limpeza}</Text>
-            </View>
-        )
-    }
-
-    return (
-        <TouchableOpacity
-            className=" h-12 bg-sgreen/20 flex-row gap-1 rounded-lg items-center justify-center"
-            onPress={(e) => {
-                e.stopPropagation()
-                iniciarLimpeza(sala.qr_code_id)
-            }}
-        >
-            <MaterialCommunityIcons size={24} name='broom' color={colors.sgreen}/>
-            <Text className=" text-sgreen text-base">Iniciar limpeza</Text>
-        </TouchableOpacity>
-    )
-}
-
-function MarcarSalaComoSujaButton({ sala, marcarSalaComoSuja, visible }: MarcarSalaComoSujaButtonProps) {
-    if (!visible) return null;
-
-    if(sala.status_limpeza === 'Suja' || sala.status_limpeza === 'Em Limpeza'){
-
-        const statusButtonClass = sala.status_limpeza === 'Em Limpeza' ? 'bg-sgray/20 text-sgray' : 'bg-sred/20 text-sred'
-        const statusTextClass = sala.status_limpeza === 'Em Limpeza' ? 'text-sgray' : 'text-sred'
-        const statusIconColor = sala.status_limpeza === 'Em Limpeza' ? colors.sgray : colors.sred
-
-        return (
-            <View className={` h-12 ${statusButtonClass} flex-row gap-2 rounded-lg items-center justify-center`}>
-                <MaterialCommunityIcons size={24} name={sala.status_limpeza === 'Em Limpeza' ? 'broom' : 'block-helper'} color={statusIconColor}/>
-                <Text className={statusTextClass}>Sala {sala.status_limpeza}</Text>
-            </View>
-        )
-    }
-
-    return (
-        <TouchableOpacity
-            className=" h-12 bg-syellow/20 flex-row gap-1 rounded-lg items-center justify-center"
-            onPress={(e) => {
-                e.stopPropagation();
-                marcarSalaComoSuja(sala.qr_code_id);
-            }}
-        >
-            <MaterialCommunityIcons size={24} name='delete-variant' color={colors.syellow}/>
-            <Text className=" text-syellow text-base">Reportar sujeira</Text>
-        </TouchableOpacity>
-    )
-}
-
-function EditarSalaButton({ sala, editarSala, visible }: EditarSalaButtonProps) {
-    if (!visible) return null;
-
-    return (
-        <TouchableOpacity
-            className=" h-12 aspect-square bg-sblue/20 flex-row gap-1 rounded-lg items-center justify-center"
-            onPress={(e) => {
-                e.stopPropagation();
-                editarSala(sala);
-            }}
-        >
-            <MaterialCommunityIcons size={24} name='pencil' color={colors.sblue}/>
-        </TouchableOpacity>
-    )
-}
-
-function ExcluirSalaButton({ sala, excluirSala, visible }: ExcluirSalaButtonProps) {
-    if (!visible) return null;
-    return (
-        <TouchableOpacity
-            className=" h-12 aspect-square bg-sred/20 flex-row gap-1 rounded-lg items-center justify-center"
-            onPress={(e) => {
-                e.stopPropagation();
-                excluirSala(sala.qr_code_id);
-            }}
-        >
-            <MaterialCommunityIcons size={24} name='delete' color={colors.sred}/>
-        </TouchableOpacity>
-    )
-}
-
-function EmLimpezaButton(){
-    return (
-        <View className=" h-12 bg-sgray/20 flex-row gap-2 rounded-lg items-center justify-center">
-            <MaterialCommunityIcons size={24} name='broom' color={colors.sgray}/>
-            <Text className=" text-sgray">Sala em limpeza</Text>
-        </View>
-    )
-}
 
 function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala, excluirSala, userRole, userGroups }: SalaCardButtonsProps){
 
@@ -172,7 +83,13 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
                     <Ionicons name="ban" size={24} color={colors.sgray} />
                     <Text className=" text-sgray italic">Sala inativa</Text>
                 </TouchableOpacity>
-                <EditarSalaButton sala={sala} editarSala={editarSala} visible={userRole !== 'user'}/>
+                <SalaCardButton
+                    visible={userRole !== 'user'}
+                    icon='pencil'
+                    colors={{style: colors.sblue, tailwind: 'sblue'}}
+                    adminButton={true}
+                    onPress={() => editarSala(sala)}
+                />
             </View>
         )
     }
@@ -195,7 +112,7 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
     const visibleGroupsButton = [visibleIniciarLimpeza, visibleMarcarSalaComoSuja]
 
     const adminConditionStyle = visibleGroupsButton.filter(item => item).length > 1
-    const adminButtonsStyle = !adminConditionStyle ? " flex-row-reverse gap-2" : " flex-col gap-2"
+    const adminButtonsStyle = !false ? " flex-row-reverse gap-2" : " flex-col gap-2"
 
     const buttonsVisibles = [visibleEditarSala, visibleExcluirSala, visibleIniciarLimpeza, visibleMarcarSalaComoSuja]
 
@@ -211,26 +128,62 @@ function SalaCardButtons({ sala, iniciarLimpeza, marcarSalaComoSuja, editarSala,
 
     return (
         <View className=" flex-row gap-2 p-2 border-t-2 border-gray-300">
-            <View className="flex-col flex-1 gap-2">
-                <IniciarLimpezaButton sala={sala} iniciarLimpeza={iniciarLimpeza} visible={visibleIniciarLimpeza}/>
-                <MarcarSalaComoSujaButton sala={sala} marcarSalaComoSuja={marcarSalaComoSuja} visible={visibleMarcarSalaComoSuja}/>
+            <View className="flex-row flex-1 gap-2">
+                <SalaCardButton
+                    visible={visibleIniciarLimpeza}
+                    icon="broom"
+                    label={!visibleMarcarSalaComoSuja ? 'Iniciar limpeza' : ''}
+                    colors={{style: colors.sgreen, tailwind: 'sgreen'}}
+                    onPress={() => iniciarLimpeza(sala.qr_code_id)}
+                />
+                <SalaCardButton
+                    visible={visibleMarcarSalaComoSuja}
+                    icon='delete-variant'
+                    label={!visibleIniciarLimpeza ? 'Reportar sujeira' : ''}
+                    colors={{style: colors.syellow, tailwind: 'syellow'}}
+                    onPress={() => marcarSalaComoSuja(sala.qr_code_id)}
+                />
             </View>
             <View className={adminButtonsStyle}>
-                <EditarSalaButton sala={sala} editarSala={editarSala} visible={visibleEditarSala}/>
-                <ExcluirSalaButton sala={sala} excluirSala={excluirSala} visible={visibleExcluirSala}/>
+                <SalaCardButton
+                    visible={visibleEditarSala}
+                    icon='pencil'
+                    colors={{style: colors.sblue, tailwind: 'sblue'}}
+                    adminButton={true}
+                    onPress={() => editarSala(sala)}
+                />
+                <SalaCardButton
+                    visible={visibleExcluirSala}
+                    icon='delete'
+                    colors={{style: colors.sred, tailwind: 'sred'}}
+                    adminButton={true}
+                    onPress={() => excluirSala(sala.qr_code_id)}
+                />
             </View>
         </View>
 
     )
 }
 
+interface propsSalaCard{
+    sala: Sala;
+    onPress: () => void,
+    iniciarLimpeza: (id:string) => void,
+    marcarSalaComoSuja: (id:string) => void,
+    editarSala: (sala: Sala) => void,
+    excluirSala: (id: string) => void,
+    userRole: 'user' | 'admin',
+    userGroups: number[]
+
+}
 
 
 function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userGroups, userRole, marcarSalaComoSuja}: propsSalaCard){
 
     // const userGroups: number[] = []
     const salaCardImage = require('../../../../assets/salaCardImage.jpg')
-    const salaImage = sala.imagem ? {uri: apiURL + sala.imagem} : salaCardImage
+    const salaCardImage2 = require('../../../../assets/salaCardImage4.jpg')
+    const salaImage = sala.imagem ? {uri: apiURL + sala.imagem} : salaCardImage2
 
     return (
         <TouchableOpacity className="mb-4 rounded-xl shadow-md" onPress={onPress}>
@@ -239,11 +192,11 @@ function SalaCard({sala, onPress, iniciarLimpeza, editarSala, excluirSala, userG
                     <View className=" gap-1 flex-row ">
                         <View className=" aspect-square h-40">
                             <Image
-                                className={`flex-1 aspect-square ${(userGroups.length === 0 && userRole === 'user') ? 'rounded-l-xl': 'rounded-tl-xl'} ${sala.imagem ? '' : 'bg-black opacity-80'}`}
+                                className={`flex-1 aspect-square ${(userGroups.length === 0 && userRole === 'user') ? 'rounded-l-xl': 'rounded-tl-xl'} ${sala.imagem ? '' : ' bg-black opacity-90'}`}
                                 source={salaImage}
                                 resizeMode="cover"
                             />
-                            {sala.imagem ? null : <Text className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-lg">Sem imagem</Text>}
+                            {/* {sala.imagem ? null : <Text className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-lg">Sem imagem</Text>} */}
                         </View>
                         <View className=" flex-1 rounded-r-lg p-2 flex-col gap-1">
                             <Text className=" text-2xl" numberOfLines={1} ellipsizeMode="tail">{sala.nome_numero}</Text>

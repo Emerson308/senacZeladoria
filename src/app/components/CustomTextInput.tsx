@@ -2,7 +2,6 @@
 import { TextInput, TextInputProps } from "react-native-paper";
 import { Text, View } from "react-native";
 import { colors } from "../../styles/colors";
-import { tr } from "date-fns/locale";
 
 interface CustomTextInputProps extends TextInputProps{
     errorMessage? : string

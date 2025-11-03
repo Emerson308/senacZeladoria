@@ -8,7 +8,7 @@ import { CustomTextInput as TextInput } from "../components/CustomTextInput";
 import { colors } from "../../styles/colors";
 import * as ImagePicker from 'expo-image-picker'
 import { showErrorToast, showSuccessToast } from "../utils/functions";
-import {formatarDataISO, formatSecondsToHHMMSS, getSecondsElapsed, getSecondsUtcDiference} from '../utils/dateFunctions'
+import {formatarDataISO, formatSecondsToHHMMSS, getContadorTailwind, getSecondsElapsed, getSecondsUtcDiference} from '../utils/dateFunctions'
 import { imageRegistro, imagesToUpload } from "../types/apiTypes";
 import { TelaLimpeza } from "../navigation/types/StackTypes";
 import { getRegistrosService, adicionarFotoLimpezaService, concluirLimpezaService, deletarFotoLimpezaService } from '../servicos/servicoLimpezas';
@@ -329,22 +329,6 @@ export default function LimpezaScreen() {
     }
 
 
-    const contadorStyle = {
-        fastTime: 'text-sgreen',
-        mediumTime: 'text-syellow',
-        slowTime: 'text-sred'
-    }
-
-    const getContadorStyle = (seconds: number): string => {
-        if (seconds < 1200) {
-            return contadorStyle.fastTime;
-        } else if (seconds < 2400) {
-            return contadorStyle.mediumTime;
-        } else {
-            return contadorStyle.slowTime;
-        }
-    }
-
     const getLimpezaScreenData = () => {
         if(type === 'Observar'){
             return {
@@ -469,7 +453,7 @@ export default function LimpezaScreen() {
                     }
                     <View className=" h-1 bg-white w-full"/>
                     <Text className=" px-4 text-lg font-bold">Tempo de Limpeza</Text>
-                    <Text className={` px-4 text-4xl text-center ${getContadorStyle(tempoDeLimpeza)}`}>{contadorFormatado}</Text>
+                    <Text className={` px-4 text-4xl text-center ${getContadorTailwind(tempoDeLimpeza)}`}>{contadorFormatado}</Text>
                 </View>
 
             </ScrollView>

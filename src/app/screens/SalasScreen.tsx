@@ -171,6 +171,7 @@ export default function SalasScreen() {
         
         setEditingSala(null);
         setObservacao('');
+        await carregarTudo()
     }
 
     const carregarLimpezasAndamento = async () => {
