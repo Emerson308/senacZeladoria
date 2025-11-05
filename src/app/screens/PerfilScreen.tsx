@@ -10,14 +10,14 @@ import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import { apiURL } from "../api/axiosConfig";
 import ImgTypeSelector from "../components/ImgTypeSelector";
 import { ImageURISource } from "react-native";
-import Toast from "react-native-toast-message";
+// import Toast from "react-native-toast-message";
 import { showErrorToast } from "../utils/functions";
 import SalasAtribuidasModal from "../components/SalasAtribuidasModal";
 import { useSalas } from "../contexts/SalasContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import LoadingComponent from "../components/LoadingComponent";
 import { compressImage, getFileSizeInBytes, imageOptimized } from "../utils/imageCompressor";
-import { SaveFormat, useImageManipulator } from "expo-image-manipulator";
+// import { SaveFormat, useImageManipulator } from "expo-image-manipulator";
 
 
 
@@ -168,7 +168,7 @@ export default function PerfilScreen(){
                         <TouchableOpacity
                             onPress={() => setSalasAtribuidasModalVisible(true)}
                             className=" p-2"
-                            >
+                        >
                             <MaterialCommunityIcons name="file-document-multiple-outline" size={24} color={'black'}/>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -180,7 +180,7 @@ export default function PerfilScreen(){
                     </View>
                 }
             </View>
-            <ScrollView style={{}} className=" flex-1 " contentContainerClassName=" flex-1" 
+            <ScrollView style={{}} className=" flex-1 " contentContainerClassName="" 
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={carregarDadosDoUsuario}/>}
             >
                 <View className=" items-center py-10 bg-white border-b border-gray-200">
@@ -279,27 +279,6 @@ export default function PerfilScreen(){
         </SafeAreaView>
     )
 }
-
-
-const styles = StyleSheet.create({
-    textYellow:{
-        color: '#eab308',
-        // backgroundColor: '#fef9c3',
-        // padding: 1,
-        // paddingHorizontal: 5,
-        // borderRadius: 20
-    },
-    
-    textGreen:{
-        color: '#00292E',
-        // backgroundColor: '#dcfce7',
-        // padding: 1,
-        // paddingHorizontal: 5,
-        // borderRadius: 20
-    }
-})
-
-
 
 
 
