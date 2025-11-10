@@ -36,6 +36,13 @@ O sistema conecta diferentes perfis de usuário em um ciclo de manutenção cont
       * **Edição e Deleção** (Administração).
   * **Botões de Status:** Inclui os botões **"Limpezas em Andamento"** (se houver tarefas pendentes para o Zelador) e **"Criar Sala"** (para o Administrador).
 
+ * **Notificações:**
+
+   A central de **Notificações** consolida todos os alertas relevantes para o usuário, funcionando como uma caixa de entrada de tarefas prioritárias:
+  
+  * **Gestão de Alertas:** O usuário pode **marcar uma notificação específica como lida** ou **marcar todas as pendentes como lidas** de uma só vez, para gerenciar o volume de alertas.
+  * **Cards Informativos:** Cada card de notificação exibe o **horário do evento** e informações essenciais da sala relacionada. O status de **lida ou não lida** é indicado visualmente.
+  * **Ação Rápida:** Ao clicar em um card, o usuário é direcionado imediatamente à tela **Detalhes sala**, onde a sala em questão é destacada, permitindo que a **Equipe de Zeladoria inicie a limpeza** ou que o administrador verifique o status de manutenção.
 
 
 
