@@ -22,4 +22,29 @@ O sistema conecta diferentes perfis de usuário em um ciclo de manutenção cont
 
 * Segurança e Controle de Acesso: O acesso é estritamente baseado em perfis, garantindo que as permissões de execução de tarefas sejam limitadas e pertinentes à função de cada colaborador.
 
+## Telas do app
+
+* **Salas:**
+  * **Visibilidade Adaptável:** A listagem exibe salas ativas (para a Zeladoria/Solicitantes) ou todas as salas (para a Administração), com cards que mostram o **nome, imagem e status** atual da sala (Limpa, Suja, Pendente).
+  * **Ferramentas de Navegação:**
+      * **Filtros Avançados:** Permitem a busca rápida e precisa por salas.
+      * **Leitor de QR Code:** Acesso direto para identificar salas no campo.
+      * **Acesso a Notificações:** Link rápido para a central de alertas do usuário.
+  * **Ações Dinâmicas:** Os cards de sala apresentam botões contextuais que dependem do status da sala e do perfil do usuário, incluindo:
+      * **Início de Limpeza** (Zeladoria).
+      * **Reportar Sujeira** (Solicitantes).
+      * **Edição e Deleção** (Administração).
+  * **Botões de Status:** Inclui os botões **"Limpezas em Andamento"** (se houver tarefas pendentes para o Zelador) e **"Criar Sala"** (para o Administrador).
+
+
+
+
+
+
+
+
+
+
+
+
 
