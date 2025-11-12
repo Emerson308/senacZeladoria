@@ -1,6 +1,6 @@
 # 🧹 Projeto senacZeladoria
 
-Este projeto é uma plataforma digital completa para a gestão e fiscalização da manutenção de espaços físicos (salas, laboratórios, escritórios). O sistema substitui fluxos de trabalho manuais por um processo eficiente e em tempo real, garantindo rastreabilidade total e a excelência na qualidade dos serviços de limpeza.
+Este projeto facilita a gestão e fiscalização da manutenção de espaços físicos (salas, laboratórios, escritórios) do Senac mossoró. O sistema substitui fluxos de trabalho manuais por um processo eficiente e em tempo real, garantindo rastreabilidade total e a excelência na qualidade dos serviços de limpeza.
 
 ### **Funcionalidade Geral**
 
