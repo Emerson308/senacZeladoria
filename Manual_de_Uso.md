@@ -6,6 +6,8 @@ Este manual detalha o passo a passo de como utilizar as funcionalidades do aplic
 
 A tela **Salas** é a primeira que você vê ao fazer login e é o ponto de partida para todas as suas atividades.
 
+![Tela salas](assets/Tela_salas.png)
+
 * **1.1 Localizar Sala (Busca/Filtro)**
 
   * **Permissão:** Todos
@@ -45,6 +47,8 @@ A tela **Salas** é a primeira que você vê ao fazer login e é o ponto de part
 ## 2. Fluxo da Equipe de Zeladoria
 
 Seu foco é na execução e comprovação dos serviços de limpeza de forma rastreável.
+
+![Tela concluir limpeza](assets/Tela_concluirLimpeza.png)
 
 ### A. Realizar e Finalizar uma Limpeza
 
