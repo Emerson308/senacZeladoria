@@ -38,17 +38,19 @@ A tela **Salas** é a primeira que você vê ao fazer login e é o ponto de part
 
   * **Detalhe:** Clique no **card da sala** na lista da Tela Salas para ver informações completas (localização, capacidade, instruções, etc.).
 
+![Tela detalhes sala](assets/DetalhesSalas.png)
+
 * **1.6 Criar Sala**
 
   * **Permissão:** Administrador
 
   * **Detalhe:** O botão **"Criar Sala"** (rodapé) só aparece para o Administrador. (Veja item 4.4).
 
+![Tela criar sala](assets/Salas_criarSala.png)
+
 ## 2. Fluxo da Equipe de Zeladoria
 
 Seu foco é na execução e comprovação dos serviços de limpeza de forma rastreável.
-
-![Tela concluir limpeza](assets/Tela_concluirLimpeza.png)
 
 ### A. Realizar e Finalizar uma Limpeza
 
@@ -68,6 +70,11 @@ Seu foco é na execução e comprovação dos serviços de limpeza de forma rast
 
   * **Detalhe:** **Se você interromper a limpeza**, use o botão **"Limpezas em Andamento"** na Tela Salas. Clique no card para **retomar o serviço** e ir para a tela de Conclusão.
 
+![Botão limpezas em andamento](assets/BotaoLimpezasAndamento.png)
+
+![Tela limpezas em andamento](assets/TelaLimpezasAndamento.png)
+![Botão concluir limpeza](assets/BotaoConcluirLimpeza.png)
+
 * **2.3 Acessar Conclusão (Fluxo Direto)**
 
   * **Permissão:** Zeladoria
@@ -75,6 +82,8 @@ Seu foco é na execução e comprovação dos serviços de limpeza de forma rast
   * **Tela/Localização:** Detalhes da Sala / Botão "Concluir Limpeza"
 
   * **Detalhe:** Ao iniciar a limpeza, o botão **"Iniciar Limpeza"** é substituído por **"Concluir Limpeza"**. Clique aqui para **acessar a tela de Conclusão** e finalizar o registro.
+
+![Tela concluir limpeza](assets/Tela_concluirLimpeza.png)
 
 * **2.4 Comprovar com Fotos**
 
@@ -99,6 +108,8 @@ Seu foco é na execução e comprovação dos serviços de limpeza de forma rast
   * **Tela/Localização:** Concluir Limpeza / Botão "Concluir Limpeza"
 
   * **Detalhe:** Use o botão **"Concluir Limpeza"** (azul, na parte inferior) após terminar a comprovação. A sala muda para o status **"Limpa"**.
+
+![Tela concluir limpeza](assets/TelaConcluirLimpezaPreenchida.png)
 
 ### B. Acompanhar Seus Históricos e Salas Atribuídas
 
@@ -130,6 +141,8 @@ Seu foco é na execução e comprovação dos serviços de limpeza de forma rast
 
 Seu papel é acionar a manutenção imediatamente quando notar que uma sala precisa de atenção (não-conformidade, sujeira).
 
+![Reportar sujeira](assets/Salas&Detalhes_reportarSujeira.png)
+
 * **3.1 Encontrar a Sala**
 
   * **Permissão:** Solicitante/Todos
@@ -160,6 +173,8 @@ Você tem acesso irrestrito a todas as informações, relatórios e ferramentas 
 
 ### A. Gerenciamento de Usuários
 
+![Tela usuários](assets/Usuarios.png)
+
 * **4.1 Acessar Painel**
 
   * **Permissão:** Administrador
@@ -186,6 +201,10 @@ Você tem acesso irrestrito a todas as informações, relatórios e ferramentas 
 
 ### B. Gestão de Salas e QR Codes
 
+![Tela criar sala](assets/Salas_criarSala.png)
+
+![Botões editar/excluir](assets/BotoesEdicao.png)
+
 * **4.4 Criar Nova Sala**
 
   * **Permissão:** Administrador
@@ -211,6 +230,9 @@ Você tem acesso irrestrito a todas as informações, relatórios e ferramentas 
   * **Detalhe:** Clique neste ícone para gerar o **PDF dos QR Codes** das salas para impressão.
 
 ### C. Análise de Desempenho e Rastreabilidade (Relatórios)
+
+![Tela estatisticas parte 1](assets/EstatisticasP1.png)
+![Tela estatisticas parte 2](assets/EstatisticasP2.png)
 
 * **4.7 Ver Status Geral**
 
@@ -256,6 +278,8 @@ Você tem acesso irrestrito a todas as informações, relatórios e ferramentas 
 
 A central de **Notificações** é onde você recebe comunicações importantes sobre o sistema e a manutenção.
 
+![Tela notificações](assets/Notificacoes.png)
+
 * **5.1 Acessar Notificações**
 
   * **Permissão:** Zeladoria
@@ -283,6 +307,8 @@ A central de **Notificações** é onde você recebe comunicações importantes 
 ## 6. Configurações Pessoais (Todos os Usuários)
 
 A tela de **Perfil** serve para gerenciar dados de acesso e segurança, e não o fluxo de trabalho principal.
+
+![Tela de perfil](assets/Perfil.png)
 
 * **6.1 Acessar o Perfil**
 
